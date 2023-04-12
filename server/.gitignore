@@ -1,0 +1,27 @@
+# Dependency directories
+node_modules/
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Build output
+dist/
+build/
+out/
+public/bundle.js
+
+# Environment variables
+.env
+
+# Config files
+config/*.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
