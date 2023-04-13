@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 
 import EditText from "./shared-components/EditText.component";
 import AuthFrame from "./shared-components/AuthFrame.component";
@@ -12,6 +13,20 @@ import { Spacer } from "../components/spacer";
 import { Colors } from "../theme/color";
 
 const LoginScreen = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleSignInWithEmail = () => {
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        console.log("Sign in succeeded");
+      })
+      .catch((err) => {
+        console.log("Error when sign in with email", err);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <AuthFrame heading={"Sign in"}>
@@ -26,9 +41,16 @@ const LoginScreen = () => {
         <Spacer position={"top"} size={"huge"}></Spacer>
         <Spacer position={"top"} size={"huge"}></Spacer>
 
-        <EditText placeholder={"Email"} iconLeft={"email"}></EditText>
+        <EditText
+          value={email}
+          onChangeText={(newEmail) => setEmail(newEmail)}
+          placeholder={"Email"}
+          iconLeft={"email"}
+        ></EditText>
         <Spacer position={"top"} size={"large"}></Spacer>
         <EditText
+          value={password}
+          onChangeText={(newPassword) => setPassword(newPassword)}
           isPasswordType={true}
           placeholder={"Password"}
           iconLeft={"lock"}
@@ -37,7 +59,10 @@ const LoginScreen = () => {
         <Spacer position={"top"} size={"huge"}></Spacer>
         <Spacer position={"top"} size={"large"}></Spacer>
 
-        <AuthButton buttonContent={"Continue"}></AuthButton>
+        <AuthButton
+          onPress={handleSignInWithEmail}
+          buttonContent={"Login"}
+        ></AuthButton>
 
         <Spacer position={"top"} size={"medium"}></Spacer>
 
