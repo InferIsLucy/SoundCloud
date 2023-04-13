@@ -1,6 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React from "react";
 
+import { Colors } from "../theme/color";
+import { Spacer } from "../components/spacer";
 import EditText from "./shared-components/EditText.component";
 import AuthFrame from "./shared-components/AuthFrame.component";
 import {
@@ -8,20 +10,18 @@ import {
   GoogleAuthButton,
   FbAuthButton,
 } from "./shared-components/AuthButton.component";
-import { Spacer } from "../components/spacer";
-import { Colors } from "../theme/color";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   return (
     <View style={styles.container}>
-      <AuthFrame heading={"Sign in"}>
+      <AuthFrame heading={"Create accout"}>
         <GoogleAuthButton
-          buttonContent={"Continue with Google"}
+          buttonContent={"Sign up with Google"}
         ></GoogleAuthButton>
 
         <Spacer position={"top"} size={"large"}></Spacer>
 
-        <FbAuthButton buttonContent={"Continue with Facebook"}></FbAuthButton>
+        <FbAuthButton buttonContent={"Sign up with Facebook"}></FbAuthButton>
 
         <Spacer position={"top"} size={"huge"}></Spacer>
         <Spacer position={"top"} size={"huge"}></Spacer>
@@ -37,19 +37,15 @@ const LoginScreen = () => {
         <Spacer position={"top"} size={"huge"}></Spacer>
         <Spacer position={"top"} size={"large"}></Spacer>
 
-        <AuthButton buttonContent={"Continue"}></AuthButton>
+        <AuthButton buttonContent={"Sign up with email"}></AuthButton>
 
         <Spacer position={"top"} size={"medium"}></Spacer>
-
-        <TouchableOpacity>
-          <Text style={styles.forgotPassword}>Forgot your password?</Text>
-        </TouchableOpacity>
       </AuthFrame>
     </View>
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -57,9 +53,5 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: Colors.authBackground,
-  },
-  forgotPassword: {
-    fontSize: 16,
-    color: "black",
   },
 });
