@@ -1,7 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
 
+import { Colors } from "../theme/color";
+import { Spacer } from "../components/spacer";
 import EditText from "./shared-components/EditText.component";
 import AuthFrame from "./shared-components/AuthFrame.component";
 import {
@@ -9,49 +10,49 @@ import {
   GoogleAuthButton,
   FbAuthButton,
 } from "./shared-components/AuthButton.component";
-import { Spacer } from "../components/spacer";
-import { Colors } from "../theme/color";
+import { auth } from "../config/firebase";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleSignInWithEmail = () => {
+  const handleSignUpWithEmail = () => {
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredentials) => {
         const user = userCredentials.user;
-        console.log("Sign in succeeded");
+        console.log("Sign up succeeded", user);
       })
       .catch((err) => {
-        console.log("Error when sign in with email", err);
+        console.log("Error when create new user", err);
       });
   };
 
   return (
     <View style={styles.container}>
-      <AuthFrame heading={"Sign in"}>
+      <AuthFrame heading={"Create accout"}>
         <GoogleAuthButton
-          buttonContent={"Continue with Google"}
+          buttonContent={"Sign up with Google"}
         ></GoogleAuthButton>
 
         <Spacer position={"top"} size={"large"}></Spacer>
 
-        <FbAuthButton buttonContent={"Continue with Facebook"}></FbAuthButton>
+        <FbAuthButton buttonContent={"Sign up with Facebook"}></FbAuthButton>
 
         <Spacer position={"top"} size={"huge"}></Spacer>
         <Spacer position={"top"} size={"huge"}></Spacer>
 
         <EditText
-          value={email}
           onChangeText={(newEmail) => setEmail(newEmail)}
+          value={email}
           placeholder={"Email"}
           iconLeft={"email"}
         ></EditText>
         <Spacer position={"top"} size={"large"}></Spacer>
         <EditText
-          value={password}
           onChangeText={(newPassword) => setPassword(newPassword)}
           isPasswordType={true}
+          value={password}
           placeholder={"Password"}
           iconLeft={"lock"}
         ></EditText>
@@ -60,21 +61,17 @@ const LoginScreen = () => {
         <Spacer position={"top"} size={"large"}></Spacer>
 
         <AuthButton
-          onPress={handleSignInWithEmail}
-          buttonContent={"Login"}
+          onPress={handleSignUpWithEmail}
+          buttonContent={"Sign up with email"}
         ></AuthButton>
 
         <Spacer position={"top"} size={"medium"}></Spacer>
-
-        <TouchableOpacity>
-          <Text style={styles.forgotPassword}>Forgot your password?</Text>
-        </TouchableOpacity>
       </AuthFrame>
     </View>
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -82,9 +79,5 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: Colors.authBackground,
-  },
-  forgotPassword: {
-    fontSize: 16,
-    color: "black",
   },
 });
