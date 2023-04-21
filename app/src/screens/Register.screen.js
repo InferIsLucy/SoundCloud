@@ -13,7 +13,7 @@ import {
 import { auth } from "../config/firebase";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleSignUpWithEmail = () => {
@@ -30,7 +30,12 @@ const RegisterScreen = () => {
 
   return (
     <View style={styles.container}>
-      <AuthFrame heading={"Create accout"}>
+      <AuthFrame
+        onBackBtnPress={() => {
+          navigation.navigate("Auth");
+        }}
+        heading={"Create accout"}
+      >
         <GoogleAuthButton
           buttonContent={"Sign up with Google"}
         ></GoogleAuthButton>

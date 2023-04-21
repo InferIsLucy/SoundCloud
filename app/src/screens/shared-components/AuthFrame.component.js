@@ -9,11 +9,14 @@ import {
 } from "./AuthButton.component";
 import { Spacer } from "../../components/spacer";
 
-const AuthFrame = ({ children, heading }) => {
+const AuthFrame = ({ children, onBackBtnPress, heading }) => {
   return (
     <View>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtnWrapper}>
+        <TouchableOpacity
+          onPress={onBackBtnPress}
+          style={styles.backBtnWrapper}
+        >
           <Ionicons name="arrow-back" size={28} color="white" />
         </TouchableOpacity>
         <Text style={styles.heading}>{heading}</Text>

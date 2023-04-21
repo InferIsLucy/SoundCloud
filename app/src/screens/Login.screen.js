@@ -1,6 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
-import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import React, { useContext, useState } from "react";
 
 import EditText from "./shared-components/EditText.component";
 import AuthFrame from "./shared-components/AuthFrame.component";
@@ -11,25 +10,24 @@ import {
 } from "./shared-components/AuthButton.component";
 import { Spacer } from "../components/spacer";
 import { Colors } from "../theme/color";
+import { AuthenticationContext } from "../providers/authentication.context";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleSignInWithEmail = () => {
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        console.log("Sign in succeeded");
-      })
-      .catch((err) => {
-        console.log("Error when sign in with email", err);
-      });
-  };
+  const { onLoginWithEmail } = useContext(AuthenticationContext);
 
+  const handleLoginWithEmail = () => {
+    onLoginWithEmail(email, password);
+  };
   return (
     <View style={styles.container}>
-      <AuthFrame heading={"Sign in"}>
+      <AuthFrame
+        onBackBtnPress={() => {
+          navigation.navigate("Auth");
+        }}
+        heading={"Sign in"}
+      >
         <GoogleAuthButton
           buttonContent={"Continue with Google"}
         ></GoogleAuthButton>
@@ -56,11 +54,11 @@ const LoginScreen = () => {
           iconLeft={"lock"}
         ></EditText>
 
-        <Spacer position={"top"} size={"huge"}></Spacer>
+        <Spacer position={"top"} size={"large"}></Spacer>
         <Spacer position={"top"} size={"large"}></Spacer>
 
         <AuthButton
-          onPress={handleSignInWithEmail}
+          onPress={handleLoginWithEmail}
           buttonContent={"Login"}
         ></AuthButton>
 
