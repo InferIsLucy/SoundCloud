@@ -9,6 +9,7 @@ import {
     Image,
     FlatList,
     Animated,
+    Button,
  } from 'react-native';
  import TrackPlayer,{
     Capability,
@@ -29,7 +30,7 @@ import {
         artwork: require("../../assets/artwork/111.png"),
         url: require("../../assets/songs/Aya_Nakamura_-_Copines__Slowed__Reverb.mp3"),
         id:1,
-        duration:311,
+       // duration:311,
     },
     {
         title: "SING-OF_TIKTOK_OF__TAREK_SIS_SEMONGKO_viral_2020",
@@ -86,7 +87,12 @@ const MusicPlayer = () => {
 
     const skipToNext = () => {
         songSlider.current.scrollToOffset({
-            offset: (songIndex +1)* width,
+            offset: (songIndex + 1)* width,
+        });
+    }
+    const skipToPrevious = () => {
+        songSlider.current.scrollToOffset({
+            offset: (songIndex - 1)* width,
         });
     }
 
@@ -106,7 +112,7 @@ const MusicPlayer = () => {
             </Animated.View>
         );
     }
-    return (
+        return (
         <SafeAreaView style={styles.container}>
             <View style={styles.mainContainer}>
                 <View style={{width: width,}}>
@@ -117,7 +123,7 @@ const MusicPlayer = () => {
                         keyExtractor={(item)=> item.id}
                         horizontal
                         pagingEnabled
-                        showsHorizontalScrollIndicator
+                        showsHorizontalScrollIndicator = {false}
                         scrollEventThrottle={16}
                         onScroll={Animated.event(
                             [{nativeEvent: {
@@ -156,20 +162,110 @@ const MusicPlayer = () => {
                     </View>
                 </View>
 
-                <View style={styles.musicControlls}>
+                <View style={styles.musicControls}>
                     <TouchableOpacity onPress={skipToPrevious}>
                         <IonIcons name="play-skip-back-outline" size={35} color="#FFD396" style={{marginTop: 25}}/>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>togglePlayback(playbackState)}>
                         <IonIcons name={playbackState == State.Playing?"ios-pause-circle": "ios-play-circle"} size={75} color="#FFD396" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={skipToPrevious}>
+                    <TouchableOpacity onPress={skipToNext}>
                         <IonIcons name="play-skip-forward-outline" size={35} color="#FFD396" style={{marginTop: 25}}/>
                     </TouchableOpacity>
                 </View>
             </View>
+            <View style={styles.bottomContainer}>
+                <View style={styles.bottomControl}>
+                <TouchableOpacity onPress={()=>{}}>
+                <IonIcons name = "heart-outline" size={30} color="#777777"/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>{}}>
+                <IonIcons name = "repeat" size={30} color="#777777"/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>{}}>
+                <IonIcons name = "share-outline" size={30} color="#777777"/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>{}}>
+                <IonIcons name = "ellipsis-horizontal" size={30} color="#777777"/>
+                </TouchableOpacity>
+                </View>
+
+            </View>
         </SafeAreaView>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#222831'
+    },
+    mainContainer: {
+        flex: 1,
+        alignItems : "center",
+        justifyContent : "center",
+    },
+    artworkWrapper: {
+        width: 300,
+        height: 340,
+        marginBottom:25,
+        shadowColor:"#000",
+        shadowOffset:{
+            width: 5,
+            height: 5,
+        },
+        shadowOpacity: 0.5,
+        shadowRadius: 3.84,
+
+        elevation: 5,
+    },
+    artworkImg: {
+        width: '100%', height: '100%',
+        borderRadius: 15,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+        color: '#EEEEEE'
+    },
+    artist: {
+        fontSize:16,
+        fontWeight: '200',
+        textAlign: 'center',
+        color: '#EEEEEE'
+    },
+    progressContainer: {
+        width: 350,
+        height:40,
+        marginTop: 25,
+        flexDirection: 'row',
+    },
+    musicControls: {
+        flexDirection: 'row',
+        width: "60%",
+        justifyContent: 'space-between',
+        marginTop: 15,
+    },
+    progressLabelContainer: {
+        width:340,
+        flexDirection:'row',
+        justifyContent: 'space-between',
+    },
+    progressLabelTxt: {
+        color: '#fff',
+    },
+    bottomContainer: {
+        borderTopColor: "#393E46",
+        borderTopWidth: 1,
+        width: width,
+        alignItems: "center",
+        paddingVertical: 15
+    },
+    bottomControl: {
+        flexDirection: 'now', 
+        justifyContent:'space-between', 
+        width: '80%'}
+})
 
 export default MusicPlayer
