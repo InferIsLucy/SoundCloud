@@ -16,7 +16,6 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { onLoginWithEmail } = useContext(AuthenticationContext);
-
   const handleLoginWithEmail = () => {
     onLoginWithEmail(email, password);
   };
