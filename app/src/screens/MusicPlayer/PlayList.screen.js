@@ -68,7 +68,7 @@ const PlayList = () => {
           }}
         >
           <Entypo name="beamed-note" size={24} color="white" />
-          <Text style={{ color: "white" }}>Song Playlist</Text>
+          <Text style={{ color: "white", marginLeft: 4 }}>Song Playlist</Text>
         </View>
         <ItemPlayList></ItemPlayList>
         <ItemPlayList></ItemPlayList>
@@ -82,7 +82,6 @@ export default PlayList;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 24,
     flex: 1,
     backgroundColor: "#fff",
 

@@ -33,5 +33,13 @@ const styles = StyleSheet.create({
     padding: 12,
     margin: 12,
   },
+  boxWithShadow: {
+    shadowColor: "#000",
+    borderWidth: 1,
+    overflow: "hidden",
+    shadowRadius: 10,
+    shadowOpacity: 1,
+    elevation: 10,
+  },
   img: { borderRadius: 50, width: 40, height: 40, resizeMode: "cover" },
 });

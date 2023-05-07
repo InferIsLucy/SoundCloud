@@ -22,16 +22,6 @@ const PlayerScreen = () => {
     await sound.playAsync();
   }
 
-  useEffect(() => {
-    return currentSong
-      ? () => {
-          console.log("Unloading Sound");
-          currentSong.unloadAsync();
-          setCurrentSong(null);
-        }
-      : undefined;
-  }, [currentSong]);
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -89,7 +79,6 @@ export default PlayerScreen;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 40,
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
