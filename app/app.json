@@ -30,6 +30,14 @@
         {
           "microphonePermission": "Allow to access your microphone."
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow  to access your photos.",
+          "savePhotosPermission": "Allow  to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
       ]
     ]
   }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, createContext } from "react";
 export const AudioContext = createContext();
 import { Audio } from "expo-av";
+import * as MediaLibrary from "expo-media-library";
 
 export const AudioContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,6 +10,7 @@ export const AudioContextProvider = ({ children }) => {
   const [isPlaying, setIsPlaying] = useState(null);
   const [repeatMode, setRepeatMode] = useState(0); // 0 - none, 1- all,2 - one
   const [shuffleMode, setShuffleMode] = useState(false);
+  const [localSongs, setLocalSongs] = useState([]);
   const playNext = async () => {
     try {
       await currentSong.stopAsync();
@@ -53,14 +55,36 @@ export const AudioContextProvider = ({ children }) => {
     }
     setRepeatMode(newRepeatMode);
   };
+  const getLocalAudioFiles = async () => {
+    try {
+      const mediaFiles = await MediaLibrary.getAssetsAsync({
+        mediaType: "audio",
+      });
+
+      console.log("local media files", mediaFiles.assets);
+      setLocalSongs(mediaFiles.assets);
+    } catch (e) {
+      console.log(e);
+      setError(e);
+    }
+  };
+  const getPermission = async () => {
+    const permission = await MediaLibrary.requestPermissionsAsync();
+    if (permission.granted) {
+      getLocalAudioFiles();
+    }
+  };
   useEffect(() => {
+    //load example file
     (async () => {
+      //get local audio
+      await getPermission();
       try {
         const { sound } = await Audio.Sound.createAsync(
-          require("../../assets/example.mp3")
+          // require("../../assets/example.mp3")
+          { uri: localSongs[0].uri }
         );
         setCurrentSong(sound);
-        console.log("object sound", sound);
       } catch (e) {
         console.log("error", e);
         setError(e);

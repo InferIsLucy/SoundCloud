@@ -3,7 +3,6 @@ import React, { useContext, useEffect } from "react";
 import Slider from "@react-native-community/slider";
 import { Colors } from "../../theme/color";
 import { Ionicons } from "@expo/vector-icons";
-import { Audio } from "expo-av";
 
 import PlayerController from "./components/PlayerController.component";
 import BottomReactionBar from "./components/BottomBar.component";
