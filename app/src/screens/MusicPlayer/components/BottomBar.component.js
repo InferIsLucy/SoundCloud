@@ -8,7 +8,7 @@ const BottomReactionBar = () => {
   return (
     <View style={styles.bottomBar}>
       <TouchableOpacity>
-        <AntDesign name="heart" size={iconSize} color="red" />
+        {/* <AntDesign name="heart" size={iconSize} color="red" /> */}
         <AntDesign name="hearto" size={iconSize} color="black" />
       </TouchableOpacity>
       <TouchableOpacity>

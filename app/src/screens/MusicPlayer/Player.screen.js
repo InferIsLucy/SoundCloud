@@ -1,21 +1,42 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import Slider from "@react-native-community/slider";
 import { Colors } from "../../theme/color";
 import { Ionicons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
 
 import PlayerController from "./components/PlayerController.component";
 import BottomReactionBar from "./components/BottomBar.component";
+import { AudioContext } from "../../providers/audio.context";
+
 const PlayerScreen = () => {
-  handlePlay = (audio) => {
-    console.log("Audio", audio);
-    // const playBackObj = new Audio.Sound();
-    // playBackObj.loadAsync()
-  };
+  const { currentSong, setCurrentSong } = useContext(AudioContext);
+
+  async function playSong() {
+    console.log("Loading");
+    const { sound } = await Audio.Sound.createAsync(
+      require("./../../../assets/example.mp3")
+    );
+    setCurrentSong(sound);
+
+    console.log("Playing song", sound);
+    await sound.playAsync();
+  }
+
+  useEffect(() => {
+    return currentSong
+      ? () => {
+          console.log("Unloading Sound");
+          currentSong.unloadAsync();
+          setCurrentSong(null);
+        }
+      : undefined;
+  }, [currentSong]);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={{ backgroundColor: "blue", paddingRight: 8 }}>
+        <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
           <Ionicons name="chevron-back" size={32} color="black" />
         </TouchableOpacity>
         <View
@@ -55,7 +76,11 @@ const PlayerScreen = () => {
       </View>
 
       {/* music controller */}
-      <PlayerController></PlayerController>
+      <PlayerController
+        playEvents={{
+          playSong,
+        }}
+      ></PlayerController>
       <BottomReactionBar></BottomReactionBar>
     </View>
   );
