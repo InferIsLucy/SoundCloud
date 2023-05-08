@@ -11,7 +11,7 @@ export default function App() {
   return (
     <AuthenticationContextProvider>
       <AudioContextProvider>
-        <BottomPlayer></BottomPlayer>
+        <PlayerScreen></PlayerScreen>
       </AudioContextProvider>
     </AuthenticationContextProvider>
   );

@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import Slider from "@react-native-community/slider";
 import { Colors } from "../../theme/color";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,8 +7,37 @@ import { Ionicons } from "@expo/vector-icons";
 import PlayerController from "./components/PlayerController.component";
 import BottomReactionBar from "./components/BottomBar.component";
 import { AudioContext } from "../../providers/audio.context";
+import { formatTime } from "../../utils/TimeFormater";
 
 const PlayerScreen = () => {
+  const { songStatus, isLoading, AudioObj, isPlaying, currentSongIndex } =
+    useContext(AudioContext);
+  const [currentPosition, setCurrentPosition] = useState(0);
+
+  const intervalRef = useRef(null);
+  useEffect(() => {
+    if (isPlaying) {
+      if (!intervalRef.current) {
+        intervalRef.current = setInterval(() => {
+          if (currentPosition < songStatus.durationMillis) {
+            setCurrentPosition((prev) => prev + 1000);
+          }
+        }, 1000);
+      }
+    } else {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [currentSongIndex, isPlaying]);
+  useEffect(() => {
+    setCurrentPosition(0);
+  }, [currentSongIndex.current]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -40,15 +69,26 @@ const PlayerScreen = () => {
       </View>
 
       <View style={styles.progressBar}>
-        <Text style={[styles.duration, { bottom: 0 }]}>0:00</Text>
+        <Text style={[styles.duration, { bottom: 0 }]}>
+          {formatTime(currentPosition)}
+        </Text>
         <Slider
+          tapToSeek={true}
           style={{ width: 320, height: 40 }}
           minimumValue={0}
-          maximumValue={1}
-          minimumTrackTintColor="#FFFFFF"
+          onSlidingComplete={async (value) => {
+            await AudioObj.setPositionAsync(value);
+            setCurrentPosition(value);
+          }}
+          value={currentPosition}
+          thumbTintColor={"black"}
+          minimumTrackTintColor={"black"}
+          maximumValue={songStatus.durationMillis}
           maximumTrackTintColor="#000000"
         />
-        <Text style={[styles.duration, { bottom: 0, right: 0 }]}>0:00</Text>
+        <Text style={[styles.duration, { bottom: 0, right: 0 }]}>
+          {formatTime(songStatus.durationMillis)}
+        </Text>
       </View>
 
       {/* music controller */}
