@@ -9,19 +9,6 @@ import BottomReactionBar from "./components/BottomBar.component";
 import { AudioContext } from "../../providers/audio.context";
 
 const PlayerScreen = () => {
-  const { currentSong, setCurrentSong } = useContext(AudioContext);
-
-  async function playSong() {
-    console.log("Loading");
-    const { sound } = await Audio.Sound.createAsync(
-      require("./../../../assets/example.mp3")
-    );
-    setCurrentSong(sound);
-
-    console.log("Playing song", sound);
-    await sound.playAsync();
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -65,11 +52,7 @@ const PlayerScreen = () => {
       </View>
 
       {/* music controller */}
-      <PlayerController
-        playEvents={{
-          playSong,
-        }}
-      ></PlayerController>
+      <PlayerController></PlayerController>
       <BottomReactionBar></BottomReactionBar>
     </View>
   );

@@ -5,22 +5,13 @@ import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { AudioContext } from "../../../providers/audio.context";
-const PlayerController = ({ playEvents }) => {
-  const { playSong } = playEvents;
-  const {
-    isPlaying,
-    togglePlayStatus,
-    toggleShuffleMode,
-    repeatMode,
-    shuffleMode,
-    toggleRepeatMode,
-    playNext,
-  } = useContext(AudioContext);
+const PlayerController = () => {
+  const { isPlaying, audioEvents, repeatMode, shuffleMode } =
+    useContext(AudioContext);
   const controllSize = 32;
-  useLayoutEffect;
   return (
     <View style={styles.controllerContainer}>
-      <TouchableOpacity onPress={toggleShuffleMode}>
+      <TouchableOpacity onPress={audioEvents.toggleShuffleMode}>
         <MaterialCommunityIcons
           name="shuffle"
           size={controllSize}
@@ -28,24 +19,24 @@ const PlayerController = ({ playEvents }) => {
         />
       </TouchableOpacity>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={audioEvents.playPrev}>
         <Entypo
           name="controller-jump-to-start"
           size={controllSize}
           color="black"
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={togglePlayStatus}>
+      <TouchableOpacity onPress={audioEvents.togglePlayStatus}>
         {isPlaying ? (
           <Ionicons name="pause-circle-sharp" size={60} color="black" />
         ) : (
           <Ionicons name="play-circle-sharp" size={60} color="black" />
         )}
       </TouchableOpacity>
-      <TouchableOpacity onPress={playNext}>
+      <TouchableOpacity onPress={audioEvents.playNext}>
         <Entypo name="controller-next" size={controllSize} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={toggleRepeatMode}>
+      <TouchableOpacity onPress={audioEvents.toggleRepeatMode}>
         {repeatMode == 2 ? (
           <MaterialCommunityIcons
             name="repeat-once"

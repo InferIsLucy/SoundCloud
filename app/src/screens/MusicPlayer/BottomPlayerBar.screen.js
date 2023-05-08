@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { AudioContext } from "../../providers/audio.context";
 const BottomPlayer = () => {
-  const { isPlaying } = useContext(AudioContext);
+  const { isPlaying, audioEvents } = useContext(AudioContext);
   return (
     <View style={styles.container}>
       <Image
@@ -33,18 +33,18 @@ const BottomPlayer = () => {
       </View>
       {/* controller */}
       <View style={styles.controller}>
-        <TouchableOpacity>
-          <Entypo name="controller-jump-to-start" size={36} color="black" />
+        <TouchableOpacity onPress={audioEvents.playPrev}>
+          <Entypo name="controller-jump-to-start" size={36} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={audioEvents.togglePlayStatus}>
           {isPlaying ? (
-            <Ionicons name="pause-circle-sharp" size={44} color="black" />
+            <Ionicons name="pause-circle-sharp" size={44} color="white" />
           ) : (
-            <Ionicons name="play-circle-sharp" size={44} color="black" />
+            <Ionicons name="play-circle-sharp" size={44} color="white" />
           )}
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Entypo name="controller-next" size={36} color="black" />
+        <TouchableOpacity onPress={audioEvents.playNext}>
+          <Entypo name="controller-next" size={36} color="white" />
         </TouchableOpacity>
       </View>
     </View>
