@@ -5,6 +5,7 @@ import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { AudioContext } from "../../../providers/audio.context";
+
 const PlayerController = () => {
   const { isPlaying, audioEvents, repeatMode, shuffleMode } =
     useContext(AudioContext);
