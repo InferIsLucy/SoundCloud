@@ -194,7 +194,7 @@ const HomeScreen = ({ navigation }) => {
         <View
           style={{
             backgroundColor: COLORS.primary,
-            height: 120,
+            height: 90,
             paddingHorizontal: 20,
           }}
         >
@@ -245,8 +245,8 @@ const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   header: {
-    paddingVertical: 20,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: COLORS.primary,
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderRadius: 10,
     position: "absolute",
-    top: 90,
+    top: 60,
     flexDirection: "row",
     paddingHorizontal: 20,
     alignItems: "center",
