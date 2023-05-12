@@ -20,27 +20,18 @@ import {
     useTrackPlayerEvents,
  } from 'react-native-track-player';
  import Ionicons from 'react-native-vector-icons/Ionicons'
- //import Ionicons from 'react-native-vector-icons';
+ import songs from '../../model/data';
 
  import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
  import Slider from '@react-native-community/slider';
- const songs = [
-    {
-        title: "Aya_Nakamura_-_Copines__Slowed__Reverb",
-        artist: "123",
-        artwork: require("../../assets/artwork/111.png"),
-        url: require("../../assets/songs/Aya_Nakamura_-_Copines__Slowed__Reverb.mp3"),
-        id:1,
-       // duration:311,
-    },
-    {
-        title: "SING-OF_TIKTOK_OF__TAREK_SIS_SEMONGKO_viral_2020",
-        artist: "1223",
-        artwork: require("../../assets/artwork/222.jpg"),
-        url: require("../../assets/songs/SING-OF_TIKTOK_OF__TAREK_SIS_SEMONGKO_viral_2020.mp3"),
-        id:2,
-    }
-]
+
+ if (myObject !== null && myObject !== undefined) {
+    // Access properties of myObject
+    const rating = myObject.RATING_HEART;
+  } else {
+    console.error('myObject is null or undefined');
+  }
+  
 
 const {width, height} = Dimensions.get('window');
 
@@ -165,87 +156,87 @@ const MusicPlayer = () => {
         );
     }
         return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.mainContainer}>
-                <View style={{width: width,}}>
-                    <Animated.FlatList
-                        ref={songSlider}
-                        data={songs}
-                        renderItem={renderSongs}
-                        keyExtractor={(item)=> item.id}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator = {false}
-                        scrollEventThrottle={16}
-                        onScroll={Animated.event(
-                            [{nativeEvent: {
-                                contentOffset: {x: scrollX}
-                            } }],
-                            {useNativeDriver: true}
-                        )}
-                    />
-                </View>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.mainContainer}>
+                    <View style={{width: width,}}>
+                        <Animated.FlatList
+                            ref={songSlider}
+                            data={songs}
+                            renderItem={renderSongs}
+                            keyExtractor={(item)=> item.id}
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator = {false}
+                            scrollEventThrottle={16}
+                            onScroll={Animated.event(
+                                [{nativeEvent: {
+                                    contentOffset: {x: scrollX}
+                                } }],
+                                {useNativeDriver: true}
+                            )}
+                        />
+                    </View>
 
-                <View>
-                    <Text style={styles.title}>{trackTitle}</Text>
-                    <Text style={styles.artist}>{trackArtist}</Text>
-                </View>
+                    <View>
+                        <Text style={styles.title}>{trackTitle}</Text>
+                        <Text style={styles.artist}>{trackArtist}</Text>
+                    </View>
 
-                <View>
-                    <Slider
-                        style={styles.progressContainer}
-                        value={progress.position}
-                        minimumValue={0}
-                        maximumValue={progress.duration}
-                        thumbTintColor="#FFD396"
-                        minimumTrackTintColor="#ffd396"
-                        maximumTrackTintColor="#fff"
-                        onSlidingComplete={async(value)=>{
-                            await TrackPlayer.seekTo(value);
-                        }}
-                    />
-                    <View style={styles.progressLabelContainer}>
-                        <Text style={styles.progressLabelTxt}>
-                            {new Date(progress.position * 1000).toISOString().substr(14, 5)}
-                        </Text>
-                        <Text style={styles.progressLabelTxt}>
-                            {new Date((progress.duration - progress.position) * 1000).toISOString().substr(14, 5)}
-                        </Text>
+                    <View>
+                        <Slider
+                            style={styles.progressContainer}
+                            value={progress.position}
+                            minimumValue={0}
+                            maximumValue={progress.duration}
+                            thumbTintColor="#FFD396"
+                            minimumTrackTintColor="#ffd396"
+                            maximumTrackTintColor="#fff"
+                            onSlidingComplete={async(value)=>{
+                                await TrackPlayer.seekTo(value);
+                            }}
+                        />
+                        <View style={styles.progressLabelContainer}>
+                            <Text style={styles.progressLabelTxt}>
+                                {new Date(progress.position * 1000).toISOString().substr(14, 5)}
+                            </Text>
+                            <Text style={styles.progressLabelTxt}>
+                                {new Date((progress.duration - progress.position) * 1000).toISOString().substr(14, 5)}
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.musicControls}>
+                        <TouchableOpacity onPress={skipToPrevious}>
+                            <Ionicons name="play-skip-back-outline" size={35} color="#FFD396" style={{marginTop: 25}}/>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=>togglePlayback(playbackState)}>
+                            <Ionicons name={playbackState == State.Playing?"ios-pause-circle": "ios-play-circle"} size={75} color="#FFD396" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={skipToNext}>
+                            <Ionicons name="play-skip-forward-outline" size={35} color="#FFD396" style={{marginTop: 25}}/>
+                        </TouchableOpacity>
                     </View>
                 </View>
+                <View style={styles.bottomContainer}>
+                    <View style={styles.bottomControl}>
+                    <TouchableOpacity onPress={()=>{}}>
+                        <Ionicons name = "heart-outline" size={30} color="#777777"/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={changeRepeatMode}>
+                        <MaterialCommunityIcons name = {`${repeatIcon()}`} size={30} color={repeatMode !=='off'? "#FFD396" : "#777777"}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{}}>
+                        <Ionicons name = "share-outline" size={30} color="#777777"/>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{}}>
+                        <Ionicons name = "ellipsis-horizontal" size={30} color="#777777"/>
+                    </TouchableOpacity>
+                    </View>
 
-                <View style={styles.musicControls}>
-                    <TouchableOpacity onPress={skipToPrevious}>
-                        <Ionicons name="play-skip-back-outline" size={35} color="#FFD396" style={{marginTop: 25}}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>togglePlayback(playbackState)}>
-                        <Ionicons name={playbackState == State.Playing?"ios-pause-circle": "ios-play-circle"} size={75} color="#FFD396" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={skipToNext}>
-                        <Ionicons name="play-skip-forward-outline" size={35} color="#FFD396" style={{marginTop: 25}}/>
-                    </TouchableOpacity>
                 </View>
-            </View>
-            <View style={styles.bottomContainer}>
-                <View style={styles.bottomControl}>
-                <TouchableOpacity onPress={()=>{}}>
-                    <Ionicons name = "heart-outline" size={30} color="#777777"/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={changeRepeatMode}>
-                    <MaterialCommunityIcons name = {'${repeatIcon()}'} size={30} color={repeatMode !=='off'? "#FFD396" : "#777777"}/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{}}>
-                    <Ionicons name = "share-outline" size={30} color="#777777"/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{}}>
-                    <Ionicons name = "ellipsis-horizontal" size={30} color="#777777"/>
-                </TouchableOpacity>
-                </View>
-
-            </View>
-        </SafeAreaView>
-    )
-}
+            </SafeAreaView>
+        );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -317,7 +308,7 @@ const styles = StyleSheet.create({
     bottomControl: {
         flexDirection: 'now', 
         justifyContent:'space-between', 
-        width: '80%'}
-})
+        width: '80%'},
+});
 
 export default MusicPlayer
