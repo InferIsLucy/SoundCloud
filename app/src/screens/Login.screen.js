@@ -1,28 +1,72 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useContext, useState } from "react";
 
-import AuthButton from "../components/button/auth-button.component";
+import EditText from "./shared-components/EditText.component";
+import AuthFrame from "./shared-components/AuthFrame.component";
+import {
+  AuthButton,
+  GoogleAuthButton,
+  FbAuthButton,
+} from "./shared-components/AuthButton.component";
 import { Spacer } from "../components/spacer";
+import { Colors } from "../theme/color";
+import { AuthenticationContext } from "../providers/authentication.context";
 
-const LoginScreen = () => {
-  const handleSignIn = () => {};
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { onLoginWithEmail } = useContext(AuthenticationContext);
+  const handleLoginWithEmail = () => {
+    onLoginWithEmail(email, password);
+  };
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../../assets/girl_listening_to_music.png")}
-        style={styles.image}
-      ></Image>
-      <Spacer size={"huge"} position={"bottom"}></Spacer>
-      <Spacer size={"huge"} position={"bottom"}></Spacer>
+      <AuthFrame
+        onBackBtnPress={() => {
+          navigation.navigate("Auth");
+        }}
+        heading={"Sign in"}
+      >
+        <GoogleAuthButton
+          buttonContent={"Continue with Google"}
+        ></GoogleAuthButton>
 
-      <View style={{ marginBottom: 36 }}>
-        <AuthButton buttonContent={"Create an account"}></AuthButton>
-        <Spacer size={"large"} position={"bottom"}></Spacer>
+        <Spacer position={"top"} size={"large"}></Spacer>
+
+        <FbAuthButton buttonContent={"Continue with Facebook"}></FbAuthButton>
+
+        <Spacer position={"top"} size={"huge"}></Spacer>
+        <Spacer position={"top"} size={"huge"}></Spacer>
+
+        <EditText
+          value={email}
+          onChangeText={(newEmail) => setEmail(newEmail)}
+          placeholder={"Email"}
+          iconLeft={"email"}
+        ></EditText>
+        <Spacer position={"top"} size={"large"}></Spacer>
+        <EditText
+          value={password}
+          onChangeText={(newPassword) => setPassword(newPassword)}
+          isPasswordType={true}
+          placeholder={"Password"}
+          iconLeft={"lock"}
+        ></EditText>
+
+        <Spacer position={"top"} size={"large"}></Spacer>
+        <Spacer position={"top"} size={"large"}></Spacer>
+
         <AuthButton
-          onPress={handleSignIn}
-          buttonContent={"I already have an account"}
+          onPress={handleLoginWithEmail}
+          buttonContent={"Login"}
         ></AuthButton>
-      </View>
+
+        <Spacer position={"top"} size={"medium"}></Spacer>
+
+        <TouchableOpacity>
+          <Text style={styles.forgotPassword}>Forgot your password?</Text>
+        </TouchableOpacity>
+      </AuthFrame>
     </View>
   );
 };
@@ -32,11 +76,12 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: "flex-start",
     alignItems: "center",
+    backgroundColor: Colors.authBackground,
   },
-  image: {
-    resizeMode: "cover",
-    width: 300,
+  forgotPassword: {
+    fontSize: 16,
+    color: "black",
   },
 });
