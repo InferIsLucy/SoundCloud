@@ -1,9 +1,8 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-
 import Navigator from "./src/navigations/main.navigator";
 import { AuthenticationContextProvider } from "./src/providers/authentication.context";
 import { AudioContextProvider } from "./src/providers/audio.context";
+import FollowingItem from "./src/screens/UserProfile/components/FollowingItem.component";
+import FollowingDetail from "./src/screens/UserProfile/FollowingDetail.screen";
 import UserProfile from "./src/screens/UserProfile/UserProfile.screen";
 export default function App() {
   return (
@@ -14,11 +13,3 @@ export default function App() {
     </AuthenticationContextProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-
-  },
-});
-

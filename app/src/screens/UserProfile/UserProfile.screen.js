@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import React, { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -6,9 +13,10 @@ import { fontSizes } from "../../theme/fontSizes";
 import { Spacer } from "../../components/spacer";
 import { Ionicons } from "@expo/vector-icons";
 import ItemPlayList from "../MusicPlayer/components/ItemPlayList.component";
-
+import FollowingDetail from "./FollowingDetail.screen";
 const UserProfile = () => {
   const [avatarUri, setAvatarUri] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const handleChangeAvatar = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -82,7 +90,12 @@ const UserProfile = () => {
         </View>
 
         <Spacer position={"left"} size={"large"}></Spacer>
-        <TouchableOpacity style={styles.follow}>
+        <TouchableOpacity
+          onPress={() => {
+            setModalVisible(!modalVisible);
+          }}
+          style={styles.follow}
+        >
           <Text style={styles.followText}>0</Text>
           <Text style={styles.followText}> Following</Text>
         </TouchableOpacity>
@@ -107,6 +120,17 @@ const UserProfile = () => {
         <ItemPlayList></ItemPlayList>
         <ItemPlayList></ItemPlayList>
       </View>
+
+      <Modal
+        animationType="fade"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <FollowingDetail setModalVisible={setModalVisible}></FollowingDetail>
+      </Modal>
     </View>
   );
 };
@@ -121,12 +145,13 @@ const styles = StyleSheet.create({
   },
   header: {
     height: 60,
+    paddingTop: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
   },
   heading: {
-    fontSize: fontSizes.heading2,
+    fontSize: fontSizes.heading3,
     fontWeight: 500,
     textAlign: "center",
   },

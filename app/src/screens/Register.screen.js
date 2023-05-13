@@ -22,6 +22,7 @@ const RegisterScreen = ({ navigation }) => {
       .then((userCredentials) => {
         const user = userCredentials.user;
         console.log("Sign up succeeded", user);
+        navigation.navigate("Login");
       })
       .catch((err) => {
         console.log("Error when create new user", err);
