@@ -12,6 +12,7 @@ import app from "../config/firebase";
 export const AuthenticationContext = createContext();
 import * as SecureStore from "expo-secure-store";
 
+const USER_ID = "userId";
 export const AuthenticationContextProvider = ({ children }) => {
   const auth = getAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -21,14 +22,14 @@ export const AuthenticationContextProvider = ({ children }) => {
   console.log("auth", auth);
   const saveUserId = async (userId) => {
     try {
-      await SecureStore.setItemAsync("userId", userId);
+      await SecureStore.setItemAsync(USER_ID, userId);
     } catch (err) {
       console.log("err", err);
     }
   };
   const getUserId = async () => {
     try {
-      const userId = await SecureStore.setItemAsync("userId");
+      const userId = await SecureStore.getItemAsync(USER_ID);
       return userId;
     } catch (err) {
       console.log("err", err);
@@ -69,7 +70,8 @@ export const AuthenticationContextProvider = ({ children }) => {
         setIsLoading(false);
       });
   };
-  const logout = () => {
+  const logout = async () => {
+    await SecureStore.deleteItemAsync(USER_ID);
     signOut(auth);
     setIsAuthenticated(false);
     setUser(null);

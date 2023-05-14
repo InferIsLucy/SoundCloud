@@ -10,36 +10,51 @@ import {
 import { Spacer } from "../../components/spacer";
 import { Colors } from "../../theme/color";
 import { AuthenticationContext } from "../../providers/authentication.context";
+import * as yup from "yup";
+import { loginSchema } from "../../utils/Validator";
 import { signInWithPopup } from "firebase/auth";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
   const { onLoginWithEmail, auth, sendPasswordResetEmail } = useContext(
     AuthenticationContext
   );
   const handleLoginWithEmail = () => {
-    onLoginWithEmail(email, password);
+    loginSchema
+
+      .validate({ email, password })
+      .then(() => {
+        onLoginWithEmail(email, password);
+        setEmailError(null);
+        setPasswordError(null);
+      })
+      .catch((error) => {
+        console.log("err", error);
+        setError(error.path, error.message);
+      });
+  };
+
+  const setError = (errorPath, message) => {
+    switch (errorPath) {
+      case "email": {
+        setEmailError(message);
+        setPasswordError(null);
+        break;
+      }
+      case "password": {
+        {
+          setEmailError(null);
+          setPasswordError(message);
+          break;
+        }
+      }
+    }
   };
   const handleResetPassword = () => {
-    // const actionCodeSettings = {
-    //     url: 'https://www.example.com/?email=user@example.com',
-    //     iOS: {
-    //        bundleId: 'com.example.ios'
-    //     },
-    //     android: {
-    //       packageName: 'com.example.android',
-    //       installApp: true,
-    //       minimumVersion: '12'
-    //     },
-    //     handleCodeInApp: true
-    //   };
-    //   await sendSignInLinkToEmail(auth, 'user@example.com', actionCodeSettings);
-    //   // Obtain emailLink from the user.
-    //   if(isSignInWithEmailLink(auth, emailLink)) {
-    //     await signInWithEmailLink(auth, 'user@example.com', emailLink);
-    //   }
     console.log("email", email);
-    sendPasswordResetEmail(auth, "jbkhanhtran@gmail.com")
+    sendPasswordResetEmail(auth, email)
       .then(() => console.log("sended"))
       .catch((er) => console.log("error", er));
   };
@@ -70,6 +85,8 @@ const LoginScreen = ({ navigation }) => {
           placeholder={"Email"}
           iconLeft={"email"}
         ></EditText>
+
+        {emailError && <Text style={styles.textError}>{emailError}</Text>}
         <Spacer position={"top"} size={"large"}></Spacer>
         <EditText
           value={password}
@@ -78,7 +95,7 @@ const LoginScreen = ({ navigation }) => {
           placeholder={"Password"}
           iconLeft={"lock"}
         ></EditText>
-
+        {passwordError && <Text style={styles.textError}>{passwordError}</Text>}
         <Spacer position={"top"} size={"large"}></Spacer>
         <Spacer position={"top"} size={"large"}></Spacer>
 
@@ -109,5 +126,9 @@ const styles = StyleSheet.create({
   forgotPassword: {
     fontSize: 16,
     color: "black",
+  },
+  textError: {
+    color: "tomato",
+    marginTop: 4,
   },
 });
