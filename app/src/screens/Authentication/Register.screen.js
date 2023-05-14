@@ -1,16 +1,16 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 
-import { Colors } from "../theme/color";
-import { Spacer } from "../components/spacer";
-import EditText from "./shared-components/EditText.component";
-import AuthFrame from "./shared-components/AuthFrame.component";
+import { Colors } from "../../theme/color";
+import { Spacer } from "../../components/spacer";
+import EditText from "../shared-components/EditText.component";
+import AuthFrame from "../shared-components/AuthFrame.component";
 import {
   AuthButton,
   GoogleAuthButton,
   FbAuthButton,
-} from "./shared-components/AuthButton.component";
-import { auth } from "../config/firebase";
+} from "../shared-components/AuthButton.component";
+import { auth } from "../../config/firebase";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 
 const RegisterScreen = ({ navigation }) => {

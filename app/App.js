@@ -8,7 +8,7 @@ export default function App() {
   return (
     <AuthenticationContextProvider>
       <AudioContextProvider>
-        <UserProfile></UserProfile>
+        <Navigator></Navigator>
       </AudioContextProvider>
     </AuthenticationContextProvider>
   );

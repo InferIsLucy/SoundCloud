@@ -9,7 +9,7 @@ import BottomReactionBar from "./components/BottomBar.component";
 import { AudioContext } from "../../providers/audio.context";
 import { formatTime } from "../../utils/TimeFormater";
 
-const PlayerScreen = () => {
+const PlayerScreen = ({ song }) => {
   const { songStatus, isLoading, AudioObj, isPlaying, currentSongIndex } =
     useContext(AudioContext);
   const [currentPosition, setCurrentPosition] = useState(0);

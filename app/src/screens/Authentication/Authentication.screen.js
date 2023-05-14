@@ -1,15 +1,15 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-import { AuthButton } from "./shared-components/AuthButton.component";
-import { Spacer } from "../components/spacer";
-import { Colors } from "../theme/color";
+import { AuthButton } from "../shared-components/AuthButton.component";
+import { Spacer } from "../../components/spacer";
+import { Colors } from "../../theme/color";
 
 const AuthScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../assets/girl_listening_to_music.png")}
+        source={require("../../../assets/girl_listening_to_music.png")}
         style={styles.image}
       ></Image>
       <Spacer size={"huge"} position={"bottom"}></Spacer>

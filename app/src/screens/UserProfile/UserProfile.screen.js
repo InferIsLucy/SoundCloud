@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { fontSizes } from "../../theme/fontSizes";
@@ -14,9 +14,12 @@ import { Spacer } from "../../components/spacer";
 import { Ionicons } from "@expo/vector-icons";
 import ItemPlayList from "../MusicPlayer/components/ItemPlayList.component";
 import FollowingDetail from "./FollowingDetail.screen";
-const UserProfile = () => {
+import { AuthenticationContext } from "../../providers/authentication.context";
+const UserProfile = ({ navigation }) => {
   const [avatarUri, setAvatarUri] = useState(null);
+  const { logout } = useContext(AuthenticationContext);
   const [modalVisible, setModalVisible] = useState(false);
+
   const handleChangeAvatar = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -74,6 +77,23 @@ const UserProfile = () => {
         >
           User name
         </Text>
+        <TouchableOpacity
+          onPress={() => logout()}
+          style={{
+            padding: 8,
+            borderRadius: 4,
+            marginRight: 8,
+            backgroundColor: "tomato",
+            position: "absolute",
+
+            bottom: 0,
+            right: 0,
+          }}
+        >
+          <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left" }}>
+            Sign out
+          </Text>
+        </TouchableOpacity>
       </View>
       <View
         style={{
@@ -100,6 +120,7 @@ const UserProfile = () => {
           <Text style={styles.followText}> Following</Text>
         </TouchableOpacity>
       </View>
+
       <View
         style={{
           width: "100%",

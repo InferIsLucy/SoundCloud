@@ -1,24 +1,49 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useContext, useState } from "react";
-
-import EditText from "./shared-components/EditText.component";
-import AuthFrame from "./shared-components/AuthFrame.component";
+import EditText from "../shared-components/EditText.component";
+import AuthFrame from "../shared-components/AuthFrame.component";
 import {
   AuthButton,
   GoogleAuthButton,
   FbAuthButton,
-} from "./shared-components/AuthButton.component";
-import { Spacer } from "../components/spacer";
-import { Colors } from "../theme/color";
-import { AuthenticationContext } from "../providers/authentication.context";
-
+} from "../shared-components/AuthButton.component";
+import { Spacer } from "../../components/spacer";
+import { Colors } from "../../theme/color";
+import { AuthenticationContext } from "../../providers/authentication.context";
+import { signInWithPopup } from "firebase/auth";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { onLoginWithEmail } = useContext(AuthenticationContext);
+  const { onLoginWithEmail, auth, sendPasswordResetEmail } = useContext(
+    AuthenticationContext
+  );
   const handleLoginWithEmail = () => {
     onLoginWithEmail(email, password);
   };
+  const handleResetPassword = () => {
+    // const actionCodeSettings = {
+    //     url: 'https://www.example.com/?email=user@example.com',
+    //     iOS: {
+    //        bundleId: 'com.example.ios'
+    //     },
+    //     android: {
+    //       packageName: 'com.example.android',
+    //       installApp: true,
+    //       minimumVersion: '12'
+    //     },
+    //     handleCodeInApp: true
+    //   };
+    //   await sendSignInLinkToEmail(auth, 'user@example.com', actionCodeSettings);
+    //   // Obtain emailLink from the user.
+    //   if(isSignInWithEmailLink(auth, emailLink)) {
+    //     await signInWithEmailLink(auth, 'user@example.com', emailLink);
+    //   }
+    console.log("email", email);
+    sendPasswordResetEmail(auth, "jbkhanhtran@gmail.com")
+      .then(() => console.log("sended"))
+      .catch((er) => console.log("error", er));
+  };
+  const handleLoginWithGoogle = () => {};
   return (
     <View style={styles.container}>
       <AuthFrame
@@ -28,6 +53,7 @@ const LoginScreen = ({ navigation }) => {
         heading={"Sign in"}
       >
         <GoogleAuthButton
+          onPress={handleLoginWithGoogle}
           buttonContent={"Continue with Google"}
         ></GoogleAuthButton>
 
@@ -63,7 +89,7 @@ const LoginScreen = ({ navigation }) => {
 
         <Spacer position={"top"} size={"medium"}></Spacer>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleResetPassword}>
           <Text style={styles.forgotPassword}>Forgot your password?</Text>
         </TouchableOpacity>
       </AuthFrame>

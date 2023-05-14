@@ -105,12 +105,11 @@ export const AudioContextProvider = ({ children }) => {
     setRepeatMode(newRepeatMode);
   };
   const getLocalAudioFiles = async () => {
-    console.log("get file");
     try {
       const mediaFiles = await MediaLibrary.getAssetsAsync({
         mediaType: "audio",
       });
-      console.log("local media files", mediaFiles.assets.length);
+      console.log("local media files", mediaFiles.assets);
       setSongs(() => mediaFiles.assets);
       return mediaFiles.assets;
     } catch (e) {
