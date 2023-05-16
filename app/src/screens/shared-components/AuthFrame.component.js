@@ -17,7 +17,7 @@ const AuthFrame = ({ children, onBackBtnPress, heading }) => {
           onPress={onBackBtnPress}
           style={styles.backBtnWrapper}
         >
-          <Ionicons name="arrow-back" size={28} color="white" />
+          <Ionicons name="arrow-back" size={28} color="black" />
         </TouchableOpacity>
         <Text style={styles.heading}>{heading}</Text>
       </View>
@@ -32,6 +32,7 @@ export default AuthFrame;
 const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
+    fontWeight: "500",
   },
   header: {
     flexDirection: "row",
@@ -40,7 +41,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backBtnWrapper: {
-    backgroundColor: "gray",
     borderRadius: 50,
     padding: 6,
 

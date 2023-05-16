@@ -12,7 +12,6 @@ const Navigator = () => {
       <SafeAreaView
         style={{
           flex: 1,
-          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         }}
       >
         {isAuthenticated == false ? (
