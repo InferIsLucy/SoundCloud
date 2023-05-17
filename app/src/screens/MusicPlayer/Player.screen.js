@@ -59,7 +59,7 @@ const PlayerScreen = ({ song }) => {
 
       <Image
         source={{
-          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt7b4qdih9G-kDB1hYb9whD_nWkCdBmmW4l8kNYogJ&s",
+          uri: "https://images2.thanhnien.vn/528068263637045248/2023/5/10/iu-1683710624038576717966.png",
         }}
         style={styles.img}
       ></Image>
@@ -87,7 +87,7 @@ const PlayerScreen = ({ song }) => {
           maximumTrackTintColor="#000000"
         />
         <Text style={[styles.duration, { bottom: 0, right: 0 }]}>
-          {formatTime(songStatus.durationMillis)}
+          {formatTime(songStatus.durationMillis) || ""}
         </Text>
       </View>
 

@@ -64,8 +64,10 @@ export const AuthenticationContextProvider = ({ children }) => {
         setIsAuthenticated(true);
         setIsLoading(false);
         saveUserId(user.uid);
+        setError(null);
       })
       .catch((error) => {
+        setError("Thông tin đăng nhập không chính xác!");
         console.log("Error when sign in with email", error);
         setIsLoading(false);
       });

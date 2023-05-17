@@ -3,6 +3,11 @@ export const AudioContext = createContext();
 import { Audio } from "expo-av";
 import * as MediaLibrary from "expo-media-library";
 import { formatTime } from "../utils/TimeFormater";
+import { firebase } from "../config/firebase";
+
+const songStorage = firebase.storage().ref("songs");
+const songsRef = firebase.firestore().collection("songs");
+
 export const AudioContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,7 +19,33 @@ export const AudioContextProvider = ({ children }) => {
   const [shuffleMode, setShuffleMode] = useState(false);
   const [songs, setSongs] = useState([]);
   const currentSongIndex = useRef(-1);
+  // function listFilesAndDirectories(reference, pageToken) {
+  //   return reference.list({ pageToken }).then((result) => {
+  //     // Loop over each item
+  //     result.items.forEach((ref) => {
+  //       ref
+  //         .getDownloadURL()
+  //         .then((url) => {
+  //           console.log("url", url);
+  //         })
+  //         .catch((err) => console.log("error when get download url"));
+  //     });
+  //     if (result.nextPageToken) {
+  //       return listFilesAndDirectories(reference, result.nextPageToken);
+  //     }
+  //     return Promise.resolve();
+  //   });
+  // }
+  // useEffect(() => {
+  //   listFilesAndDirectories(songStorage).then(() => {
+  //     console.log("Finished listing");
+  //   });
+  // }, []);
   const playNext = async () => {
+    //getting songs
+    if (isLoading == true) {
+      return;
+    }
     if (isLoading == true || AudioObj == null) {
       return;
     }
@@ -50,6 +81,10 @@ export const AudioContextProvider = ({ children }) => {
     }
   };
   const playPrev = async () => {
+    //getting songs
+    if (isLoading == true) {
+      return;
+    }
     //set bottom limited index
     currentSongIndex.current =
       currentSongIndex.current == 0 ? 0 : currentSongIndex.current - 1;
@@ -77,15 +112,17 @@ export const AudioContextProvider = ({ children }) => {
     }
   };
   const togglePlayStatus = async () => {
-    console.log("togglePlayStatus", !!AudioObj);
+    //getting songs
+    if (isLoading == true) {
+      return;
+    }
     if (AudioObj == null) {
+      await initializeAudioObject(currentSongIndex.current);
       return;
     }
     if (AudioObj._loading) {
       return;
     }
-    const status = await AudioObj.getStatusAsync();
-
     setIsPlaying((isPlaying) => !isPlaying);
     if (isPlaying) {
       await AudioObj.pauseAsync();
@@ -96,13 +133,29 @@ export const AudioContextProvider = ({ children }) => {
   const toggleShuffleMode = () => {
     setShuffleMode(!shuffleMode);
   };
-
   const toggleRepeatMode = () => {
     let newRepeatMode = repeatMode + 1;
     if (newRepeatMode > 2) {
       newRepeatMode = 0;
     }
     setRepeatMode(newRepeatMode);
+  };
+  const initializeAudioObject = async (songIndex) => {
+    console.log("songs", songIndex);
+    const uri = songs[songIndex].uri;
+    try {
+      const { sound: playbackObject } = await Audio.Sound.createAsync({
+        uri: uri,
+      });
+      setAudioObj(playbackObject);
+      console.log("audioObject", AudioObj);
+      const status = await playbackObject.getStatusAsync();
+      setSongDuration(formatTime(status.durationMillis));
+      setSongStatus(status);
+      console.log("status", status);
+    } catch (err) {
+      console.log("error when initialize audio object");
+    }
   };
   const getLocalAudioFiles = async () => {
     try {
@@ -120,38 +173,47 @@ export const AudioContextProvider = ({ children }) => {
   const getPermission = async () => {
     return await MediaLibrary.requestPermissionsAsync();
   };
-
-  useEffect(() => {
-    const loadSong = async () => {
-      setIsLoading(true);
-      //get local audio
-      try {
-        const permission = await getPermission();
-
-        let localSongs = [];
-        if (permission.granted) {
-          localSongs = await getLocalAudioFiles();
-        }
-        console.log("get file", songs.length);
-        const { sound: playbackObject } = await Audio.Sound.createAsync({
-          uri: localSongs[0].uri,
-        });
-        setAudioObj(playbackObject);
-        console.log("audioObject", AudioObj);
-        const status = await playbackObject.getStatusAsync();
-        setSongDuration(formatTime(status.durationMillis));
-        setSongStatus(status);
-        console.log("status", status);
-        setIsLoading(false);
-        currentSongIndex.current = 0;
-      } catch (e) {
-        console.log("error", e);
-        setIsLoading(false);
-        setError(e);
+  const loadLocalSongs = async () => {
+    setIsLoading(true);
+    //get local audio
+    try {
+      const permission = await getPermission();
+      let localSongs = [];
+      if (permission.granted) {
+        localSongs = await getLocalAudioFiles();
       }
-    };
-
-    loadSong();
+      console.log("get file", songs.length);
+      setIsLoading(false);
+      currentSongIndex.current = 0;
+    } catch (e) {
+      console.log("error", e);
+      setIsLoading(false);
+      setError(e);
+    }
+  };
+  const getRemoteSongs = async () => {
+    await songsRef
+      .get()
+      .then((querySnapshot) => {
+        const newSongs = [];
+        querySnapshot.forEach((documentSnapshot) => {
+          console.log("doc", documentSnapshot.data());
+          newSongs.push({
+            id: documentSnapshot.id,
+            ...documentSnapshot.data(),
+          });
+        });
+        console.log("newsong", newSongs);
+        setSongs(newSongs);
+        currentSongIndex.current = 0;
+      })
+      .catch((err) => {
+        console.log("error when get all songs", err);
+      });
+  };
+  useEffect(() => {
+    // loadLocalSongs();
+    getRemoteSongs();
   }, []);
   useEffect(() => {
     return AudioObj

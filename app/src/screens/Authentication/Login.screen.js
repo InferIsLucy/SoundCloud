@@ -18,7 +18,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
-  const { onLoginWithEmail, auth, sendPasswordResetEmail } = useContext(
+  const { onLoginWithEmail, auth, error, sendPasswordResetEmail } = useContext(
     AuthenticationContext
   );
   const handleLoginWithEmail = () => {
@@ -97,8 +97,8 @@ const LoginScreen = ({ navigation }) => {
         ></EditText>
         {passwordError && <Text style={styles.textError}>{passwordError}</Text>}
         <Spacer position={"top"} size={"large"}></Spacer>
+        {error && <Text style={styles.textError}>{error}</Text>}
         <Spacer position={"top"} size={"large"}></Spacer>
-
         <AuthButton
           onPress={handleLoginWithEmail}
           buttonContent={"Login"}
