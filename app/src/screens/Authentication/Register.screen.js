@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import { Colors } from "../../theme/color";
 import { Spacer } from "../../components/spacer";
@@ -13,7 +13,9 @@ import {
 import { auth } from "../../config/firebase";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { accountSchema } from "../../utils/Validator";
+import { AuthenticationContext } from "../../providers/authentication.context";
 const RegisterScreen = ({ navigation }) => {
+  const { createUserWithEmail, error } = useContext(AuthenticationContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -32,12 +34,11 @@ const RegisterScreen = ({ navigation }) => {
       });
       clearErors();
       const auth = getAuth();
-      const userCredentials = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      navigation.navigate("Login");
+      const newUser = { email, password, displayName };
+      const userCredentials = await createUserWithEmail(newUser);
+      if (!error) {
+        navigation.navigate("Login");
+      }
     } catch (err) {
       console.log("Error when create new user", err);
       setError(err.path, err.message);

@@ -6,13 +6,15 @@ import FollowingItem from "./src/screens/UserProfile/components/FollowingItem.co
 import FollowingDetail from "./src/screens/UserProfile/FollowingDetail.screen";
 import UserProfile from "./src/screens/UserProfile/UserProfile.screen";
 import PlayerScreen from "./src/screens/MusicPlayer/Player.screen";
+import PlayList from "./src/screens/MusicPlayer/PlayList.screen";
 import CommentScreen from "./src/screens/commentScreen/Comment.screen";
+import AuthScreen from "./src/screens/Authentication/Authentication.screen";
 export default function App() {
   return (
     <AuthenticationContextProvider>
       <AudioContextProvider>
         <CommentContextProvider>
-          <PlayerScreen></PlayerScreen>
+          <Navigator></Navigator>
         </CommentContextProvider>
       </AudioContextProvider>
     </AuthenticationContextProvider>

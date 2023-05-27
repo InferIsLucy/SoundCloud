@@ -11,8 +11,6 @@ export const CommentContextProvider = ({ children }) => {
   //Tạm thời set cứng songid
   const [songId, setSongId] = useState("NGWUhheMYyhxK3RJ1hMj");
   const addComment = (songId, commentContent) => {
-    console.log("songId", songId);
-    console.log("commentContent", commentContent);
     const newComment = {
       content: commentContent,
       songId: songId,

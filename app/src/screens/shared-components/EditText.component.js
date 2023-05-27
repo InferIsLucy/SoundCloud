@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { TextInput } from "react-native-paper";
-import React from "react";
+import React, { useState } from "react";
 
 const EditText = ({
   value,
@@ -8,13 +8,30 @@ const EditText = ({
   placeholder,
   onChangeText,
   isPasswordType = false,
+  togglePasswordVisibility,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <TextInput
       style={styles.textInput}
       value={value}
       placeholder={placeholder}
-      secureTextEntry={isPasswordType && true}
+      secureTextEntry={isPasswordType && !showPassword}
+      right={
+        isPasswordType && (
+          <TextInput.Icon
+            size={20}
+            style={{
+              marginRight: 0,
+              fontSize: 12,
+            }}
+            onPress={() => {
+              setShowPassword(!showPassword);
+            }}
+            icon={showPassword ? "eye-off" : "eye"}
+          />
+        )
+      }
       onChangeText={onChangeText}
       left={
         <TextInput.Icon

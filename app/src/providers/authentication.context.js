@@ -7,63 +7,122 @@ import {
   onAuthStateChanged,
   getAuth,
   signOut,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
-import app from "../config/firebase";
-export const AuthenticationContext = createContext();
+import { firebase } from "../config/firebase";
+
 import * as SecureStore from "expo-secure-store";
 
+export const AuthenticationContext = createContext();
+
 const USER_ID = "userId";
+const imageStorage = firebase.storage().ref("images");
+const usersRef = firebase.firestore().collection("users");
 export const AuthenticationContextProvider = ({ children }) => {
   const auth = getAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  console.log("auth", auth);
+  console.log("userObject", user);
+  const createUser = async (user) => {
+    await usersRef
+      .add(user)
+      .then(() => {
+        console.log("user created!");
+      })
+      .catch((err) => {
+        console.log("error when add comment", err);
+        throw err;
+      });
+  };
+  const getUserFromDb = async (userId) => {
+    await usersRef
+      .where("userId", "==", userId)
+      .get()
+      .then((querySnapshot) => {
+        const user = querySnapshot.docs[0].data();
+        console.log("user", user);
+        setUser(user);
+      })
+      .catch((err) => {
+        console.log("error when get user", err);
+        throw err;
+      });
+  };
   const saveUserId = async (userId) => {
     try {
-      await SecureStore.setItemAsync(USER_ID, userId);
+      const id = JSON.stringify(userId);
+      await SecureStore.setItemAsync(USER_ID, id);
     } catch (err) {
       console.log("err", err);
     }
-  };
-  const getUserId = async () => {
-    try {
-      const userId = await SecureStore.getItemAsync(USER_ID);
-      return userId;
-    } catch (err) {
-      console.log("err", err);
-    }
-    return null;
   };
   useEffect(() => {
-    // onAuthStateChanged(auth, (user) => {
-    //   if (user) {
-    //     // User is signed in, see docs for a list of available properties
-    //     // https://firebase.google.com/docs/reference/js/firebase.User
-    //     const uid = user.uid;
-    //     console.log("ÚIER", uid);
-    //     // ...
-    //   } else {
-    //     // User is signed out
-    //     // ...
-    //   }
-    // });
-    if (getUserId() != null) {
-      setIsAuthenticated(true);
-      setUser({});
-    }
+    getUserIdFromStorage();
   }, []);
+  const getUserIdFromStorage = async () => {
+    try {
+      const userId = await SecureStore.getItemAsync(USER_ID);
+      if (userId) {
+        const data = JSON.parse(userId);
+        await getUserFromDb(data);
+        setIsAuthenticated(true);
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
+  const updateUserInfor = async (newUserInfor) => {
+    const { avatar } = newUserInfor;
+
+    const response = await fetch(avatar); // URL hợp lệ hoặc đường dẫn tệp tin cục bộ
+    const blob = await response.blob();
+    const filename = avatar.substring(avatar.lastIndexOf("/") + 1);
+
+    setIsLoading(true);
+    const uploadTask = imageStorage.child(filename).put(blob); // Upload file
+    try {
+      await uploadTask;
+
+      console.log("upload user avatar successfully");
+      const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+      // Cập nhật trường "avatar" của user với URL mới
+      await usersRef
+        .where("userId", "==", user.userId)
+        .get()
+        .then((querySnapshot) => {
+          const user = querySnapshot.docs[0];
+          return user.ref.update({ avatar: downloadURL });
+        })
+        .then(() => {
+          console.log("Avatar URL updated successfully");
+          const updatedUser = { ...user, avatar: downloadURL };
+          setUser(updatedUser);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log("Error when updating avatar URL:", err);
+          setIsLoading(false);
+        });
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Error when uploading avatar:", error);
+      setIsLoading(false);
+    }
+  };
   const onLoginWithEmail = (email, password) => {
     setIsLoading(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredentials) => {
-        const user = userCredentials.user;
-        console.log("Sign in succeeded", user);
-        setUser(user);
+        const firebaseUser = userCredentials.user;
+        console.log("Sign in succeeded", firebaseUser);
+        saveUserId(firebaseUser.uid);
+        return getUserFromDb(firebaseUser.uid);
+      })
+      .then(() => {
         setIsAuthenticated(true);
         setIsLoading(false);
-        saveUserId(user.uid);
         setError(null);
       })
       .catch((error) => {
@@ -72,11 +131,47 @@ export const AuthenticationContextProvider = ({ children }) => {
         setIsLoading(false);
       });
   };
+  const createUserWithEmail = async (userInfor) => {
+    setIsLoading(true);
+    await createUserWithEmailAndPassword(
+      auth,
+      userInfor.email,
+      userInfor.password
+    )
+      .then((userCredentials) => {
+        const firebaseUser = userCredentials.user;
+        const newUser = {
+          userId: firebaseUser.uid,
+          email: userInfor.email,
+          displayName: userInfor.displayName,
+          avatar: "",
+        };
+        return newUser;
+      })
+      .then((newUser) => {
+        createUser(newUser);
+      })
+      .then(() => {
+        setIsLoading(false);
+        setError(null);
+      })
+      .catch((error) => {
+        setError("Tạo tài khoản không thành công");
+        console.log("Error when sign up with email", error);
+        setIsLoading(false);
+      });
+  };
   const logout = async () => {
-    await SecureStore.deleteItemAsync(USER_ID);
-    signOut(auth);
-    setIsAuthenticated(false);
-    setUser(null);
+    try {
+      await SecureStore.deleteItemAsync(USER_ID);
+      const id = await SecureStore.getItemAsync(USER_ID);
+
+      signOut(auth);
+      setIsAuthenticated(false);
+      setUser(null);
+    } catch (err) {
+      console.log("Sign out failed", err);
+    }
   };
   return (
     <AuthenticationContext.Provider
@@ -88,6 +183,8 @@ export const AuthenticationContextProvider = ({ children }) => {
         setError,
         auth,
         sendPasswordResetEmail,
+        createUserWithEmail,
+        updateUserInfor,
         onLoginWithEmail,
         logout,
       }}

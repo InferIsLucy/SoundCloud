@@ -16,7 +16,8 @@ import ItemPlayList from "../MusicPlayer/components/ItemPlayList.component";
 import FollowingDetail from "./FollowingDetail.screen";
 import { AuthenticationContext } from "../../providers/authentication.context";
 const UserProfile = ({ navigation }) => {
-  const [avatarUri, setAvatarUri] = useState(null);
+  const { updateUserInfor, user } = useContext(AuthenticationContext);
+  const [avatarUri, setAvatarUri] = useState(user.avatar);
   const { logout } = useContext(AuthenticationContext);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -29,6 +30,8 @@ const UserProfile = ({ navigation }) => {
         quality: 1,
       });
       if (!result.canceled) {
+        console.log("result image picker", result);
+        await updateUserInfor({ avatar: result.uri });
         setAvatarUri(result.uri);
       }
     } catch (err) {
@@ -52,7 +55,7 @@ const UserProfile = ({ navigation }) => {
       </View>
       <View style={styles.userInfo}>
         <TouchableOpacity onPress={handleChangeAvatar}>
-          {avatarUri == null ? (
+          {avatarUri == "" ? (
             <Image
               style={styles.avatar}
               source={require("../../../assets/DefaultAvatar.jpg")}
