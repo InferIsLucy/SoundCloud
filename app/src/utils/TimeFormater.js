@@ -1,5 +1,7 @@
-export const formatTime = (duration) => {
-  const minutes = Math.floor(duration / 60000);
-  const seconds = ((duration % 60000) / 1000).toFixed(0);
+export const formatTime = (durationMillis) => {
+  //279.902
+
+  const minutes = Math.floor(durationMillis / 1000 / 60);
+  const seconds = Math.floor((durationMillis / 1000) % 60);
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 };

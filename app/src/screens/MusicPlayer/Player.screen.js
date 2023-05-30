@@ -1,5 +1,11 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import Slider from "@react-native-community/slider";
 import { Colors } from "../../theme/color";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,20 +15,26 @@ import BottomReactionBar from "./components/BottomBar.component";
 import { AudioContext } from "../../providers/audio.context";
 import { formatTime } from "../../utils/TimeFormater";
 
-const PlayerScreen = ({ song }) => {
-  const { songStatus, isLoading, AudioObj, isPlaying, currentSongIndex } =
-    useContext(AudioContext);
-  const [currentPosition, setCurrentPosition] = useState(0);
-
+const PlayerScreen = () => {
+  const {
+    songStatus,
+    isLoading,
+    songs,
+    handleSongEnd,
+    currentSong,
+    // currentPosition,
+    // setCurrentPosition,
+    audioObj,
+    isPlaying,
+    currentSongIndex,
+    savedPosition,
+  } = useContext(AudioContext);
+  const [currentPosition, setCurrentPosition] = useState(savedPosition.current);
   const intervalRef = useRef(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isPlaying) {
       if (!intervalRef.current) {
-        intervalRef.current = setInterval(() => {
-          if (currentPosition < songStatus.durationMillis) {
-            setCurrentPosition((prev) => prev + 1000);
-          }
-        }, 1000);
+        setIntervalRef();
       }
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -34,10 +46,22 @@ const PlayerScreen = ({ song }) => {
         intervalRef.current = null;
       }
     };
-  }, [currentSongIndex, isPlaying]);
-  useEffect(() => {
-    setCurrentPosition(0);
-  }, [currentSongIndex.current]);
+  }, [currentSongIndex.current, isPlaying]);
+
+  const setIntervalRef = () => {
+    intervalRef.current = setInterval(() => {
+      if (savedPosition.current + 1000 < currentSong.duration) {
+        savedPosition.current = savedPosition.current + 1000;
+        setCurrentPosition(savedPosition.current);
+      } else if (savedPosition.current + 499 < currentSong.duration) {
+        setCurrentPosition(savedPosition.current);
+        savedPosition.current = savedPosition.current + 499;
+      } else {
+        console.log("Call end");
+        handleSongEnd();
+      }
+    }, 1000);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -51,8 +75,14 @@ const PlayerScreen = ({ song }) => {
           }}
         >
           <Text style={styles.text1}>now playing</Text>
-          <Text style={[styles.text1, { fontWeight: 500 }]}>
-            Love the way you lie
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.text1,
+              { marginLeft: 24, marginRight: 24, fontWeight: 500 },
+            ]}
+          >
+            {currentSong.name || "Song Name"}
           </Text>
         </View>
       </View>
@@ -64,8 +94,12 @@ const PlayerScreen = ({ song }) => {
         style={styles.img}
       ></Image>
       <View style={{ alignItems: "center" }}>
-        <Text style={styles.title}>Song </Text>
-        <Text style={styles.artist}>Artist Name </Text>
+        <Text numberOfLines={2} style={styles.title}>
+          {currentSong.name || "Song Name"}
+        </Text>
+        <Text numberOfLines={1} style={styles.artist}>
+          {currentSong.artistString || " "}
+        </Text>
       </View>
 
       <View style={styles.progressBar}>
@@ -77,17 +111,28 @@ const PlayerScreen = ({ song }) => {
           style={{ width: 320, height: 40 }}
           minimumValue={0}
           onSlidingComplete={async (value) => {
-            await AudioObj.setPositionAsync(value);
+            //value is second unit -> convert to millisecond
+            await audioObj.setPositionAsync(value);
             setCurrentPosition(value);
+            savedPosition.current = value;
+          }}
+          onTouchStart={() => {
+            clearInterval(intervalRef.current);
+          }}
+          onValueChange={(value) => {
+            setCurrentPosition(value);
+          }}
+          onTouchEnd={() => {
+            setIntervalRef();
           }}
           value={currentPosition}
           thumbTintColor={"black"}
           minimumTrackTintColor={"black"}
-          maximumValue={songStatus.durationMillis}
+          maximumValue={currentSong.duration}
           maximumTrackTintColor="#000000"
         />
         <Text style={[styles.duration, { bottom: 0, right: 0 }]}>
-          {formatTime(songStatus.durationMillis) || ""}
+          {formatTime(currentSong.duration) || ""}
         </Text>
       </View>
 
@@ -121,6 +166,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 500,
+    marginLeft: 24,
+    marginRight: 24,
     color: Colors.defaultTextColor,
   },
   img: {

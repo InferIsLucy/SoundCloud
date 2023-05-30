@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  FlatList,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
@@ -15,8 +16,10 @@ import { Ionicons } from "@expo/vector-icons";
 import ItemPlayList from "../MusicPlayer/components/ItemPlayList.component";
 import FollowingDetail from "./FollowingDetail.screen";
 import { AuthenticationContext } from "../../providers/authentication.context";
+import { AudioContext } from "../../providers/audio.context";
 const UserProfile = ({ navigation }) => {
   const { updateUserInfor, user } = useContext(AuthenticationContext);
+  const { songs } = useContext(AudioContext);
   const [avatarUri, setAvatarUri] = useState(user.avatar);
   const { logout } = useContext(AuthenticationContext);
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,7 +81,7 @@ const UserProfile = ({ navigation }) => {
             fontSize: fontSizes.label,
           }}
         >
-          User name
+          {user.displayName}
         </Text>
         <TouchableOpacity
           onPress={() => logout()}
@@ -131,8 +134,13 @@ const UserProfile = ({ navigation }) => {
         }}
       >
         <Text style={styles.title}>Liked songs</Text>
-        <ItemPlayList></ItemPlayList>
-        <ItemPlayList></ItemPlayList>
+        <FlatList
+          data={songs}
+          renderItem={({ item, index }) => (
+            <ItemPlayList songIndex={index} song={item} />
+          )}
+          keyExtractor={(item) => item.id}
+        />
       </View>
       <View
         style={{
@@ -141,8 +149,8 @@ const UserProfile = ({ navigation }) => {
         }}
       >
         <Text style={styles.title}>Your uploaded songs</Text>
-        <ItemPlayList></ItemPlayList>
-        <ItemPlayList></ItemPlayList>
+        {/* <ItemPlayList></ItemPlayList>
+        <ItemPlayList></ItemPlayList> */}
       </View>
 
       <Modal

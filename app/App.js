@@ -9,6 +9,7 @@ import PlayerScreen from "./src/screens/MusicPlayer/Player.screen";
 import PlayList from "./src/screens/MusicPlayer/PlayList.screen";
 import CommentScreen from "./src/screens/commentScreen/Comment.screen";
 import AuthScreen from "./src/screens/Authentication/Authentication.screen";
+
 export default function App() {
   return (
     <AuthenticationContextProvider>

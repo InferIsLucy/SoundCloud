@@ -24,7 +24,7 @@ export const AuthenticationContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  console.log("userObject", user);
+  // console.log("userObject", user);
   const createUser = async (user) => {
     await usersRef
       .add(user)

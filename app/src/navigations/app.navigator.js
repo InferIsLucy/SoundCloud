@@ -8,7 +8,6 @@ import UserProfile from "../screens/UserProfile/UserProfile.screen";
 const Tab = createBottomTabNavigator();
 
 export const AppNavigator = () => {
-  console.log("appnaviagtor");
   return (
     <Tab.Navigator
       initialRouteName="Home"
