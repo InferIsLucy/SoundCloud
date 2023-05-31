@@ -32,6 +32,7 @@ export const CommentContextProvider = ({ children }) => {
     setIsLoading(true);
     await commentsRef
       .where("songId", "==", songId)
+
       .get()
       .then((querySnapshot) => {
         const newComments = [];
@@ -42,6 +43,7 @@ export const CommentContextProvider = ({ children }) => {
             createdAt: new Date(documentSnapshot.data().createdAt),
           });
         });
+        newComments.sort((a, b) => a.createdAt - b.createdAt);
         setComments(newComments);
       })
       .catch((err) => {

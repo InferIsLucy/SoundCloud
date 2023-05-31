@@ -13,9 +13,11 @@ import { AntDesign } from "@expo/vector-icons";
 import Comment from "./comment/index";
 import Footer from "./footer/index";
 import { CommentContext } from "../../providers/comment.context";
+import { AudioContext } from "../../providers/audio.context";
 
 const CommentScreen = ({ setCommentsVisible, songId }) => {
   const { addComment, isLoading, loadComments } = useContext(CommentContext);
+  const { currentSong } = useContext(AudioContext);
   const [comments, setComments] = useState([]);
   console.log("COMMENTS SCREEN - comments", comments);
   useEffect(() => {
@@ -48,9 +50,9 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
             </View>
             <View style={styles.songInfor}>
               <Text style={styles.songName} numberOfLines={1}>
-                Sing to You (FEAT. Shiloh Dynasty) *ALSO ON SPOTIFY*
+                {currentSong.name}
               </Text>
-              <Text style={styles.artis}>Monty Datta</Text>
+              <Text style={styles.artis}>{currentSong.artistString}</Text>
             </View>
           </View>
         </View>

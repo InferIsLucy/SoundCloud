@@ -25,20 +25,16 @@ import { formatTime } from "../../utils/TimeFormater";
 
 const PlayerScreen = () => {
   const {
-    songStatus,
-    isLoading,
     songs,
     handleSongEnd,
     currentSong,
-    // currentPosition,
-    // setCurrentPosition,
     audioObj,
     isPlaying,
     currentSongIndex,
     setPlayerVisbile,
     savedPosition,
   } = useContext(AudioContext);
-  console.log("PlayerScreen songs", songs);
+
   const [currentPosition, setCurrentPosition] = useState(savedPosition.current);
   const [commentsVisible, setCommentsVisible] = useState(false);
   const intervalRef = useRef(null);
@@ -61,20 +57,22 @@ const PlayerScreen = () => {
 
   const setIntervalRef = () => {
     intervalRef.current = setInterval(() => {
-      if (savedPosition.current + 1000 < currentSong.duration) {
-        savedPosition.current = savedPosition.current + 1000;
+      if (savedPosition.current + 999 < currentSong.duration) {
+        savedPosition.current = savedPosition.current + 999;
         setCurrentPosition(savedPosition.current);
       } else if (savedPosition.current + 499 < currentSong.duration) {
         setCurrentPosition(savedPosition.current);
         savedPosition.current = savedPosition.current + 499;
       } else {
+        console.log(savedPosition.current);
+        console.log(currentSong.duration);
         console.log("Call end");
         handleSongEnd();
       }
     }, 1000);
   };
   return (
-    <View style={styles.container}>
+    <View style={[{ opacity: commentsVisible ? 0.5 : 1 }, styles.container]}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
@@ -160,16 +158,26 @@ const PlayerScreen = () => {
       ></BottomReactionBar>
       <Modal
         animationType="fade"
-        transparent={false}
+        transparent={true}
         visible={commentsVisible}
         onRequestClose={() => {
           setCommentsVisible(!commentsVisible);
         }}
       >
-        <CommentScreen
-          setCommentsVisible={setCommentsVisible}
-          songId={currentSong.id}
-        ></CommentScreen>
+        <View
+          style={{
+            position: "absolute",
+            bottom: 0,
+            backgroundColor: "white",
+            right: 0,
+            left: 0,
+          }}
+        >
+          <CommentScreen
+            setCommentsVisible={setCommentsVisible}
+            songId={currentSong.id}
+          ></CommentScreen>
+        </View>
       </Modal>
     </View>
   );

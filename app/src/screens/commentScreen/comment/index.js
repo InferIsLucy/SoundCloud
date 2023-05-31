@@ -39,7 +39,7 @@ const comment = ({ comment }) => {
               {dayjs(comment.createdAt).format(
                 "DD/MM/YYYY" + " lúc " + "HH:mm"
               )}
-              <Entypo name="dot-single" size={15} color="#898989" /> 2w{" "}
+              <Entypo name="dot-single" size={15} color="#898989" />
             </Text>
           </View>
         </View>
