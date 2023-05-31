@@ -7,28 +7,30 @@ const commentsRef = firebase.firestore().collection("comments");
 export const CommentContextProvider = ({ children }) => {
   //lấy thông tin của user để đính kèm vào comment
   const { user } = useContext(AuthenticationContext);
-  const [comments, setComments] = useState([]);
-  //Tạm thời set cứng songid
-  const [songId, setSongId] = useState("NGWUhheMYyhxK3RJ1hMj");
-  const addComment = (songId, commentContent) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const addComment = async (songId, commentContent) => {
+    setIsLoading(true);
     const newComment = {
       content: commentContent,
       songId: songId,
+      userId: user.userId,
+      userName: user.displayName,
+      userAvatar: user.avatar,
+      createdAt: Date.now(),
     };
-    commentsRef
+    await commentsRef
       .add(newComment)
       .then(() => {
         console.log("Comment added!");
-        const newComments = [...comments, newComment];
-        setComments(newComments);
       })
       .catch((err) => {
         console.log("error when add comment", err);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
-  //get song comments
-  useEffect(() => {
-    commentsRef
+  const loadComments = async (songId, setComments) => {
+    setIsLoading(true);
+    await commentsRef
       .where("songId", "==", songId)
       .get()
       .then((querySnapshot) => {
@@ -37,18 +39,19 @@ export const CommentContextProvider = ({ children }) => {
           newComments.push({
             id: documentSnapshot.id,
             ...documentSnapshot.data(),
+            createdAt: new Date(documentSnapshot.data().createdAt),
           });
         });
         setComments(newComments);
       })
       .catch((err) => {
         console.log("error when get all comments", err);
-      });
-    // Stop listening for updates when no longer required
-    // return () => subscriber();
-  }, [songId]);
+        setComments([]);
+      })
+      .finally(() => setIsLoading(false));
+  };
   return (
-    <CommentContext.Provider value={{ comments, addComment }}>
+    <CommentContext.Provider value={{ isLoading, loadComments, addComment }}>
       {children}
     </CommentContext.Provider>
   );

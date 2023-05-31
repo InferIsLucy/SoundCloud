@@ -4,6 +4,7 @@ import styles from "./style";
 import { Avatar } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
 import Comment from "../footer/index";
+const dayjs = require("dayjs");
 
 const comment = ({ comment }) => {
   const [isReplyComment, setIsReplyComment] = useState(styles.container);
@@ -14,19 +15,31 @@ const comment = ({ comment }) => {
   return (
     <View style={isReplyComment}>
       <View style={styles.userImage}>
-        <Avatar.Image
-          size={35}
-          source={require("./../../../../assets/useravatar.png")}
-        />
+        {comment.userAvatar == "" ? (
+          <Avatar.Image
+            size={35}
+            source={require("./../../../../assets/useravatar.png")}
+          />
+        ) : (
+          <Avatar.Image
+            size={35}
+            source={{
+              uri: comment.userAvatar,
+            }}
+          />
+        )}
       </View>
       <View style={styles.body}>
         <View style={styles.commentInfor}>
           <View>
-            <Text style={styles.userName}>Daniel Clark</Text>
+            <Text style={styles.userName}>{comment.userName}</Text>
           </View>
           <View style={styles.commentRecordedTime}>
             <Text style={styles.time}>
-              at 0:39 <Entypo name="dot-single" size={15} color="#898989" /> 2w{" "}
+              {dayjs(comment.createdAt).format(
+                "DD/MM/YYYY" + " lúc " + "HH:mm"
+              )}
+              <Entypo name="dot-single" size={15} color="#898989" /> 2w{" "}
             </Text>
           </View>
         </View>

@@ -5,26 +5,39 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, memo, useEffect } from "react";
 import styles from "./CommentScr.component.style";
 import { AntDesign } from "@expo/vector-icons";
 import Comment from "./comment/index";
 import Footer from "./footer/index";
 import { CommentContext } from "../../providers/comment.context";
-export default function CommentScreen({ songId }) {
-  const { comments, addComment } = useContext(CommentContext);
+
+const CommentScreen = ({ setCommentsVisible, songId }) => {
+  const { addComment, isLoading, loadComments } = useContext(CommentContext);
+  const [comments, setComments] = useState([]);
+  console.log("COMMENTS SCREEN - comments", comments);
+  useEffect(() => {
+    loadComments(songId, setComments);
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.sub_header}>
           <View style={styles.currentComments}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setCommentsVisible((prev) => !prev);
+              }}
+            >
               <View style={styles.closeBtn}>
                 <AntDesign name="close" size={24} color="black" />
               </View>
             </TouchableOpacity>
-            <Text style={styles.totalComment}>3245 Comments</Text>
+            <Text
+              style={styles.totalComment}
+            >{`${comments.length} Comments`}</Text>
           </View>
           <View style={styles.currentSong}>
             <View style={styles.Image}>
@@ -41,15 +54,21 @@ export default function CommentScreen({ songId }) {
             </View>
           </View>
         </View>
-        <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
-          {comments.map((item, index) => {
-            return <Comment key={index} comment={item} />;
-          })}
-        </ScrollView>
+        {isLoading == true ? (
+          <ActivityIndicator size={40} style={{ flex: 1 }}></ActivityIndicator>
+        ) : (
+          <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+            {comments.map((item, index) => {
+              return <Comment key={index} comment={item} />;
+            })}
+          </ScrollView>
+        )}
       </View>
       <View style={styles.footer}>
-        <Footer songId={songId} onAddComment={addComment} />
+        <Footer setComments={setComments} songId={songId} />
       </View>
     </View>
   );
-}
+};
+
+export default memo(CommentScreen);

@@ -3,12 +3,12 @@ import React, { useContext, memo } from "react";
 import { AudioContext } from "../../../providers/audio.context";
 import { formatTime } from "../../../utils/TimeFormater";
 const ItemPlayList = ({ song }) => {
-  const { setIsPlayerVisible, setCurrentSong } = useContext(AudioContext);
+  const { setPlayerVisbile, setCurrentSong } = useContext(AudioContext);
   return (
     <TouchableOpacity
       onPress={() => {
         setCurrentSong(song);
-        setIsPlayerVisible((value) => !value);
+        setPlayerVisbile((value) => !value);
       }}
       style={styles.container}
     >

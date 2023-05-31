@@ -1,7 +1,8 @@
 import { NavigationContainer } from "@react-navigation/native";
+import { useAppState } from "@react-native-community/hooks";
+import { useEffect, useContext } from "react";
 import { SafeAreaView, Platform, StatusBar, Modal } from "react-native";
 import { AuthNavigator } from "./auth.navigator";
-import { useContext } from "react";
 import { AuthenticationContext } from "../providers/authentication.context";
 import { AppNavigator } from "./app.navigator";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
@@ -9,7 +10,19 @@ import { AudioContext } from "../providers/audio.context";
 
 const Navigator = () => {
   const { isAuthenticated } = useContext(AuthenticationContext);
-  const { isPlayerVisible, setIsPlayerVisible } = useContext(AudioContext);
+  const { isPlayerVisible, setPlayerVisbile } = useContext(AudioContext);
+
+  // const appState = useAppState();
+  // useEffect(() => {
+  //   const handleAppClose = async () => {
+  //     await handleReact();
+  //     console.log("App close");
+  //   };
+  //   if (appState !== "active") {
+  //     handleAppClose();
+  //   }
+  // }, [appState]);
+
   return (
     <>
       <Modal
@@ -17,7 +30,7 @@ const Navigator = () => {
         transparent={false}
         visible={isPlayerVisible}
         onRequestClose={() => {
-          setIsPlayerVisible(!isPlayerVisible);
+          setPlayerVisbile(!isPlayerVisible);
         }}
       >
         <PlayerScreen></PlayerScreen>

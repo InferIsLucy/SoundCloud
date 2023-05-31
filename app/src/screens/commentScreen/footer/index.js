@@ -6,19 +6,21 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useContext, memo } from "react";
 import styles from "./style";
 import { Entypo } from "@expo/vector-icons";
+import { CommentContext } from "../../../providers/comment.context";
 
-const footer = (props) => {
+const footer = ({ setComments, songId }) => {
+  const { addComment, loadComments } = useContext(CommentContext);
   const [comment, setComment] = useState("");
-  console.log("commentContent", comment);
-  const handleAddComment = () => {
+  console.log("RenderComment", comment);
+  const handleAddComment = async () => {
     if (comment.length === 0) {
       return false;
     }
-    // props.onAddComment(props.songId, comment);
-    props.onAddComment("NGWUhheMYyhxK3RJ1hMj", comment);
+    await addComment(songId, comment);
+    await loadComments(songId, setComments);
     setComment("");
     Keyboard.dismiss();
   };
@@ -36,7 +38,7 @@ const footer = (props) => {
         style={styles.input}
         onChangeText={(text) => setComment(text)}
       ></TextInput>
-      <TouchableOpacity onPress={handleAddComment}>
+      <TouchableOpacity onPress={() => handleAddComment()}>
         <View style={styles.iconWrapper}>
           <Entypo name="paper-plane" size={24} color="black" />
         </View>
@@ -45,4 +47,4 @@ const footer = (props) => {
   );
 };
 
-export default footer;
+export default memo(footer);

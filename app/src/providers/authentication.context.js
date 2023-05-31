@@ -10,7 +10,6 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { firebase } from "../config/firebase";
-
 import * as SecureStore from "expo-secure-store";
 
 export const AuthenticationContext = createContext();

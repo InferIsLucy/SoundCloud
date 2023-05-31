@@ -1,23 +1,38 @@
-import React, { useEffect, useState, createContext, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  useRef,
+  useContext,
+} from "react";
 export const AudioContext = createContext();
 import { Audio } from "expo-av";
 import * as MediaLibrary from "expo-media-library";
 import { formatTime } from "../utils/TimeFormater";
 import { firebase } from "../config/firebase";
 import { getSongArtistFromArray } from "../utils/Converters";
+import * as SecureStore from "expo-secure-store";
+import { AuthenticationContext } from "./authentication.context";
+
+Audio.setAudioModeAsync({
+  staysActiveInBackground: true,
+  playThroughEarpieceAndroid: false,
+  shouldDuckAndroid: true,
+});
+
+const REACT_IDS = "reactIdList";
 const songStorage = firebase.storage().ref("songs");
 const songsRef = firebase.firestore().collection("songs");
-
 export const AudioContextProvider = ({ children }) => {
+  const { user, isAuthenticated } = useContext(AuthenticationContext);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [audioObj, setAudioObj] = useState(null);
-  const [isPlayerVisible, setIsPlayerVisible] = useState(false);
+  const [isPlayerVisible, setPlayerVisbile] = useState(false);
   const [isPlaying, setIsPlaying] = useState(null);
   const [songStatus, setSongStatus] = useState({});
   const [currentSong, setCurrentSong] = useState(null);
   const [songDuration, setSongDuration] = useState("");
-
   const [repeatMode, setRepeatMode] = useState(0); // 0 - none, 1- all,2 - one
   const [shuffleMode, setShuffleMode] = useState(false);
   const [songs, setSongs] = useState([]);
@@ -124,6 +139,7 @@ export const AudioContextProvider = ({ children }) => {
             name: file.filename,
             artists: [],
             imageUri: "",
+            isLocalSong: true,
           };
         });
         console.log("LocalSongs", localSongs);
@@ -159,9 +175,135 @@ export const AudioContextProvider = ({ children }) => {
       });
   };
   const handleTogglePlayerModelVisbile = () => {
-    setIsPlayerVisible((v) => !v);
+    setPlayerVisbile((v) => !v);
+  };
+  const checkIfReact = (songId) => {
+    const userId = user.userId;
+    const song = songs.find((song) => song.id === songId);
+    console.log("userId", userId);
+    console.log("song", song);
+    if (song) {
+      const likes = song.likes || [];
+      console.log("likes", likes);
+      return likes.includes(userId);
+    }
+
+    return false;
   };
 
+  // before app closed this func is going to be called
+  const handleReact = async () => {
+    try {
+      // Get the list of songIds from expo-secure-store
+      const storedIds = await SecureStore.getItemAsync(REACT_IDS);
+      let updatedIds = [];
+      if (storedIds) {
+        // If storedIds is not null or empty, parse it as an array
+        updatedIds = JSON.parse(storedIds);
+      }
+
+      // Get the list of songs from Firebase
+      const songsRef = firebase.firestore().collection("songs");
+      const querySnapshot = await songsRef.get();
+
+      // Iterate over the songs
+      for (const documentSnapshot of querySnapshot.docs) {
+        const songId = documentSnapshot.id;
+
+        // Check if the songId is in the list of songIds
+        const index = updatedIds.indexOf(songId);
+
+        // If the songId is in the list, update the likes field
+        if (index !== -1) {
+          const likes = documentSnapshot.data().likes || [];
+
+          // Check if the userId is in the likes field
+          const userIdIndex = likes.indexOf(user.userId);
+
+          // If the userId is in the likes field, remove it
+          if (userIdIndex !== -1) {
+            likes.splice(userIdIndex, 1);
+          }
+
+          // Update the likes field in Firebase
+          await songsRef.doc(songId).update({ likes: likes });
+          getRemoteSongs();
+        }
+      }
+
+      console.log("React songs handled successfully!");
+    } catch (error) {
+      console.log("Error handling react songs:", error);
+    }
+  };
+  console.log("SONGS", songs);
+  //react to song stored in db
+  const sendReact = async (songId) => {
+    try {
+      // Get the current user's ID (replace with your own logic to obtain the user ID)
+      const userId = user.userId;
+
+      // Get the song document reference from Firebase
+      const songRef = firebase.firestore().collection("songs").doc(songId);
+
+      // Retrieve the song document
+      const songDoc = await songRef.get();
+
+      if (songDoc.exists) {
+        // Get the current likes array from the song document
+        const likes = songDoc.data().likes || [];
+
+        // Check if the user's ID exists in the likes array
+        const userIdIndex = likes.indexOf(userId);
+
+        if (userIdIndex === -1) {
+          // If the user's ID doesn't exist in the likes array, add it
+          likes.push(userId);
+        } else {
+          // If the user's ID already exists in the likes array, remove it
+          likes.splice(userIdIndex, 1);
+        }
+
+        // Update the likes field in Firebase
+        await songRef.update({ likes: likes });
+        console.log("React sent successfully!");
+        await getRemoteSongs();
+      } else {
+        console.log("Song not found!");
+      }
+    } catch (error) {
+      console.log("Error sending react:", error);
+    }
+  };
+
+  const toggleReactSong = async (songId) => {
+    try {
+      // Retrieve the existing list of songIds from SecureStore
+      const storedIds = await SecureStore.getItemAsync(REACT_IDS);
+      let updatedIds = [];
+      if (storedIds) {
+        // If storedIds is not null or empty, parse it as an array
+        updatedIds = JSON.parse(storedIds);
+      }
+
+      const index = updatedIds.indexOf(songId);
+
+      if (index === -1) {
+        // If songId does not exist in the list, add it
+        updatedIds.push(songId);
+      } else {
+        // If songId already exists in the list, remove it
+        updatedIds.splice(index, 1);
+      }
+
+      // Store the updated list back in SecureStore
+      await SecureStore.setItemAsync(REACT_IDS, JSON.stringify(updatedIds));
+
+      console.log("Toggle successful!");
+    } catch (error) {
+      console.log("Error toggling song:", error);
+    }
+  };
   const audioLoadSongAsync = async (songUri) => {
     if (audioObj != null) {
       console.log("LoadsongAsync");
@@ -339,8 +481,8 @@ export const AudioContextProvider = ({ children }) => {
     }
   }, [repeatMode]);
   useEffect(() => {
-    loadLocalSongs();
-    // getRemoteSongs();
+    // loadLocalSongs();
+    getRemoteSongs();
   }, []);
   useEffect(() => {
     return audioObj
@@ -375,10 +517,14 @@ export const AudioContextProvider = ({ children }) => {
         setAudioObj,
         songDuration,
         isPlayerVisible,
-        setIsPlayerVisible,
+        setPlayerVisbile,
         savedPosition,
         handleSongEnd,
         setSongStatus: setSongStatus,
+        // toggleReactSong,
+        // handleReact,
+        checkIfReact,
+        sendReact,
         audioEvents: {
           setIsPlaying,
           togglePlayStatus,

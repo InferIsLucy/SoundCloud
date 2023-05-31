@@ -1,4 +1,11 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, {
   useContext,
   useEffect,
@@ -12,6 +19,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import PlayerController from "./components/PlayerController.component";
 import BottomReactionBar from "./components/BottomBar.component";
+import CommentScreen from "../commentScreen/Comment.screen";
 import { AudioContext } from "../../providers/audio.context";
 import { formatTime } from "../../utils/TimeFormater";
 
@@ -27,9 +35,12 @@ const PlayerScreen = () => {
     audioObj,
     isPlaying,
     currentSongIndex,
+    setPlayerVisbile,
     savedPosition,
   } = useContext(AudioContext);
+  console.log("PlayerScreen songs", songs);
   const [currentPosition, setCurrentPosition] = useState(savedPosition.current);
+  const [commentsVisible, setCommentsVisible] = useState(false);
   const intervalRef = useRef(null);
   useLayoutEffect(() => {
     if (isPlaying) {
@@ -65,7 +76,12 @@ const PlayerScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
+        <TouchableOpacity
+          onPress={() => {
+            setPlayerVisbile((prev) => !prev);
+          }}
+          style={{ paddingLeft: 8, paddingRight: 4 }}
+        >
           <Ionicons name="chevron-back" size={32} color="black" />
         </TouchableOpacity>
         <View
@@ -138,7 +154,23 @@ const PlayerScreen = () => {
 
       {/* music controller */}
       <PlayerController></PlayerController>
-      <BottomReactionBar></BottomReactionBar>
+      <BottomReactionBar
+        setCommentsVisible={setCommentsVisible}
+        song={currentSong}
+      ></BottomReactionBar>
+      <Modal
+        animationType="fade"
+        transparent={false}
+        visible={commentsVisible}
+        onRequestClose={() => {
+          setCommentsVisible(!commentsVisible);
+        }}
+      >
+        <CommentScreen
+          setCommentsVisible={setCommentsVisible}
+          songId={currentSong.id}
+        ></CommentScreen>
+      </Modal>
     </View>
   );
 };
