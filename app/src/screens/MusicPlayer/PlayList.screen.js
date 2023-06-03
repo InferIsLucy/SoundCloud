@@ -6,6 +6,8 @@ import { Feather } from "@expo/vector-icons";
 import ItemPlayList from "./components/ItemPlayList.component";
 import { ImageBackground } from "react-native";
 import { AudioContext } from "../../providers/audio.context";
+
+//DetailPlaylist
 const PlayList = () => {
   const { songs, currentSong } = useContext(AudioContext);
   console.log(songs);
@@ -74,8 +76,6 @@ const PlayList = () => {
           <Text style={{ color: "white", marginLeft: 4 }}>Song Playlist</Text>
         </View>
         <ItemPlayList song={songs[0]}></ItemPlayList>
-        <ItemPlayList song={songs[1]}></ItemPlayList>
-        <ItemPlayList song={songs[2]}></ItemPlayList>
       </View>
     </View>
   );

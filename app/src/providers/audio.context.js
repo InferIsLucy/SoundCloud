@@ -162,6 +162,9 @@ export const AudioContextProvider = ({ children }) => {
             id: documentSnapshot.id,
             ...documentSnapshot.data(),
             artistString: "",
+            // artistString: getSongArtistFromArray(
+            //   documentSnapshot.data().artists
+            // ),
           });
         });
         console.log("newsong", newSongs);
