@@ -161,9 +161,7 @@ export const AudioContextProvider = ({ children }) => {
           newSongs.push({
             id: documentSnapshot.id,
             ...documentSnapshot.data(),
-            artistString: getSongArtistFromArray(
-              documentSnapshot.data().artists
-            ),
+            artistString: "",
           });
         });
         console.log("newsong", newSongs);

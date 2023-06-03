@@ -1,4 +1,10 @@
-import React from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import {
   View,
   StyleSheet,
@@ -11,13 +17,61 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import COLORS from "../consts/colors";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import places from "../consts/places";
 const { width } = Dimensions.get("screen");
+import { AudioContext } from "../providers/audio.context";
 
 const HomeScreen = ({ navigation }) => {
+  const { songs, currentSong } = useContext(AudioContext);
+  const [filterdData, setfilterdData] = useState([]);
+  const [search, setsearch] = useState("");
+  const [isShow, setIsShow] = useState(false);
+
+  const searchFilter = (text) => {
+    if (text !== "") {
+      const newData = songs.filter((song) => {
+        const itemData = song.name ? song.name.toUpperCase() : "".toLowerCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      console.log("NEW DATA", newData);
+      setfilterdData(newData);
+      setsearch(text);
+      setIsShow(true);
+    } else {
+      setfilterdData(songs);
+      setsearch(text);
+      setIsShow(false);
+    }
+  };
+  const ItemView = ({ song, index }) => {
+    return (
+      <TouchableOpacity style={styles.itemStyle}>
+        <View style={styles.itemContainer}>
+          <View style={styles.itemBody}>
+            <Text style={styles.itemName}>
+              {index + 1}
+              {". "}
+              {song.name}
+            </Text>
+          </View>
+          <View style={styles.option}></View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  const ItemSeparatorView = () => {
+    return (
+      <View
+        style={{ height: 0.8, width: "100%", backgroundColor: "#332222" }}
+      />
+    );
+  };
+
   const categoryIcon = [
     <Icon name="flight" size={25} color={COLORS.primary} />,
     <Icon name="flight" size={25} color={COLORS.primary} />,
@@ -203,12 +257,37 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.inputContainer}>
               <Icon name="search" size={28} />
               <TextInput
-                placeholder="Search..."
-                style={{ color: COLORS.grey }}
+                value={search}
+                onChangeText={(text) => searchFilter(text)}
+                placeholder="Search...                                                       ."
+                style={{ color: "black", fontSize: 18 }}
               />
             </View>
           </View>
         </View>
+        {isShow && (
+          <SafeAreaView
+            style={{
+              position: "absolute",
+              bottom: -5,
+              top: 80,
+              right: 20,
+              left: 20,
+              zIndex: 1,
+              marginTop: 50,
+              backgroundColor: "#ddd9d9",
+            }}
+          >
+            <FlatList
+              data={filterdData}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={ItemSeparatorView}
+              renderItem={({ item, index }) => (
+                <ItemView index={index} song={item}></ItemView>
+              )}
+            />
+          </SafeAreaView>
+        )}
         <ListCategory />
         <Text style={styles.sectionTitle}>Nổi bật</Text>
         <View>
@@ -259,7 +338,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     height: 60,
     width: "100%",
-    backgroundColor: COLORS.white,
+    backgroundColor: "#ece8e8",
     borderRadius: 10,
     position: "absolute",
     top: 60,
@@ -311,6 +390,47 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     overflow: "hidden",
     padding: 10,
+  },
+  itemStyle: {
+    padding: 10,
+  },
+  textInputStyle: {
+    height: 50,
+    borderWidth: 1,
+    paddingLeft: 20,
+    margin: 5,
+    borderColor: "#009688",
+    backgroundColor: "white",
+  },
+  btnTab: {
+    width: Dimensions.get("window").width / 3.5,
+    flexDirection: "row",
+    borderWidth: 0.5,
+    borderColor: "#EBEBEB",
+    padding: 10,
+    justifyContent: "center",
+  },
+  itemContainer: {
+    flexDirection: "row",
+    paddingVertical: 15,
+  },
+  itemLogo: {
+    padding: 10,
+    width: 50,
+    height: 50,
+  },
+  itemBody: {
+    flex: 1,
+    paddingHorizontal: 10,
+    justifyContent: "center",
+  },
+  itemName: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  itemImage: {
+    width: 50,
+    height: 50,
   },
 });
 export default HomeScreen;

@@ -5,12 +5,13 @@ import { CommentContextProvider } from "./src/providers/comment.context";
 import { useAppState } from "@react-native-community/hooks";
 import BottomPlayer from "./src/screens/MusicPlayer/BottomPlayerBar.screen";
 import { useEffect } from "react";
+import PlayList from "./src/screens/MusicPlayer/PlayList.screen";
 export default function App() {
   return (
     <AuthenticationContextProvider>
       <AudioContextProvider>
         <CommentContextProvider>
-          <Navigator></Navigator>
+          <PlayList></PlayList>
         </CommentContextProvider>
       </AudioContextProvider>
     </AuthenticationContextProvider>
