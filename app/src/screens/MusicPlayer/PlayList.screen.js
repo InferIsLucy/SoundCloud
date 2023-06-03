@@ -6,6 +6,8 @@ import { Feather } from "@expo/vector-icons";
 import ItemPlayList from "./components/ItemPlayList.component";
 import { ImageBackground } from "react-native";
 import { AudioContext } from "../../providers/audio.context";
+
+//DetailPlaylist
 const PlayList = () => {
   const { songs } = useContext(AudioContext);
   console.log("songs", songs);
