@@ -52,14 +52,6 @@ const SearchScreen = () => {
     return (
       <TouchableOpacity style={styles.itemStyle} onPress={null}>
         <View style={styles.itemContainer}>
-          <View style={styles.itemLogo}>
-            <Image
-              style={styles.itemImage}
-              source={{
-                url: "https://tse3.mm.bing.net/th?id=OIP.8GxBli-8O0IoBUMkyA3u6wHaHa&pid=Api&P=0",
-              }}
-            />
-          </View>
           <View style={styles.itemBody}>
             <Text style={styles.itemName}>
               {item.id}

@@ -6,7 +6,6 @@ import { Feather } from "@expo/vector-icons";
 import HomeScreen from "../screens/Home.screen";
 import UserProfile from "../screens/UserProfile/UserProfile.screen";
 import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
-import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 
 const Tab = createBottomTabNavigator();
 
