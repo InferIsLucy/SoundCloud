@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import ItemPlayList from "./components/ItemPlayList.component";
 import { ImageBackground } from "react-native";
+import { AudioContext } from "../../providers/audio.context";
 const PlayList = () => {
+  const { songs } = useContext(AudioContext);
+  console.log("songs", songs);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -70,9 +73,7 @@ const PlayList = () => {
           <Entypo name="beamed-note" size={24} color="white" />
           <Text style={{ color: "white", marginLeft: 4 }}>Song Playlist</Text>
         </View>
-        <ItemPlayList></ItemPlayList>
-        <ItemPlayList></ItemPlayList>
-        <ItemPlayList></ItemPlayList>
+        <ItemPlayList song={songs[0]}></ItemPlayList>
       </View>
     </View>
   );

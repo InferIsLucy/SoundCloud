@@ -1,7 +1,7 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
-export const CommentContext = createContext();
 import { firebase } from "../config/firebase";
 import { AuthenticationContext } from "./authentication.context";
+export const CommentContext = createContext();
 
 const commentsRef = firebase.firestore().collection("comments");
 export const CommentContextProvider = ({ children }) => {
@@ -32,7 +32,6 @@ export const CommentContextProvider = ({ children }) => {
     setIsLoading(true);
     await commentsRef
       .where("songId", "==", songId)
-
       .get()
       .then((querySnapshot) => {
         const newComments = [];

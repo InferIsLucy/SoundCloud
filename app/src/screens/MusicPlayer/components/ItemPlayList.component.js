@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useContext, memo } from "react";
 import { AudioContext } from "../../../providers/audio.context";
 import { formatTime } from "../../../utils/TimeFormater";
-const ItemPlayList = ({ song }) => {
+const ItemPlayList = ({ song = {} }) => {
   const { setPlayerVisbile, setCurrentSong } = useContext(AudioContext);
   return (
     <TouchableOpacity
