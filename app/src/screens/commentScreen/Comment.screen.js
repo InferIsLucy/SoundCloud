@@ -19,9 +19,11 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
   const { addComment, isLoading, loadComments } = useContext(CommentContext);
   const { currentSong } = useContext(AudioContext);
   const [comments, setComments] = useState([]);
-  console.log("COMMENTS SCREEN - comments", comments);
   useEffect(() => {
-    loadComments(songId, setComments);
+    (async () => {
+      const list = await loadComments(songId);
+      setComments(list);
+    })();
   }, []);
   return (
     <View style={styles.container}>
@@ -39,7 +41,8 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
             </TouchableOpacity>
             <Text
               style={styles.totalComment}
-            >{`${comments.length} Comments`}</Text>
+              // >{`${comments.length} Comments`}</Text>
+            >{`Comment`}</Text>
           </View>
           <View style={styles.currentSong}>
             <View style={styles.Image}>
@@ -61,7 +64,7 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
         ) : (
           <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
             {comments.map((item, index) => {
-              return <Comment key={index} comment={item} />;
+              return <Comment key={index} comment={item} songId={songId} />;
             })}
           </ScrollView>
         )}

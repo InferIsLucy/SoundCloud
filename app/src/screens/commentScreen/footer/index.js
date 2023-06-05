@@ -12,15 +12,14 @@ import { Entypo } from "@expo/vector-icons";
 import { CommentContext } from "../../../providers/comment.context";
 
 const footer = ({ setComments, songId }) => {
-  const { addComment, loadComments } = useContext(CommentContext);
+  const { addComment } = useContext(CommentContext);
   const [comment, setComment] = useState("");
-  console.log("RenderComment", comment);
   const handleAddComment = async () => {
     if (comment.length === 0) {
       return false;
     }
-    await addComment(songId, comment);
-    await loadComments(songId, setComments);
+    const newCmt = await addComment(songId, comment);
+    setComments((prev) => [...prev, newCmt]);
     setComment("");
     Keyboard.dismiss();
   };

@@ -167,7 +167,6 @@ export const AudioContextProvider = ({ children }) => {
             // ),
           });
         });
-        console.log("newsong", newSongs);
         setSongs(newSongs);
         currentSongIndex.current = 0;
       })
@@ -181,11 +180,8 @@ export const AudioContextProvider = ({ children }) => {
   const checkIfReact = (songId) => {
     const userId = user.userId;
     const song = songs.find((song) => song.id === songId);
-    console.log("userId", userId);
-    console.log("song", song);
     if (song) {
       const likes = song.likes || [];
-      console.log("likes", likes);
       return likes.includes(userId);
     }
 
@@ -237,7 +233,6 @@ export const AudioContextProvider = ({ children }) => {
       console.log("Error handling react songs:", error);
     }
   };
-  console.log("SONGS", songs);
   //react to song stored in db
   const sendReact = async (songId) => {
     try {
