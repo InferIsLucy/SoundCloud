@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View } from "react-native";
+import { View, Platform } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import HomeScreen from "../screens/Home.screen";
 import UserProfile from "../screens/UserProfile/UserProfile.screen";
