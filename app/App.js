@@ -4,6 +4,7 @@ import { AudioContextProvider } from "./src/providers/audio.context";
 import { CommentContextProvider } from "./src/providers/comment.context";
 import { NotificationContextProvider } from "./src/providers/notification.context";
 
+import PlayList from "./src/Libarary.screen";
 export default function App() {
   return (
     <AuthenticationContextProvider>
