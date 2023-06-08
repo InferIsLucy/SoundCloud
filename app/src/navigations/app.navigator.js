@@ -6,6 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import HomeScreen from "../screens/Home.screen";
 import UserProfile from "../screens/UserProfile/UserProfile.screen";
 import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
+import PlayList from "../screens/Libarary.screen";
 
 const Tab = createBottomTabNavigator();
 
@@ -46,7 +47,7 @@ export const AppNavigator = () => {
         <Tab.Screen
           name="Settings"
           options={{ headerShown: false }}
-          component={UserProfile}
+          component={PlayList}
         />
       </Tab.Navigator>
       <View style={{ position: "absolute", bottom: 48, left: 0, right: 0 }}>

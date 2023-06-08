@@ -7,9 +7,11 @@ import {
   Dimensions,
   TextInput,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { PlaylistContext } from "../providers/playlist.context";
 const color = {
   APP_BG: "#fff",
   FONT: "#303d49",
@@ -22,12 +24,13 @@ const color = {
 
 const PlayListInPutModal = ({ visible, onClose }) => {
   const [playListName, setPlaylistName] = useState("");
-
+  const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
+    useContext(PlaylistContext);
   const handleOnSubmit = () => {
-    if (playListName.trim()) {
+    if (!playListName.trim()) {
       onClose();
     } else {
-      // onsubmit(playListName);
+      createNewPlaylist(playListName);
       setPlaylistName("");
       onClose();
     }
@@ -37,6 +40,7 @@ const PlayListInPutModal = ({ visible, onClose }) => {
       visible={visible}
       animationType="fade"
       style={{ height: 400, width: "100%" }}
+      transparent
     >
       <View style={styles.modalContainer}>
         <TouchableWithoutFeedback onPress={() => onClose()} style={{ flex: 1 }}>
@@ -46,16 +50,17 @@ const PlayListInPutModal = ({ visible, onClose }) => {
           <Text style={{ color: color.ACTIVE_BG }}>Create New Playlist</Text>
           <TextInput
             value={playListName}
-            onChange={(text) => setPlaylistName(text)}
+            onChangeText={(text) => setPlaylistName(text)}
             style={styles.input}
           />
-          <AntDesign
-            name="check"
-            size={24}
-            color={color.ACTIVE_FONT}
-            style={styles.submitIcon}
-            onPress={handleOnSubmit}
-          />
+          <TouchableOpacity onPress={handleOnSubmit}>
+            <AntDesign
+              name="check"
+              size={24}
+              color={color.ACTIVE_FONT}
+              style={styles.submitIcon}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <TouchableWithoutFeedback onPress={() => onClose()} style={{ flex: 1 }}>
