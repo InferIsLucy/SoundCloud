@@ -5,15 +5,20 @@ import { CommentContextProvider } from "./src/providers/comment.context";
 import PlayList from "./src/screens/Libarary.screen";
 import PlayerScreen from "./src/screens/MusicPlayer/Player.screen";
 import { PlaylistContextProvider } from "./src/providers/playlist.context";
+import { NotificationContextProvider } from "./src/providers/notification.context";
+
+import PlayList from "./src/Libarary.screen";
 export default function App() {
   return (
     <AuthenticationContextProvider>
       <AudioContextProvider>
-        <CommentContextProvider>
+        <NotificationContextProvider>
           <PlaylistContextProvider>
-            <Navigator></Navigator>
+            <PlaylistContextProvider>
+              <Navigator></Navigator>
+            </PlaylistContextProvider>
           </PlaylistContextProvider>
-        </CommentContextProvider>
+        </NotificationContextProvider>
       </AudioContextProvider>
     </AuthenticationContextProvider>
   );

@@ -160,11 +160,35 @@ export const AuthenticationContextProvider = ({ children }) => {
         setIsLoading(false);
       });
   };
+  const deleteUserExpoPushToken = () => {
+    usersRef
+      .where("userId", "==", user.userId)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          usersRef
+            .doc(doc.id)
+            .update({
+              expoNotifyToken: null,
+            })
+            .then(() => {
+              console.log("User updated!");
+            })
+            .catch((err) => {
+              console.log("Error while updating user information:", err);
+            });
+        });
+      })
+      .catch((err) => {
+        console.log("Error while querying users:", err);
+      });
+  };
   const logout = async () => {
     try {
       await SecureStore.deleteItemAsync(USER_ID);
       const id = await SecureStore.getItemAsync(USER_ID);
 
+      deleteUserExpoPushToken();
       signOut(auth);
       setIsAuthenticated(false);
       setUser(null);

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "374763912130",
+    "firebase_url": "https://soundcloudclone-30184-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "soundcloudclone-30184",
+    "storage_bucket": "soundcloudclone-30184.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374763912130:android:ae87b5b3bec3a7edacf45b",
+        "android_client_info": {
+          "package_name": "com.khanha.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "374763912130-m3fh7jabrbd2jru2aiifnde9a10iin16.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.khanha.app",
+            "certificate_hash": "3b363e8e9f9a4208401cf3e5011cfc324a49951d"
+          }
+        },
+        {
+          "client_id": "374763912130-eufdktpssh6e5al4ghr109bddforoidk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYgQlEpLtbYSy3y1bOCvI9Oag7VvJM8oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "374763912130-e0ctdjo06t2epgf5m4r8ed58u4eum873.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
