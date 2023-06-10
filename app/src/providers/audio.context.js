@@ -5,7 +5,6 @@ import React, {
   useRef,
   useContext,
 } from "react";
-export const AudioContext = createContext();
 import { Audio } from "expo-av";
 import * as MediaLibrary from "expo-media-library";
 import { formatTime } from "../utils/TimeFormater";
@@ -14,6 +13,7 @@ import { getSongArtistFromArray } from "../utils/Converters";
 import * as SecureStore from "expo-secure-store";
 import { AuthenticationContext } from "./authentication.context";
 
+export const AudioContext = createContext();
 Audio.setAudioModeAsync({
   staysActiveInBackground: true,
   playThroughEarpieceAndroid: false,

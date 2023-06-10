@@ -7,7 +7,6 @@ const sendNotification = async (expoPushToken, title, message) => {
 
 const sendPushNotification = async (targetExpoPushToken, title, message) => {
   const expo = new Expo();
-  console.log("a");
   const chunks = expo.chunkPushNotifications([
     {
       to: targetExpoPushToken,
