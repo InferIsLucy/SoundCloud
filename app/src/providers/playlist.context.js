@@ -9,33 +9,56 @@ import { AuthenticationContext } from "./authentication.context";
 import { AudioContext } from "./audio.context";
 
 export const PlaylistContext = createContext();
+
 export const PlaylistContextProvider = ({ children }) => {
   const { user } = useContext(AuthenticationContext);
   const { songs } = useContext(AudioContext);
-  const userId = user.userId;
+  const userId = "ABCSDF";
 
-  console.log("USER INFORMATION", user);
   const [playlists, setPlaylists] = useState([
     {
       //id play list
       id: "1",
-      userId: userId || "ABCSDF",
+      name: "playList1",
+      userId: userId,
       songsId: ["UTpqPGZIHMUMiAIdhZro", "i0G8t8oJ93djtoXPCy43"],
     },
     {
       id: "2",
-      userId: userId || "ABCSDF",
+      name: "playList2",
+      userId: userId,
       songsId: ["LTzNGsvvYiuks7gF8br4", "i0G8t8oJ93djtoXPCy43"],
     },
   ]);
-  const createNewPlaylist = (newPlaylist) => {
-    //add new playlist to playlists
+  const createNewPlaylist = (playlistName) => {
+    const newPlaylist = {
+      id: playlists.length + 1,
+      userId: userId,
+      name: playlistName,
+      songsId: [],
+    };
+    setPlaylists([...playlists, newPlaylist]);
   };
-  const updatePlaylist = (playlistId, song) => {
-    //update songs in playlist
+
+  const updatePlaylist = (playlistId, newName) => {
+    const index = playlists.findIndex((playlist) => playlist.id === playlistId);
+    if (index !== -1) {
+      const newPlaylists = [...playlists];
+      newPlaylists[index] = {
+        ...newPlaylists[index],
+        name: newName,
+      };
+      setPlaylists(newPlaylists);
+    }
   };
-  const deleteSongInPlaylist = () => {};
-  //for detail playlist screen
+  const deletePlaylist = (playlistId) => {
+    const index = playlists.findIndex((playlist) => playlist.id === playlistId);
+    if (index !== -1) {
+      const newPlaylists = [...playlists];
+      newPlaylists.splice(index, 1);
+      setPlaylists(newPlaylists);
+    }
+  };
 
   const loadSongOfPlaylist = (playlistId) => {
     // songsId: [
@@ -43,7 +66,9 @@ export const PlaylistContextProvider = ({ children }) => {
     //     "i0G8t8oJ93djtoXPCy43",
     // ]
 
-    songs.map((song) => {});
+    songs.map((song) => {
+      return <Comment key={index} comment={item} songId={songId} />;
+    });
   };
   return (
     <PlaylistContext.Provider

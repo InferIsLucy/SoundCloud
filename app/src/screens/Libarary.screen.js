@@ -7,10 +7,14 @@ import {
   Scrollable,
   Touchable,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
-import { useState } from "react";
-import PlayListInPutModal from "./components/PlayListInputMadal";
-
+import ItemPlayListComponent from "./MusicPlayer/components/ItemPlayList.component";
+import { useState, useContext } from "react";
+import PlayListInPutModal from "../components/PlayListInputMadal";
+import { PlaylistContext } from "../providers/playlist.context";
+import ListPlayList from "./MusicPlayer/components/ListPlayList.component";
+import Icon from "react-native-vector-icons/MaterialIcons";
 const color = {
   APP_BG: "#fff",
   FONT: "#303d49",
@@ -23,24 +27,27 @@ const color = {
 
 const PlayList = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
+    useContext(PlaylistContext);
 
-  const createPlayList = async (playListName) => {
-    const result = await AsyncStorage.setItem(playList);
-    if (result !== null) {
-      const newList = {
-        id: Date.now(),
-        title: playListName,
-        audios,
-      };
-    }
-  };
+  // const createPlayList = async (playListName) => {
+  //   // const result = await AsyncStorage.setItem("playlists");
+  //   // if (result !== null) {
+  //   //   const createNewPlaylist = {
+  //   //     id: playlists.length + 1,
+  //   //     userId: userId,
+  //   //     name: playlistName,
+  //   //     songsId: [],
+  //   //   };
+  //   // }
+  // };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity style={styles.playListBanner}>
-        <Text>My Favorite</Text>
-        <Text style={styles.audioCount}>0 Songs</Text>
-      </TouchableOpacity>
+    <View contentContainerStyle={styles.container}>
+      <FlatList
+        data={playlists}
+        renderItem={({ item }) => <ListPlayList Item={item.name} O={item.id} />}
+      />
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={{ marginTop: 15 }}
@@ -51,9 +58,9 @@ const PlayList = () => {
       <PlayListInPutModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onSubmit={createPlayList}
+        //onSubmit={createNewPlaylist}
       />
-    </ScrollView>
+    </View>
   );
 };
 
