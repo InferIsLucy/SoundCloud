@@ -18,19 +18,28 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  Modal,
 } from "react-native";
 import COLORS from "../consts/colors";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import places from "../consts/places";
-const { width } = Dimensions.get("screen");
 import { AudioContext } from "../providers/audio.context";
+import { AuthenticationContext } from "../providers/authentication.context";
+import { ArtistContext } from "../providers/artist.context";
+import ArtistScreen from "./Artist.Screen";
 
+const { width } = Dimensions.get("screen");
 const HomeScreen = ({ navigation }) => {
-  const { songs, currentSong } = useContext(AudioContext);
+  const { songs, currentSong, setCurrentSong, setPlayerVisbile } =
+    useContext(AudioContext);
+  const { artists } = useContext(ArtistContext);
+  const { user } = useContext(AuthenticationContext);
   const [filterdData, setfilterdData] = useState([]);
+  const [filterdArtistData, setfilterdArtistData] = useState([]);
   const [search, setsearch] = useState("");
   const [isShow, setIsShow] = useState(false);
-
+  const [selectedArtist, setSelectedArtist] = useState({});
+  const [modalVisible, setModalVisible] = useState(false);
   const searchFilter = (text) => {
     if (text !== "") {
       const newData = songs.filter((song) => {
@@ -38,26 +47,81 @@ const HomeScreen = ({ navigation }) => {
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      console.log("NEW DATA", newData);
+      const artistData = artists.filter((artist) => {
+        const itemData = artist.name
+          ? artist.name.toUpperCase()
+          : "".toLowerCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
       setfilterdData(newData);
+      setfilterdArtistData(artistData);
       setsearch(text);
       setIsShow(true);
     } else {
       setfilterdData(songs);
+      setfilterdArtistData(artists);
       setsearch(text);
       setIsShow(false);
     }
   };
+  const refreshSearch = () => {
+    setfilterdData([]);
+    setsearch("");
+    setfilterdArtistData([]);
+  };
   const ItemView = ({ song, index }) => {
     return (
-      <TouchableOpacity style={styles.itemStyle}>
+      <TouchableOpacity
+        onPress={() => {
+          refreshSearch();
+          setCurrentSong(song);
+          setPlayerVisbile((prev) => !prev);
+        }}
+        style={styles.itemStyle}
+      >
         <View style={styles.itemContainer}>
+          <Image
+            style={{
+              width: 40,
+              borderRadius: 4,
+              height: 40,
+              resizeMode: "contain",
+            }}
+            source={{ uri: song.imageUri }}
+          ></Image>
           <View style={styles.itemBody}>
-            <Text style={styles.itemName}>
-              {index + 1}
-              {". "}
-              {song.name}
-            </Text>
+            <Text style={styles.itemName}>{song.name}</Text>
+            <Text style={styles.itemName}>{song.artistString}</Text>
+          </View>
+          <View style={styles.option}></View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  const ArtistSearchItem = ({ artist = [], index }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          refreshSearch();
+          setSelectedArtist(artist);
+          setModalVisible(true);
+        }}
+        style={styles.itemStyle}
+      >
+        <View style={styles.itemContainer}>
+          <Image
+            style={{
+              width: 40,
+              borderRadius: 25,
+              height: 40,
+              resizeMode: "contain",
+            }}
+            source={{ uri: artist.avtUri }}
+          ></Image>
+          <View style={styles.itemBody}>
+            <Text style={styles.itemName}>{artist.name}</Text>
+            <Text> Nghệ sĩ </Text>
           </View>
           <View style={styles.option}></View>
         </View>
@@ -253,7 +317,9 @@ const HomeScreen = ({ navigation }) => {
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={styles.headerTitle}>Hello (TEN NGUOI DUNG)</Text>
+            <Text
+              style={styles.headerTitle}
+            >{`Hello ${user.displayName}`}</Text>
             <View style={styles.inputContainer}>
               <Icon name="search" size={28} />
               <TextInput
@@ -266,27 +332,39 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </View>
         {isShow && (
-          <SafeAreaView
+          <View
             style={{
               position: "absolute",
-              bottom: -5,
+
               top: 80,
               right: 20,
               left: 20,
               zIndex: 1,
               marginTop: 50,
-              backgroundColor: "#ddd9d9",
+              backgroundColor: "red",
             }}
           >
-            <FlatList
-              data={filterdData}
-              keyExtractor={(item, index) => index.toString()}
-              ItemSeparatorComponent={ItemSeparatorView}
-              renderItem={({ item, index }) => (
-                <ItemView index={index} song={item}></ItemView>
-              )}
-            />
-          </SafeAreaView>
+            {filterdArtistData.map((artist, index) => {
+              return (
+                //Song searched Item
+                <ArtistSearchItem
+                  key={`as + ${index}`}
+                  index={index}
+                  artist={artist}
+                ></ArtistSearchItem>
+              );
+            })}
+            {filterdData.map((song, index) => {
+              return (
+                //Song searched Item
+                <ItemView
+                  key={`inas + ${index}`}
+                  index={index}
+                  song={song}
+                ></ItemView>
+              );
+            })}
+          </View>
         )}
         <ListCategory />
         <Text style={styles.sectionTitle}>Nổi bật</Text>
@@ -318,6 +396,21 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
       </ScrollView>
+      <View>
+        <Modal
+          animationType="fade"
+          transparent={false}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <ArtistScreen
+            artist={selectedArtist}
+            setModalVisible={setModalVisible}
+          ></ArtistScreen>
+        </Modal>
+      </View>
     </SafeAreaView>
   );
 };
@@ -412,7 +505,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: "row",
-    paddingVertical: 15,
+    paddingVertical: 4,
   },
   itemLogo: {
     padding: 10,

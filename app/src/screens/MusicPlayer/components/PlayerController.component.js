@@ -63,6 +63,8 @@ export default PlayerController;
 const styles = StyleSheet.create({
   controllerContainer: {
     width: 320,
+    marginTop: 24,
+    marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

@@ -7,7 +7,7 @@ import {
   Modal,
   FlatList,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { fontSizes } from "../../theme/fontSizes";
@@ -17,13 +17,18 @@ import ItemPlayList from "../MusicPlayer/components/ItemPlayList.component";
 import FollowingDetail from "./FollowingDetail.screen";
 import { AuthenticationContext } from "../../providers/authentication.context";
 import { AudioContext } from "../../providers/audio.context";
+import { ArtistContext } from "../../providers/artist.context";
 const UserProfile = ({ navigation }) => {
   const { updateUserInfor, user } = useContext(AuthenticationContext);
+  const { getFollowerArtistsByUserId } = useContext(ArtistContext);
   const { songs } = useContext(AudioContext);
   const [avatarUri, setAvatarUri] = useState(user.avatar);
   const { logout } = useContext(AuthenticationContext);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [followedArtists, setFolloweredArtists] = useState(false);
+  useEffect(() => {
+    setFolloweredArtists(getFollowerArtistsByUserId(user.id));
+  }, []);
   const handleChangeAvatar = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -161,7 +166,10 @@ const UserProfile = ({ navigation }) => {
           setModalVisible(!modalVisible);
         }}
       >
-        <FollowingDetail setModalVisible={setModalVisible}></FollowingDetail>
+        <FollowingDetail
+          artists={followedArtists}
+          setModalVisible={setModalVisible}
+        ></FollowingDetail>
       </Modal>
     </View>
   );

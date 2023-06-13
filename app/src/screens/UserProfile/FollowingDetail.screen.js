@@ -10,13 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { fontSizes } from "../../theme/fontSizes";
 import React from "react";
 import FollowingItem from "./components/FollowingItem.component";
-const FollowingDetail = ({ setModalVisible }) => {
-  const data = [
-    {
-      id: 1,
-    },
-    { id: 2 },
-  ];
+const FollowingDetail = ({ artists = [], setModalVisible }) => {
   return (
     <View>
       <View style={styles.header}>
@@ -36,7 +30,7 @@ const FollowingDetail = ({ setModalVisible }) => {
         </View>
       </View>
       <FlatList
-        data={data}
+        data={artists}
         renderItem={({ item }) => <FollowingItem />}
         keyExtractor={(item) => item.id}
       />

@@ -10,9 +10,7 @@ import {
 import { Spacer } from "../../components/spacer";
 import { Colors } from "../../theme/color";
 import { AuthenticationContext } from "../../providers/authentication.context";
-import * as yup from "yup";
 import { loginSchema } from "../../utils/Validator";
-import { signInWithPopup } from "firebase/auth";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

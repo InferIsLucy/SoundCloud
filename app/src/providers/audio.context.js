@@ -161,10 +161,9 @@ export const AudioContextProvider = ({ children }) => {
           newSongs.push({
             id: documentSnapshot.id,
             ...documentSnapshot.data(),
-            artistString: "",
-            // artistString: getSongArtistFromArray(
-            //   documentSnapshot.data().artists
-            // ),
+            artistString: getSongArtistFromArray(
+              documentSnapshot.data().artist
+            ),
           });
         });
         setSongs(newSongs);
@@ -476,6 +475,8 @@ export const AudioContextProvider = ({ children }) => {
       }
     }
   }, [repeatMode]);
+
+  //get songs
   useEffect(() => {
     // loadLocalSongs();
     getRemoteSongs();

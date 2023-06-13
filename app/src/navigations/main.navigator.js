@@ -12,17 +12,6 @@ const Navigator = () => {
   const { isAuthenticated } = useContext(AuthenticationContext);
   const { isPlayerVisible, setPlayerVisbile } = useContext(AudioContext);
 
-  // const appState = useAppState();
-  // useEffect(() => {
-  //   const handleAppClose = async () => {
-  //     await handleReact();
-  //     console.log("App close");
-  //   };
-  //   if (appState !== "active") {
-  //     handleAppClose();
-  //   }
-  // }, [appState]);
-
   return (
     <>
       <Modal
