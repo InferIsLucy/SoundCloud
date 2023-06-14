@@ -7,6 +7,8 @@ import {
   Modal,
   Dimensions,
   TextInput,
+  Button,
+  Alert,
   TouchableWithoutFeedback,
 } from "react-native";
 import React, { useContext, memo, useState } from "react";
@@ -41,6 +43,30 @@ const ListPlayList = ({ Item, O }) => {
       setIsShow(false);
     }
   };
+  const [showBox, setShowBox] = useState(false);
+
+  const showConfirmDialog = () => {
+    return Alert.alert(
+      "Are your sure?",
+      "Are you sure you want to remove this PlayList?",
+      [
+        // The "Yes" button
+        {
+          text: "Yes",
+          onPress: () => {
+            handleDeletePlaylist(O);
+            setShowBox(false);
+          },
+        },
+        // The "No" button
+        // Does nothing but dismiss the dialog when tapped
+        {
+          text: "No",
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -74,7 +100,7 @@ const ListPlayList = ({ Item, O }) => {
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => handleDeletePlaylist(O)}>
+      <TouchableOpacity onPress={() => showConfirmDialog()}>
         <Icon name="delete" size={22} color="white" />
       </TouchableOpacity>
       {isShow && (
@@ -180,4 +206,18 @@ const styles = StyleSheet.create({
     backgroundColor: color.MODAL_BG,
   },
   img: { borderRadius: 50, width: 40, height: 40, resizeMode: "cover" },
+  screen: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  box: {
+    width: 300,
+    height: 300,
+    backgroundColor: "red",
+    marginBottom: 30,
+  },
+  text: {
+    fontSize: 30,
+  },
 });
