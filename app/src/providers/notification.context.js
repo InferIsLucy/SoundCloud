@@ -65,10 +65,12 @@ export const NotificationContextProvider = ({ children }) => {
     message,
     title = NEW_MESSAGE_TITLE
   ) => {
-    try {
-      await NotificationApi.sendNotification(token, title, message);
-    } catch (err) {
-      console.log("error when send notification", err);
+    if (user.expoNotifyToken != token) {
+      try {
+        await NotificationApi.sendNotification(token, title, message);
+      } catch (err) {
+        console.log("error when send notification", err);
+      }
     }
   };
   const saveUserExpoPushToken = (token) => {

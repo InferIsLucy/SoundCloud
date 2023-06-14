@@ -11,8 +11,12 @@ export const ArtistContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
   const [isLoading, setIsLoading] = useState(false);
   const [artists, setArtists] = useState([]);
+  const [followedArtistIds, setFolloweredArtistIds] = useState([]);
   useEffect(() => {
-    if (isAuthenticated) getArtists();
+    if (isAuthenticated) {
+      getArtists();
+      getFollowerArtistsByUserId(user.userId);
+    }
   }, [isAuthenticated]);
   const getArtists = async () => {
     setIsLoading(true);
@@ -53,6 +57,7 @@ export const ArtistContextProvider = ({ children }) => {
         setArtists((prevArtists) => {
           const updatedArtists = [...prevArtists];
           updatedArtists[artistIndex] = updatedArtist;
+          getFollowerArtistsByUserId(user.userId);
           return updatedArtists;
         });
       } catch (err) {
@@ -62,17 +67,20 @@ export const ArtistContextProvider = ({ children }) => {
   };
 
   const getFollowerArtistsByUserId = (userId) => {
-    return artists.filter(
+    const res = artists.filter(
       (artist) => artist.followers != null && artist.followers.includes(userId)
     );
+    const ids = res.map((artist) => {
+      return artist.id;
+    });
+    setFolloweredArtistIds(ids);
   };
-  const checkIfFollowed = (userId) => {
-    const res = getFollowerArtistsByUserId(userId);
-    console.log("Userid", res);
-    if (res.length == 0) {
-      return false;
+  const checkIfFollowed = (artistId) => {
+    const result = followedArtistIds.includes(artistId);
+    if (result > 0) {
+      return true;
     }
-    return true;
+    return false;
   };
   return (
     <ArtistContext.Provider
@@ -83,6 +91,7 @@ export const ArtistContextProvider = ({ children }) => {
         getArtists,
         checkIfFollowed,
         getFollowerArtistsByUserId,
+        followedArtistIds,
       }}
     >
       {children}

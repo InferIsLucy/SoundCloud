@@ -19,23 +19,25 @@ import { ArtistContext } from "../providers/artist.context";
 const ArtistScreen = ({ artist = {}, setModalVisible }) => {
   const { songs } = useContext(AudioContext);
   const { user } = useContext(AuthenticationContext);
-  const { checkIfFollowed, toggleFollowing } = useContext(ArtistContext);
+  const { followedArtistIds, checkIfFollowed, toggleFollowing } =
+    useContext(ArtistContext);
   const [artistSongs, setArtistSongs] = useState([]);
   const [isFollowed, setIsFollowed] = useState(false);
   useEffect(() => {
     const filteredSongs = songs.filter((song) =>
       song.artist.some((artistObj) => artistObj.id === artist.id)
     );
+    // lấy bài hát của nhạc sĩ
     setArtistSongs(filteredSongs);
   }, []);
+
+  useEffect(() => {
+    const res = checkIfFollowed(artist.id);
+    setIsFollowed(res);
+  }, [followedArtistIds.length]);
+
   const toggleFollowingArtist = async () => {
     await toggleFollowing(artist.id, user.userId);
-    checkFollowingArtist();
-  };
-  const checkFollowingArtist = () => {
-    const result = checkIfFollowed(user.userId);
-    console.log("result", result);
-    setIsFollowed(result);
   };
   return (
     <View style={styles.container}>

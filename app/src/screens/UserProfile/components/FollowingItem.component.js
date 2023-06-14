@@ -1,27 +1,41 @@
 import { StyleSheet, Text, Image, View, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
-const FollowingItem = () => {
+import { ArtistContext } from "../../../providers/artist.context";
+import { AuthenticationContext } from "../../../providers/authentication.context";
+const FollowingItem = ({ artist = {} }) => {
+  const { toggleFollowing, followedArtistIds, checkIfFollowed } =
+    useContext(ArtistContext);
+  const { user } = useContext(AuthenticationContext);
+  const [isFollowed, setIsFollowed] = useState(true);
+  useEffect(() => {
+    const res = checkIfFollowed(artist.id);
+    setIsFollowed(res);
+  }, [followedArtistIds.length]);
+  const toggleFollowingArtist = async () => {
+    await toggleFollowing(artist.id, user.userId);
+  };
   return (
     <View style={styles.container}>
       <Image
         source={{
-          uri: "https://scontent.fsgn13-4.fna.fbcdn.net/v/t39.30808-6/345233585_3487344644926329_8037647308456647249_n.jpg?stp=dst-jpg_s600x600&_nc_cat=110&ccb=1-7&_nc_sid=730e14&_nc_ohc=VbpDJyKRgJQAX9ENQew&_nc_ht=scontent.fsgn13-4.fna&oh=00_AfCmPytdWUlbad82ZV66FR1hC5HftsYHUBs251YtDTypeg&oe=645B8F2C",
+          uri: artist.avtUri,
         }}
         style={styles.img}
       ></Image>
       <View style={{ flex: 1, marginLeft: 12 }}>
         <Text style={{ fontSize: 16, color: "white", fontWeight: 500 }}>
-          Phương Ly
+          {artist.name}
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <FontAwesome5 name="user-alt" size={12} color="white" />
           <Text style={{ color: "#cac5e5", marginLeft: 4 }}>
-            100K Followers
+            {artist.followers ? artist.followers.length : 0} {"Follower"}
           </Text>
         </View>
       </View>
       <TouchableOpacity
+        onPress={toggleFollowingArtist}
         style={{
           padding: 4,
           backgroundColor: "white",
@@ -29,7 +43,10 @@ const FollowingItem = () => {
           minWidth: 100,
         }}
       >
-        <Text style={{ textAlign: "center", color: "#cac5e5" }}>Following</Text>
+        <Text style={{ textAlign: "center", color: "#cac5e5" }}>
+          {" "}
+          {isFollowed ? "Unfollow" : "Follow"}{" "}
+        </Text>
       </TouchableOpacity>
     </View>
   );

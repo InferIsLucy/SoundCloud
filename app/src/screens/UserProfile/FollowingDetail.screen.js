@@ -8,9 +8,19 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { fontSizes } from "../../theme/fontSizes";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FollowingItem from "./components/FollowingItem.component";
-const FollowingDetail = ({ artists = [], setModalVisible }) => {
+import { ArtistContext } from "../../providers/artist.context";
+const FollowingDetail = ({ artistIds = [], setModalVisible }) => {
+  const { artists } = useContext(ArtistContext);
+  const [followArtists, setFollowArtists] = useState([]);
+  useEffect(() => {
+    setFollowArtists(
+      artists.filter((artist) => {
+        return artistIds.includes(artist.id);
+      })
+    );
+  }, []);
   return (
     <View>
       <View style={styles.header}>
@@ -30,8 +40,8 @@ const FollowingDetail = ({ artists = [], setModalVisible }) => {
         </View>
       </View>
       <FlatList
-        data={artists}
-        renderItem={({ item }) => <FollowingItem />}
+        data={followArtists}
+        renderItem={({ item }) => <FollowingItem artist={item} />}
         keyExtractor={(item) => item.id}
       />
     </View>

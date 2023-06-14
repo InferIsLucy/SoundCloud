@@ -20,14 +20,14 @@ import { AudioContext } from "../../providers/audio.context";
 import { ArtistContext } from "../../providers/artist.context";
 const UserProfile = ({ navigation }) => {
   const { updateUserInfor, user } = useContext(AuthenticationContext);
-  const { getFollowerArtistsByUserId } = useContext(ArtistContext);
+  const { getFollowerArtistsByUserId, followedArtistIds } =
+    useContext(ArtistContext);
   const { songs } = useContext(AudioContext);
   const [avatarUri, setAvatarUri] = useState(user.avatar);
   const { logout } = useContext(AuthenticationContext);
   const [modalVisible, setModalVisible] = useState(false);
-  const [followedArtists, setFolloweredArtists] = useState(false);
   useEffect(() => {
-    setFolloweredArtists(getFollowerArtistsByUserId(user.id));
+    getFollowerArtistsByUserId(user.userId);
   }, []);
   const handleChangeAvatar = async () => {
     try {
@@ -115,11 +115,10 @@ const UserProfile = ({ navigation }) => {
           marginBottom: 60,
         }}
       >
-        <View style={styles.follow}>
+        {/* <View style={styles.follow}>
           <Text style={styles.followText}>0</Text>
           <Text style={styles.followText}> Follower</Text>
-        </View>
-
+        </View> */}
         <Spacer position={"left"} size={"large"}></Spacer>
         <TouchableOpacity
           onPress={() => {
@@ -127,7 +126,7 @@ const UserProfile = ({ navigation }) => {
           }}
           style={styles.follow}
         >
-          <Text style={styles.followText}>0</Text>
+          <Text style={styles.followText}>{followedArtistIds.length}</Text>
           <Text style={styles.followText}> Following</Text>
         </TouchableOpacity>
       </View>
@@ -167,7 +166,7 @@ const UserProfile = ({ navigation }) => {
         }}
       >
         <FollowingDetail
-          artists={followedArtists}
+          artistIds={followedArtistIds}
           setModalVisible={setModalVisible}
         ></FollowingDetail>
       </Modal>

@@ -29,22 +29,36 @@ const PlayerScreen = () => {
     handleSongEnd,
     currentSong,
     audioObj,
+    isLoading,
     isPlaying,
     currentSongIndex,
     setPlayerVisbile,
     savedPosition,
   } = useContext(AudioContext);
-
-  const [currentPosition, setCurrentPosition] = useState(savedPosition.current);
+  const [currentPosition, setCurrentPosition] = useState(0);
   const [commentsVisible, setCommentsVisible] = useState(false);
   const intervalRef = useRef(null);
+  console.log("re-render", isLoading);
+  console.log("currentPosition", currentPosition);
+  console.log("savedPosition.current", savedPosition.current);
+
+  // useEffect(() => {
+  //   if (savedPosition.current != 0) {
+  //     setCurrentPosition(savedPosition.current);
+  //   }
+  // }, [currentSong]);
   useLayoutEffect(() => {
-    if (isPlaying) {
-      if (!intervalRef.current) {
-        setIntervalRef();
+    if (!isLoading) {
+      if (isPlaying) {
+        if (!intervalRef.current) {
+          setIntervalRef();
+        }
+      } else {
+        if (intervalRef.current) clearInterval(intervalRef.current);
       }
     } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      // to reset position when load new song
+      setCurrentPosition(0);
     }
 
     return () => {
@@ -53,20 +67,12 @@ const PlayerScreen = () => {
         intervalRef.current = null;
       }
     };
-  }, [currentSongIndex.current, isPlaying]);
-
+  }, [isLoading, isPlaying]);
   const setIntervalRef = () => {
     intervalRef.current = setInterval(() => {
-      if (savedPosition.current + 999 < currentSong.duration) {
-        savedPosition.current = savedPosition.current + 999;
-        setCurrentPosition(savedPosition.current);
-      } else if (savedPosition.current + 499 < currentSong.duration) {
-        setCurrentPosition(savedPosition.current);
-        savedPosition.current = savedPosition.current + 499;
-      } else {
-        console.log(savedPosition.current);
-        console.log(currentSong.duration);
-        console.log("Call end");
+      savedPosition.current = savedPosition.current + 1000;
+      setCurrentPosition((prev) => savedPosition.current);
+      if (savedPosition.current - 1000 >= currentSong.duration) {
         handleSongEnd();
       }
     }, 1000);
@@ -126,9 +132,13 @@ const PlayerScreen = () => {
           minimumValue={0}
           onSlidingComplete={async (value) => {
             //value is second unit -> convert to millisecond
-            await audioObj.setPositionAsync(value);
-            setCurrentPosition(value);
-            savedPosition.current = value;
+            try {
+              await audioObj.setPositionAsync(value);
+              setCurrentPosition(value);
+              savedPosition.current = value;
+            } catch (e) {
+              console.log("error onSliding duration bar", e);
+            }
           }}
           onTouchStart={() => {
             clearInterval(intervalRef.current);
