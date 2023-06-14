@@ -57,10 +57,13 @@ export const AuthenticationContextProvider = ({ children }) => {
       console.log("err", err);
     }
   };
+
+  //check if user logged in
   useEffect(() => {
     getUserIdFromStorage();
   }, []);
   const getUserIdFromStorage = async () => {
+    setIsLoading(true);
     try {
       const userId = await SecureStore.getItemAsync(USER_ID);
       if (userId) {
@@ -68,8 +71,10 @@ export const AuthenticationContextProvider = ({ children }) => {
         await getUserFromDb(data);
         setIsAuthenticated(true);
       }
+      setIsLoading(false);
     } catch (err) {
       console.log("err", err);
+      setIsLoading(false);
     }
   };
   const updateUserInfor = async (newUserInfor) => {

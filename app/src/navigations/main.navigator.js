@@ -7,11 +7,14 @@ import { AuthenticationContext } from "../providers/authentication.context";
 import { AppNavigator } from "./app.navigator";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import { AudioContext } from "../providers/audio.context";
+import WelcomeScreen from "../screens/Authentication/Welcome.screen";
 
 const Navigator = () => {
-  const { isAuthenticated } = useContext(AuthenticationContext);
+  const { isAuthenticated, isLoading } = useContext(AuthenticationContext);
   const { isPlayerVisible, setPlayerVisbile } = useContext(AudioContext);
-
+  if (isLoading) {
+    return <WelcomeScreen></WelcomeScreen>;
+  }
   return (
     <>
       <Modal
