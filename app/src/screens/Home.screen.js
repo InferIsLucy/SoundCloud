@@ -366,6 +366,7 @@ const HomeScreen = ({ navigation }) => {
             })}
           </View>
         )}
+
         <ListCategory />
         <Text style={styles.sectionTitle}>Nổi bật</Text>
         <View>
