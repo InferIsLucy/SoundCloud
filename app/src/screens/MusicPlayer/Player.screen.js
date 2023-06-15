@@ -38,10 +38,6 @@ const PlayerScreen = () => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const [commentsVisible, setCommentsVisible] = useState(false);
   const intervalRef = useRef(null);
-  console.log("re-render", isLoading);
-  console.log("currentPosition", currentPosition);
-  console.log("savedPosition.current", savedPosition.current);
-
   // useEffect(() => {
   //   if (savedPosition.current != 0) {
   //     setCurrentPosition(savedPosition.current);
@@ -106,13 +102,22 @@ const PlayerScreen = () => {
           </Text>
         </View>
       </View>
+      {currentSong.imageUri == "" ? (
+        <Image
+          source={{
+            uri: "https://cdn-icons-png.flaticon.com/512/6527/6527852.png",
+          }}
+          style={styles.img}
+        ></Image>
+      ) : (
+        <Image
+          source={{
+            uri: currentSong.imageUri,
+          }}
+          style={styles.img}
+        ></Image>
+      )}
 
-      <Image
-        source={{
-          uri: "https://images2.thanhnien.vn/528068263637045248/2023/5/10/iu-1683710624038576717966.png",
-        }}
-        style={styles.img}
-      ></Image>
       <View style={{ alignItems: "center" }}>
         <Text numberOfLines={2} style={styles.title}>
           {currentSong.name || "Song Name"}

@@ -22,10 +22,11 @@ const UserProfile = ({ navigation }) => {
   const { updateUserInfor, user } = useContext(AuthenticationContext);
   const { getFollowerArtistsByUserId, followedArtistIds } =
     useContext(ArtistContext);
-  const { songs } = useContext(AudioContext);
+  const { likedSongs } = useContext(AudioContext);
   const [avatarUri, setAvatarUri] = useState(user.avatar);
   const { logout } = useContext(AuthenticationContext);
   const [modalVisible, setModalVisible] = useState(false);
+
   useEffect(() => {
     getFollowerArtistsByUserId(user.userId);
   }, []);
@@ -134,27 +135,18 @@ const UserProfile = ({ navigation }) => {
       <View
         style={{
           width: "100%",
+          flex: 1,
           justifyContent: "flex-start",
         }}
       >
         <Text style={styles.title}>Liked songs</Text>
         <FlatList
-          data={songs}
+          data={likedSongs}
           renderItem={({ item, index }) => (
             <ItemPlayList songIndex={index} song={item} />
           )}
           keyExtractor={(item) => item.id}
         />
-      </View>
-      <View
-        style={{
-          width: "100%",
-          justifyContent: "flex-start",
-        }}
-      >
-        <Text style={styles.title}>Your uploaded songs</Text>
-        {/* <ItemPlayList></ItemPlayList>
-        <ItemPlayList></ItemPlayList> */}
       </View>
 
       <Modal

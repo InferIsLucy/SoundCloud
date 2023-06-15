@@ -23,6 +23,7 @@ Audio.setAudioModeAsync({
 const REACT_IDS = "reactIdList";
 const songStorage = firebase.storage().ref("songs");
 const songsRef = firebase.firestore().collection("songs");
+const userRef = firebase.firestore().collection("users");
 export const AudioContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +37,8 @@ export const AudioContextProvider = ({ children }) => {
   const [repeatMode, setRepeatMode] = useState(0); // 0 - none, 1- all,2 - one
   const [shuffleMode, setShuffleMode] = useState(false);
   const [songs, setSongs] = useState([]);
+  const [likedSongs, setLikedSongs] = useState([]);
+  const [listeningHistory, setListeningHistory] = useState([]);
 
   // a toggle listener to notify player screen that song changed
   const [listener, setListener] = useState(false);
@@ -64,6 +67,14 @@ export const AudioContextProvider = ({ children }) => {
   //     console.log("Finished listing");
   //   });
   // }, []);
+  const getLikedSongs = (list) => {
+    const listSong = list.filter((song) => {
+      if (song.likes) {
+        if (song.likes.includes(user.userId)) return song;
+      }
+    });
+    setLikedSongs(listSong);
+  };
   const playNext = async () => {
     moveToNext();
   };
@@ -128,57 +139,6 @@ export const AudioContextProvider = ({ children }) => {
   const getPermission = async () => {
     return await MediaLibrary.requestPermissionsAsync();
   };
-  const loadLocalSongs = async () => {
-    setIsLoading(true);
-    //get local audio
-    try {
-      const permission = await getPermission();
-      if (permission.granted) {
-        localMediaFiles = await getLocalAudioFiles();
-        const localSongs = localMediaFiles.map((file) => {
-          return {
-            ...file,
-            duration: file.duration * 1000,
-            name: file.filename,
-            artists: [],
-            imageUri: "",
-            isLocalSong: true,
-          };
-        });
-        console.log("LocalSongs", localSongs);
-        setSongs(() => localSongs);
-      }
-      setIsLoading(false);
-    } catch (e) {
-      console.log("error", e);
-      setIsLoading(false);
-      setError(e);
-    }
-  };
-  const getRemoteSongs = async () => {
-    await songsRef
-      .get()
-      .then((querySnapshot) => {
-        const newSongs = [];
-        querySnapshot.forEach((documentSnapshot) => {
-          newSongs.push({
-            id: documentSnapshot.id,
-            ...documentSnapshot.data(),
-            artistString: getSongArtistFromArray(
-              documentSnapshot.data().artist
-            ),
-          });
-        });
-        setSongs(newSongs);
-        currentSongIndex.current = 0;
-      })
-      .catch((err) => {
-        console.log("error when get all songs", err);
-      });
-  };
-  const handleTogglePlayerModelVisbile = () => {
-    setPlayerVisbile((v) => !v);
-  };
   const checkIfReact = (songId) => {
     const userId = user.userId;
     const song = songs.find((song) => song.id === songId);
@@ -189,52 +149,6 @@ export const AudioContextProvider = ({ children }) => {
 
     return false;
   };
-  // before app closed this func is going to be called
-  const handleReact = async () => {
-    try {
-      // Get the list of songIds from expo-secure-store
-      const storedIds = await SecureStore.getItemAsync(REACT_IDS);
-      let updatedIds = [];
-      if (storedIds) {
-        // If storedIds is not null or empty, parse it as an array
-        updatedIds = JSON.parse(storedIds);
-      }
-
-      // Get the list of songs from Firebase
-      const songsRef = firebase.firestore().collection("songs");
-      const querySnapshot = await songsRef.get();
-
-      // Iterate over the songs
-      for (const documentSnapshot of querySnapshot.docs) {
-        const songId = documentSnapshot.id;
-
-        // Check if the songId is in the list of songIds
-        const index = updatedIds.indexOf(songId);
-
-        // If the songId is in the list, update the likes field
-        if (index !== -1) {
-          const likes = documentSnapshot.data().likes || [];
-
-          // Check if the userId is in the likes field
-          const userIdIndex = likes.indexOf(user.userId);
-
-          // If the userId is in the likes field, remove it
-          if (userIdIndex !== -1) {
-            likes.splice(userIdIndex, 1);
-          }
-
-          // Update the likes field in Firebase
-          await songsRef.doc(songId).update({ likes: likes });
-          getRemoteSongs();
-        }
-      }
-
-      console.log("React songs handled successfully!");
-    } catch (error) {
-      console.log("Error handling react songs:", error);
-    }
-  };
-  //react to song stored in db
   const sendReact = async (songId) => {
     try {
       // Get the current user's ID (replace with your own logic to obtain the user ID)
@@ -272,38 +186,8 @@ export const AudioContextProvider = ({ children }) => {
       console.log("Error sending react:", error);
     }
   };
-
-  const toggleReactSong = async (songId) => {
-    try {
-      // Retrieve the existing list of songIds from SecureStore
-      const storedIds = await SecureStore.getItemAsync(REACT_IDS);
-      let updatedIds = [];
-      if (storedIds) {
-        // If storedIds is not null or empty, parse it as an array
-        updatedIds = JSON.parse(storedIds);
-      }
-
-      const index = updatedIds.indexOf(songId);
-
-      if (index === -1) {
-        // If songId does not exist in the list, add it
-        updatedIds.push(songId);
-      } else {
-        // If songId already exists in the list, remove it
-        updatedIds.splice(index, 1);
-      }
-
-      // Store the updated list back in SecureStore
-      await SecureStore.setItemAsync(REACT_IDS, JSON.stringify(updatedIds));
-
-      console.log("Toggle successful!");
-    } catch (error) {
-      console.log("Error toggling song:", error);
-    }
-  };
   const audioLoadSongAsync = async (songUri) => {
     if (audioObj != null) {
-      console.log("LoadsongAsync");
       setIsPlaying(false);
       try {
         await audioObj.stopAsync();
@@ -372,7 +256,6 @@ export const AudioContextProvider = ({ children }) => {
       setError(e);
     }
   };
-
   const moveToPrev = () => {
     if (isLoading) {
       return;
@@ -425,7 +308,6 @@ export const AudioContextProvider = ({ children }) => {
       setError(e);
     }
   };
-
   const getRandomIndex = (max, exclude) => {
     let randomIndex;
     do {
@@ -447,7 +329,6 @@ export const AudioContextProvider = ({ children }) => {
   useEffect(() => {
     savedPosition.current = 0;
     const handleSongChange = async () => {
-      console.log("Hanlde SOngChange", savedPosition.current);
       setIsLoading(true);
       if (currentSong != null) {
         if (audioObj == null) {
@@ -475,11 +356,90 @@ export const AudioContextProvider = ({ children }) => {
     }
   }, [repeatMode]);
 
-  //get songs
+  const loadLocalSongs = async () => {
+    setIsLoading(true);
+    try {
+      const permission = await getPermission();
+      if (permission.granted) {
+        localMediaFiles = await getLocalAudioFiles();
+        const localSongs = localMediaFiles.map((file) => ({
+          ...file,
+          duration: file.duration * 1000,
+          name: file.filename,
+          artists: [],
+          imageUri: "",
+          isLocalSong: true,
+        }));
+        setIsLoading(false);
+        return localSongs; // Return the local songs array
+      }
+    } catch (e) {
+      console.log("error", e);
+      setIsLoading(false);
+      setError(e);
+    }
+  };
+  const getRemoteSongs = async () => {
+    try {
+      const querySnapshot = await songsRef.get();
+      const newSongs = [];
+      querySnapshot.forEach((documentSnapshot) => {
+        newSongs.push({
+          id: documentSnapshot.id,
+          ...documentSnapshot.data(),
+          artistString: getSongArtistFromArray(documentSnapshot.data().artist),
+        });
+      });
+      getLikedSongs(newSongs);
+      currentSongIndex.current = 0;
+      return newSongs; // Return the remote songs array
+    } catch (err) {
+      console.log("error when get all songs", err);
+    }
+  };
+  const getListeningHistory = async (listeningHistoryIds) => {
+    const listSong = listeningHistoryIds.map((id) => {
+      return songs.find((song) => song.id === id);
+    });
+
+    setListeningHistory(listSong);
+  };
+  const addSongToHistory = async (userId, songId) => {
+    try {
+      const querySnapshot = await userRef.where("userId", "==", userId).get();
+      const userDocId = querySnapshot.docs[0].id;
+      const userDocRef = userRef.doc(userDocId);
+      // Retrieve the user document from the database based on the userId
+      const userDoc = await userDocRef.get();
+      let listeningHistory = userDoc.data().listeningHistory || [];
+      // Remove the songId if it already exists in the listeningHistory
+      listeningHistory = listeningHistory.filter((id) => id !== songId);
+      // Add the songId to the beginning of the listeningHistory
+      listeningHistory.unshift(songId);
+      getListeningHistory(listeningHistory);
+      // Update the listeningHistory field in the user document
+      await userDocRef.update({ listeningHistory });
+    } catch (error) {
+      console.log("Error adding song to history:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
-    // loadLocalSongs();
-    getRemoteSongs();
-  }, []);
+    const fetchData = async () => {
+      const listLocal = await loadLocalSongs(); // Await the local songs array
+      const listRemote = await getRemoteSongs(); // Await the remote songs array
+      setSongs([...listLocal, ...listRemote]);
+    };
+    if (isAuthenticated) {
+      fetchData();
+    }
+  }, [isAuthenticated]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      getListeningHistory(user.listeningHistory || []);
+    }
+  }, [songs, isAuthenticated]);
   useEffect(() => {
     return audioObj
       ? () => {
@@ -506,21 +466,22 @@ export const AudioContextProvider = ({ children }) => {
         isPlaying,
         isLoading,
         songStatus,
+        likedSongs,
         currentSongIndex,
         currentSong,
-        setCurrentSong,
         songs,
-        setAudioObj,
         songDuration,
         isPlayerVisible,
-        setPlayerVisbile,
         savedPosition,
+        listeningHistory,
+        setCurrentSong,
+        setAudioObj,
+        setPlayerVisbile,
         handleSongEnd,
         setSongStatus: setSongStatus,
-        // toggleReactSong,
-        // handleReact,
         checkIfReact,
         sendReact,
+        addSongToHistory,
         audioEvents: {
           setIsPlaying,
           togglePlayStatus,

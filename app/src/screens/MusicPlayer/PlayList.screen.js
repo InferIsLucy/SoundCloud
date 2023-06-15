@@ -10,7 +10,6 @@ import { AudioContext } from "../../providers/audio.context";
 //DetailPlaylist
 const PlayList = () => {
   const { songs, currentSong } = useContext(AudioContext);
-  console.log(songs);
   return (
     <View style={styles.container}>
       <View style={styles.header}>

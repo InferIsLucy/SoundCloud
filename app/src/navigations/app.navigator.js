@@ -3,9 +3,12 @@ const Stack = createNativeStackNavigator();
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Platform } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import HomeScreen from "../screens/Home.screen";
 import UserProfile from "../screens/UserProfile/UserProfile.screen";
 import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
+
+//Library Screen
 import PlayList from "../screens/Libarary.screen";
 
 const Tab = createBottomTabNavigator();
@@ -16,6 +19,7 @@ export const AppNavigator = () => {
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={({ route }) => ({
+          headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -25,6 +29,7 @@ export const AppNavigator = () => {
               iconName = "user";
             } else if (route.name === "Settings") {
               iconName = "settings";
+              return <Ionicons name="library" size={size} color={color} />;
             }
             // You can return any component that you like here!
             return <Feather name={iconName} size={size} color={color} />;
@@ -38,7 +43,6 @@ export const AppNavigator = () => {
           options={{ headerShown: false }}
           component={HomeScreen}
         />
-        {/* <Tab.Screen name="Library" options={{ headerShown: false }} component={Library} /> */}
         <Tab.Screen
           name="User"
           options={{ headerShown: false }}

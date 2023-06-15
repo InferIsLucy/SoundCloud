@@ -12,6 +12,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { useState, useContext } from "react";
 import { PlaylistContext } from "../providers/playlist.context";
+import { AuthenticationContext } from "../providers/authentication.context";
 const color = {
   APP_BG: "#fff",
   FONT: "#303d49",
@@ -26,11 +27,12 @@ const PlayListInPutModal = ({ visible, onClose }) => {
   const [playListName, setPlaylistName] = useState("");
   const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
     useContext(PlaylistContext);
+  const { user } = useContext(AuthenticationContext);
   const handleOnSubmit = () => {
     if (!playListName.trim()) {
       onClose();
     } else {
-      createNewPlaylist(playListName);
+      createNewPlaylist(playListName, user.userId);
       setPlaylistName("");
       onClose();
     }

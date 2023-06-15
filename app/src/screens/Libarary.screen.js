@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -12,14 +12,15 @@ import {
   ImageBackground,
   SafeAreaView,
 } from "react-native";
-import ItemPlayListComponent from "./MusicPlayer/components/ItemPlayList.component";
 import { useState, useContext } from "react";
 import COLORS from "../consts/colors";
 import PlayListInPutModal from "../components/PlayListInputMadal";
 import { PlaylistContext } from "../providers/playlist.context";
 import ListPlayList from "./MusicPlayer/components/ListPlayList.component";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import ItemPlayList from "./MusicPlayer/components/ItemPlayList.component";
 import places from "../consts/places";
+import { AudioContext } from "../providers/audio.context";
 const color = {
   APP_BG: "#fff",
   FONT: "#303d49",
@@ -31,62 +32,18 @@ const color = {
 };
 const { width } = Dimensions.get("screen");
 const PlayList = () => {
-  const [modalVisible, setModalVisible] = useState(false);
   const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
     useContext(PlaylistContext);
-  const RecommendCard = ({ place }) => {
-    return (
-      <ImageBackground style={styles.rmCard} source={place.image}>
-        <Text
-          style={{
-            color: COLORS.white,
-            fontSize: 22,
-            fontWeight: "bold",
-            marginTop: 10,
-          }}
-        >
-          {place.name}
-        </Text>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        >
-          <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
-            <View style={{ flexDirection: "row" }}>
-              <Icon name="visibility" size={22} color={COLORS.white} />
-              <Text
-                style={{
-                  flexDirection: "row",
-                  marginLeft: 5,
-                  color: COLORS.white,
-                }}
-              >
-                {place.location}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row" }}>
-              <Icon name="star" size={22} color={COLORS.white} />
-              <Text
-                style={{
-                  flexDirection: "row",
-                  marginLeft: 5,
-                  color: COLORS.white,
-                }}
-              >
-                5.0
-              </Text>
-            </View>
-          </View>
-          <Text style={{ color: COLORS.white, fontSize: 13 }}>
-            {place.default}
-          </Text>
-        </View>
-      </ImageBackground>
-    );
-  };
+  const { songs, listeningHistory } = useContext(AudioContext);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [localSongs, setLocalSongs] = useState([]);
+  useEffect(() => {
+    const list = songs.filter((song) => {
+      return song.isLocalSong == true;
+    });
+    setLocalSongs(list);
+  }, []);
   const Card = ({ place }) => {
     return (
       <TouchableOpacity
@@ -134,10 +91,10 @@ const PlayList = () => {
         <View>
           <FlatList
             contentContainerStyle={{ paddingLeft: 20 }}
+            data={listeningHistory}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={places}
-            renderItem={({ item }) => <Card place={item} />}
+            renderItem={({ item }) => <ItemPlayList song={item} />}
           />
           <Text style={styles.sectionTitle}>Của bạn</Text>
           <FlatList
@@ -145,17 +102,26 @@ const PlayList = () => {
             contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={places}
-            renderItem={({ item }) => <RecommendCard place={item} />}
+            data={localSongs}
+            renderItem={({ item }) => <ItemPlayList song={item} />}
           />
           <Text style={styles.sectionTitle}>My Play List</Text>
         </View>
-        <FlatList
+        {/* <FlatList
           data={playlists}
           renderItem={({ item }) => (
             <ListPlayList Item={item.name} O={item.id} />
           )}
-        />
+        /> */}
+        {playlists.map((playlist) => {
+          return (
+            <ListPlayList
+              key={`key ${playlist.id}`}
+              Item={playlist.name}
+              O={playlist.id}
+            />
+          );
+        })}
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
           style={{ marginTop: 15 }}

@@ -43,9 +43,13 @@ const HomeScreen = ({ navigation }) => {
   const searchFilter = (text) => {
     if (text !== "") {
       const newData = songs.filter((song) => {
-        const itemData = song.name ? song.name.toUpperCase() : "".toLowerCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
+        if (song.isLocalSong == null) {
+          const itemData = song.name
+            ? song.name.toUpperCase()
+            : "".toLowerCase();
+          const textData = text.toUpperCase();
+          return itemData.indexOf(textData) > -1;
+        }
       });
       const artistData = artists.filter((artist) => {
         const itemData = artist.name

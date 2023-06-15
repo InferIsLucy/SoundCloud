@@ -1,20 +1,26 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React, { useContext, memo } from "react";
+import React, { useContext, memo, useEffect } from "react";
 import { AudioContext } from "../../../providers/audio.context";
 import { formatTime } from "../../../utils/TimeFormater";
+import { AuthenticationContext } from "../../../providers/authentication.context";
 const ItemPlayList = ({ song = {} }) => {
-  const { setPlayerVisbile, setCurrentSong } = useContext(AudioContext);
+  const { setPlayerVisbile, setCurrentSong, addSongToHistory } =
+    useContext(AudioContext);
+  const { user } = useContext(AuthenticationContext);
   return (
     <TouchableOpacity
       onPress={() => {
         setCurrentSong(song);
         setPlayerVisbile((value) => !value);
+        if (song.isLocalSong == null) {
+          addSongToHistory(user.userId, song.id);
+        }
       }}
       style={styles.container}
     >
       <Image
         source={{
-          uri: "https://images2.thanhnien.vn/528068263637045248/2023/5/10/iu-1683710624038576717966.png",
+          uri: song.imageUri == "" ? null : song.imageUri,
         }}
         style={styles.img}
       ></Image>

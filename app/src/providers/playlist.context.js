@@ -11,70 +11,15 @@ import { firebase } from "../config/firebase";
 export const PlaylistContext = createContext();
 const playlistRef = firebase.firestore().collection("playlists");
 export const PlaylistContextProvider = ({ children }) => {
-  const { user } = useContext(AuthenticationContext);
+  const { user, isAuthenticated } = useContext(AuthenticationContext);
   const { songs } = useContext(AudioContext);
-  const userId = "ABCSDF";
+  const [playlists, setPlaylists] = useState([]);
 
-  const [playlists, setPlaylists] = useState([
-    // {
-    //   //id play list
-    //   id: "1",
-    //   name: "playList1",
-    //   userId: userId,
-    //   songsId: ["UTpqPGZIHMUMiAIdhZro", "i0G8t8oJ93djtoXPCy43"],
-    // },
-    // {
-    //   id: "2",
-    //   name: "playList2",
-    //   userId: userId,
-    //   songsId: ["LTzNGsvvYiuks7gF8br4", "i0G8t8oJ93djtoXPCy43"],
-    // },
-  ]);
-  // const createNewPlaylist = (playlistName) => {
-  //   const newPlaylist = {
-  //     id: playlists.length + 1,
-  //     userId: userId,
-  //     name: playlistName,
-  //     songsId: [],
-  //   };
-  //   setPlaylists([...playlists, newPlaylist]);
-  // };
-
-  // const updatePlaylist = (playlistId, newName) => {
-  //   const index = playlists.findIndex((playlist) => playlist.id === playlistId);
-  //   if (index !== -1) {
-  //     const newPlaylists = [...playlists];
-  //     newPlaylists[index] = {
-  //       ...newPlaylists[index],
-  //       name: newName,
-  //     };
-  //     setPlaylists(newPlaylists);
-  //   }
-  // };
-  // const deletePlaylist = (playlistId) => {
-  //   const index = playlists.findIndex((playlist) => playlist.id === playlistId);
-  //   if (index !== -1) {
-  //     const newPlaylists = [...playlists];
-  //     newPlaylists.splice(index, 1);
-  //     setPlaylists(newPlaylists);
-  //   }
-  // };
-
-  // const loadSongOfPlaylist = (playlistId) => {
-  //   // songsId: [
-  //   //     "UTpqPGZIHMUMiAIdhZro",
-  //   //     "i0G8t8oJ93djtoXPCy43",
-  //   // ]
-
-  //   songs.map((song) => {
-  //     return <Comment key={index} comment={item} songId={songId} />;
-  //   });
-  // };
   useEffect(() => {
     const loadPlaylists = async () => {
       try {
         const querySnapshot = await playlistRef
-          .where("userId", "==", userId)
+          .where("userId", "==", user.userId)
           .get();
         const playlistList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
@@ -85,12 +30,10 @@ export const PlaylistContextProvider = ({ children }) => {
         console.log("Error loading playlists:", error);
       }
     };
+    if (isAuthenticated) loadPlaylists();
+  }, [isAuthenticated]);
 
-    loadPlaylists();
-  }, [userId]);
-
-  const createNewPlaylist = async (playlistName) => {
-    console.log("Create playlist");
+  const createNewPlaylist = async (playlistName, userId) => {
     try {
       const newPlaylist = {
         userId: userId,
@@ -108,7 +51,7 @@ export const PlaylistContextProvider = ({ children }) => {
     }
   };
 
-  const updatePlaylist = async (playlistId, newName) => {
+  const updatePlaylist = async (playlistId, newName, userId) => {
     try {
       await playlistRef.doc(playlistId).update({ name: newName });
       setPlaylists((prevPlaylists) =>
