@@ -8,40 +8,53 @@ import { AppNavigator } from "./app.navigator";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import { AudioContext } from "../providers/audio.context";
 import WelcomeScreen from "../screens/Authentication/Welcome.screen";
+import { AdminNavigator } from "./admin.navigator";
+import { AdminContextProvider } from "../providers/admin.context";
 
 const Navigator = () => {
-  const { isAuthenticated, isLoading } = useContext(AuthenticationContext);
+  const { isAuthenticated, isLoading, user } = useContext(
+    AuthenticationContext
+  );
   const { isPlayerVisible, setPlayerVisbile } = useContext(AudioContext);
   if (isLoading) {
     return <WelcomeScreen></WelcomeScreen>;
   }
-  return (
-    <>
-      <Modal
-        animationType="fade"
-        transparent={false}
-        visible={isPlayerVisible}
-        onRequestClose={() => {
-          setPlayerVisbile(!isPlayerVisible);
-        }}
-      >
-        <PlayerScreen></PlayerScreen>
-      </Modal>
+  if (user.displayName == "admin") {
+    return (
       <NavigationContainer>
-        <SafeAreaView
-          style={{
-            flex: 1,
+        <AdminContextProvider>
+          <AdminNavigator></AdminNavigator>
+        </AdminContextProvider>
+      </NavigationContainer>
+    );
+  } else
+    return (
+      <>
+        <Modal
+          animationType="fade"
+          transparent={false}
+          visible={isPlayerVisible}
+          onRequestClose={() => {
+            setPlayerVisbile(!isPlayerVisible);
           }}
         >
-          {isAuthenticated == false ? (
-            <AuthNavigator></AuthNavigator>
-          ) : (
-            <AppNavigator></AppNavigator>
-          )}
-        </SafeAreaView>
-      </NavigationContainer>
-    </>
-  );
+          <PlayerScreen></PlayerScreen>
+        </Modal>
+        <NavigationContainer>
+          <SafeAreaView
+            style={{
+              flex: 1,
+            }}
+          >
+            {isAuthenticated == false ? (
+              <AuthNavigator></AuthNavigator>
+            ) : (
+              <AppNavigator></AppNavigator>
+            )}
+          </SafeAreaView>
+        </NavigationContainer>
+      </>
+    );
 };
 
 export default Navigator;

@@ -19,7 +19,6 @@ Audio.setAudioModeAsync({
   playThroughEarpieceAndroid: false,
   shouldDuckAndroid: true,
 });
-
 const REACT_IDS = "reactIdList";
 const songStorage = firebase.storage().ref("songs");
 const songsRef = firebase.firestore().collection("songs");
@@ -39,9 +38,6 @@ export const AudioContextProvider = ({ children }) => {
   const [songs, setSongs] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [listeningHistory, setListeningHistory] = useState([]);
-
-  // a toggle listener to notify player screen that song changed
-  const [listener, setListener] = useState(false);
   const savedPosition = useRef(0);
   const currentSongIndex = useRef(-1);
   const currentSongId = useRef(-1);
@@ -381,7 +377,7 @@ export const AudioContextProvider = ({ children }) => {
   };
   const getRemoteSongs = async () => {
     try {
-      const querySnapshot = await songsRef.get();
+      const querySnapshot = await songsRef.where("deletedAt", "==", null).get();
       const newSongs = [];
       querySnapshot.forEach((documentSnapshot) => {
         newSongs.push({
@@ -392,7 +388,7 @@ export const AudioContextProvider = ({ children }) => {
       });
       getLikedSongs(newSongs);
       currentSongIndex.current = 0;
-      return newSongs; // Return the remote songs array
+      return newSongs;
     } catch (err) {
       console.log("error when get all songs", err);
     }
@@ -401,7 +397,6 @@ export const AudioContextProvider = ({ children }) => {
     const listSong = listeningHistoryIds.map((id) => {
       return songs.find((song) => song.id === id);
     });
-
     setListeningHistory(listSong);
   };
   const addSongToHistory = async (userId, songId) => {
@@ -426,15 +421,15 @@ export const AudioContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const listLocal = await loadLocalSongs(); // Await the local songs array
-      const listRemote = await getRemoteSongs(); // Await the remote songs array
-      setSongs([...listLocal, ...listRemote]);
-    };
     if (isAuthenticated) {
-      fetchData();
+      fetchSongs();
     }
   }, [isAuthenticated]);
+  const fetchSongs = async () => {
+    const listLocal = await loadLocalSongs(); // Await the local songs array
+    const listRemote = await getRemoteSongs(); // Await the remote songs array
+    setSongs([...listLocal, ...listRemote]);
+  };
   useEffect(() => {
     if (isAuthenticated) {
       getListeningHistory(user.listeningHistory || []);
@@ -481,6 +476,7 @@ export const AudioContextProvider = ({ children }) => {
         setSongStatus: setSongStatus,
         checkIfReact,
         sendReact,
+        fetchSongs,
         addSongToHistory,
         audioEvents: {
           setIsPlaying,
