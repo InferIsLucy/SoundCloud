@@ -14,12 +14,15 @@ import {
 } from "react-native";
 import { useState, useContext } from "react";
 import COLORS from "../consts/colors";
+import { formatTime } from "../utils/TimeFormater";
 import PlayListInPutModal from "../components/PlayListInputMadal";
 import { PlaylistContext } from "../providers/playlist.context";
 import ListPlayList from "./MusicPlayer/components/ListPlayList.component";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { fontSizes } from "../theme/fontSizes";
 import ItemPlayList from "./MusicPlayer/components/ItemPlayList.component";
 import places from "../consts/places";
+import { Ionicons } from "@expo/vector-icons";
 import { AudioContext } from "../providers/audio.context";
 const color = {
   APP_BG: "#fff",
@@ -44,22 +47,27 @@ const PlayList = () => {
     });
     setLocalSongs(list);
   }, []);
-  const Card = ({ place }) => {
+  const Card = ({ song = {} }) => {
     return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => navigation.navigate("PlaySongScreen", place)}
-      >
-        <ImageBackground style={styles.cardImage} source={place.image}>
+      <View activeOpacity={0.8}>
+        <ImageBackground
+          style={styles.cardImage}
+          source={{
+            uri: song.imageUri == "" ? null : song.imageUri,
+          }}
+        >
           <Text
             style={{
               color: COLORS.white,
               fontSize: 20,
               fontWeight: "bold",
               marginTop: 10,
+              textShadowColor: "#060606",
+              textShadowOffset: { width: 2, height: 2 },
+              textShadowRadius: 2,
             }}
           >
-            {place.name}
+            {song.name}
           </Text>
           <View
             style={{
@@ -70,33 +78,48 @@ const PlayList = () => {
             }}
           >
             <View style={{ flexDirection: "row" }}>
-              <Icon name="visibility" size={20} color={COLORS.white} />
-              <Text style={{ marginLeft: 5, color: COLORS.white }}>
-                {place.location}
+              <Ionicons name="person-circle-outline" size={20} color="white" />
+              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
+                {song.artistString}
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
-              <Icon name="star" size={20} color={COLORS.white} />
-              <Text style={{ marginLeft: 5, color: COLORS.white }}>5.0</Text>
+              <Ionicons name="md-timer-outline" size={20} color="white" />
+              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
+                {formatTime(song.duration)}
+              </Text>
             </View>
           </View>
         </ImageBackground>
-      </TouchableOpacity>
+      </View>
     );
   };
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: COLORS.white }}>
+    <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+      <View style={styles.header}>
+        <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
+          <Ionicons name="chevron-back" size={32} color="black" />
+        </TouchableOpacity>
+        <View
+          style={{
+            flex: 1,
+            marginRight: 36,
+          }}
+        >
+          <Text style={styles.heading}>Library</Text>
+        </View>
+      </View>
       <View contentContainerStyle={styles.container}>
-        <Text style={styles.sectionTitle}>Đã Xem</Text>
+        <Text style={styles.sectionTitle}>History</Text>
         <View>
           <FlatList
             contentContainerStyle={{ paddingLeft: 20 }}
             data={listeningHistory}
             horizontal
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <ItemPlayList song={item} />}
+            renderItem={({ item }) => <Card song={item} />}
           />
-          <Text style={styles.sectionTitle}>Của bạn</Text>
+          <Text style={styles.sectionTitle}>Your local song</Text>
           <FlatList
             snapToInterval={width - 20}
             contentContainerStyle={{ paddingLeft: 20 }}
@@ -106,6 +129,12 @@ const PlayList = () => {
             renderItem={({ item }) => <ItemPlayList song={item} />}
           />
           <Text style={styles.sectionTitle}>My Play List</Text>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={{ marginTop: -10 }}
+          >
+            <Text style={styles.playListBtn}>+ Add New Playlist</Text>
+          </TouchableOpacity>
         </View>
         {/* <FlatList
           data={playlists}
@@ -122,12 +151,6 @@ const PlayList = () => {
             />
           );
         })}
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={{ marginTop: 15 }}
-        >
-          <Text style={styles.playListBtn}>+ Add New Playlist</Text>
-        </TouchableOpacity>
 
         <PlayListInPutModal
           visible={modalVisible}
@@ -189,6 +212,18 @@ const styles = StyleSheet.create({
     padding: 10,
     overflow: "hidden",
     borderRadius: 10,
+  },
+  heading: {
+    fontSize: fontSizes.heading3,
+    fontWeight: 500,
+    textAlign: "center",
+  },
+  header: {
+    height: 60,
+    paddingTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
 });
 

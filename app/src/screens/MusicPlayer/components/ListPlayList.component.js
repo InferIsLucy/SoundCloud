@@ -33,7 +33,7 @@ const ListPlayList = ({ Item, O }) => {
   };
 
   const handleDeletePlaylist2 = (p) => {
-    console.log(p);
+    
   };
   const handleOnSubmit = () => {
     if (!playListName.trim()) {
