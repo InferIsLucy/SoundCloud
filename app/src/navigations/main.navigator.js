@@ -8,7 +8,7 @@ import { AppNavigator } from "./app.navigator";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import { AudioContext } from "../providers/audio.context";
 import WelcomeScreen from "../screens/Authentication/Welcome.screen";
-
+import { Colors } from "../theme/color";
 const Navigator = () => {
   const { isAuthenticated, isLoading } = useContext(AuthenticationContext);
   const { isPlayerVisible, setPlayerVisbile } = useContext(AudioContext);
@@ -27,16 +27,31 @@ const Navigator = () => {
       >
         <PlayerScreen></PlayerScreen>
       </Modal>
-      <NavigationContainer>
+      <NavigationContainer
+        style={{
+          backgroundColor: Colors.authBackground,
+        }}
+      >
         <SafeAreaView
           style={{
             flex: 1,
+            backgroundColor: Colors.authBackground,
           }}
         >
           {isAuthenticated == false ? (
-            <AuthNavigator></AuthNavigator>
+            <AuthNavigator
+              style={{
+                backgroundColor: Colors.authBackground,
+              }}
+            ></AuthNavigator>
           ) : (
-            <AppNavigator></AppNavigator>
+            <AppNavigator>
+              {" "}
+              style=
+              {{
+                backgroundColor: Colors.authBackground,
+              }}
+            </AppNavigator>
           )}
         </SafeAreaView>
       </NavigationContainer>

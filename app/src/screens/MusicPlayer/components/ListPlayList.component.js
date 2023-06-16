@@ -32,9 +32,7 @@ const ListPlayList = ({ Item, O }) => {
     setIsShow(true);
   };
 
-  const handleDeletePlaylist2 = (p) => {
-    
-  };
+  const handleDeletePlaylist2 = (p) => {};
   const handleOnSubmit = () => {
     if (!playListName.trim()) {
       setIsShow(false);
@@ -160,8 +158,8 @@ export default memo(ListPlayList);
 const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
-    height: 88,
-    backgroundColor: "#231b4d",
+    height: 90,
+    backgroundColor: "#101010",
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 20,

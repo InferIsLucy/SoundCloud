@@ -90,7 +90,7 @@ const PlayerScreen = () => {
             marginRight: 32,
           }}
         >
-          <Text style={styles.text1}>now playing</Text>
+          <Text style={styles.text2}>now playing</Text>
           <Text
             numberOfLines={1}
             style={[
@@ -102,22 +102,24 @@ const PlayerScreen = () => {
           </Text>
         </View>
       </View>
-      {currentSong.imageUri == "" ? (
-        <Image
-          source={{
-            uri: "https://cdn-icons-png.flaticon.com/512/6527/6527852.png",
-          }}
-          style={styles.img}
-        ></Image>
-      ) : (
-        <Image
-          source={{
-            uri: currentSong.imageUri,
-          }}
-          style={styles.img}
-        ></Image>
-      )}
 
+      <View style={styles.artworkWrapper}>
+        {currentSong.imageUri == "" ? (
+          <Image
+            source={{
+              uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            }}
+            style={styles.img}
+          ></Image>
+        ) : (
+          <Image
+            source={{
+              uri: currentSong.imageUri,
+            }}
+            style={styles.img}
+          ></Image>
+        )}
+      </View>
       <View style={{ alignItems: "center" }}>
         <Text numberOfLines={2} style={styles.title}>
           {currentSong.name || "Song Name"}
@@ -155,8 +157,8 @@ const PlayerScreen = () => {
             setIntervalRef();
           }}
           value={currentPosition}
-          thumbTintColor={"black"}
-          minimumTrackTintColor={"black"}
+          thumbTintColor={"#f8f8f8"}
+          minimumTrackTintColor={"#cfcfcf"}
           maximumValue={currentSong.duration}
           maximumTrackTintColor="#000000"
         />
@@ -203,7 +205,7 @@ export default PlayerScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#222831",
     alignItems: "center",
     justifyContent: "flex-start",
   },
@@ -218,6 +220,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: Colors.defaultTextColor,
   },
+  text2: {
+    fontSize: 15,
+    textAlign: "center",
+    color: Colors.defaultTextColor1,
+  },
   title: {
     fontSize: 24,
     fontWeight: 500,
@@ -225,22 +232,17 @@ const styles = StyleSheet.create({
     marginRight: 24,
     color: Colors.defaultTextColor,
   },
-  img: {
-    borderRadius: 16,
-    width: 300,
-    margin: 24,
-    resizeMode: "cover",
-    height: 350,
-  },
+
   artist: {
-    fontSize: 18,
-    color: Colors.defaultTextColor,
+    fontSize: 16,
+    color: Colors.defaultTextColor1,
   },
   progressBar: {
     marginTop: 40,
     height: 50,
   },
   duration: {
+    color: Colors.defaultTextColor,
     position: "absolute",
   },
   controllerContainer: {
@@ -248,5 +250,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  img: {
+    borderRadius: 16,
+    width: "100%",
+    height: "100%",
+    marginTop: 10,
+    resizeMode: "cover",
+    shadowColor: "#ffffff",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowRadius: 3.84,
+    shadowOpacity: 0.5,
+    //elevation: 5,
+  },
+  artworkWrapper: {
+    width: 300,
+    height: 340,
+    marginBottom: 30,
+    shadowColor: "#ffffff",
+    shadowOffset: {
+      width: 5,
+      height: 5,
+    },
+    shadowRadius: 3.84,
+    shadowOpacity: 0.5,
+    elevation: 5,
   },
 });

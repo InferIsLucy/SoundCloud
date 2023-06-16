@@ -27,11 +27,18 @@ import { AudioContext } from "../providers/audio.context";
 import { AuthenticationContext } from "../providers/authentication.context";
 import { ArtistContext } from "../providers/artist.context";
 import ArtistScreen from "./Artist.Screen";
+import { Colors } from "../theme/color";
+import { Ionicons } from "@expo/vector-icons";
+import { formatTime } from "../utils/TimeFormater";
+import { Box } from "@react-native-material/core";
 
 const { width } = Dimensions.get("screen");
 const HomeScreen = ({ navigation }) => {
   const { songs, currentSong, setCurrentSong, setPlayerVisbile } =
     useContext(AudioContext);
+  const LinkImg =
+    "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+
   const { artists } = useContext(ArtistContext);
   const { user } = useContext(AuthenticationContext);
   const [filterdData, setfilterdData] = useState([]);
@@ -157,22 +164,27 @@ const HomeScreen = ({ navigation }) => {
       </View>
     );
   };
-  const Card = ({ place }) => {
+  const Card = ({ song = {} }) => {
     return (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => navigation.navigate("PlaySongScreen", place)}
-      >
-        <ImageBackground style={styles.cardImage} source={place.image}>
+      <View activeOpacity={0.8}>
+        <ImageBackground
+          style={styles.cardImage}
+          source={{
+            uri: song.imageUri == "" ? LinkImg : song.imageUri,
+          }}
+        >
           <Text
             style={{
               color: COLORS.white,
               fontSize: 20,
               fontWeight: "bold",
               marginTop: 10,
+              textShadowColor: "#060606",
+              textShadowOffset: { width: 2, height: 2 },
+              textShadowRadius: 2,
             }}
           >
-            {place.name}
+            {song.name}
           </Text>
           <View
             style={{
@@ -183,29 +195,39 @@ const HomeScreen = ({ navigation }) => {
             }}
           >
             <View style={{ flexDirection: "row" }}>
-              <Icon name="visibility" size={20} color={COLORS.white} />
-              <Text style={{ marginLeft: 5, color: COLORS.white }}>
-                {place.location}
+              <Ionicons name="person-circle-outline" size={20} color="white" />
+              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
+                {song.artistString}
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
-              <Icon name="star" size={20} color={COLORS.white} />
-              <Text style={{ marginLeft: 5, color: COLORS.white }}>5.0</Text>
+              <Ionicons name="md-timer-outline" size={20} color="white" />
+              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
+                {formatTime(song.duration)}
+              </Text>
             </View>
           </View>
         </ImageBackground>
-      </TouchableOpacity>
+      </View>
     );
   };
   const RecommendCard = ({ place }) => {
     return (
-      <ImageBackground style={styles.rmCard} source={place.image}>
+      <ImageBackground
+        style={styles.rmCard}
+        source={{
+          uri: place.imageUri == "" ? LinkImg : place.imageUri,
+        }}
+      >
         <Text
           style={{
             color: COLORS.white,
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: "bold",
             marginTop: 10,
+            textShadowColor: "#060606",
+            textShadowOffset: { width: 2, height: 2 },
+            textShadowRadius: 2,
           }}
         >
           {place.name}
@@ -217,35 +239,29 @@ const HomeScreen = ({ navigation }) => {
             alignItems: "flex-end",
           }}
         >
-          <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              marginTop: 120,
+              justifyContent: "space-between",
+            }}
+          >
             <View style={{ flexDirection: "row" }}>
-              <Icon name="visibility" size={22} color={COLORS.white} />
-              <Text
-                style={{
-                  flexDirection: "row",
-                  marginLeft: 5,
-                  color: COLORS.white,
-                }}
-              >
-                {place.location}
+              <Ionicons name="person-circle-outline" size={20} color="white" />
+              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
+                {place.artistString}
               </Text>
             </View>
-            <View style={{ flexDirection: "row" }}>
-              <Icon name="star" size={22} color={COLORS.white} />
-              <Text
-                style={{
-                  flexDirection: "row",
-                  marginLeft: 5,
-                  color: COLORS.white,
-                }}
-              >
-                5.0
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Ionicons name="md-timer-outline" size={20} color="white" />
+              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
+                {formatTime(place.duration)}
               </Text>
             </View>
           </View>
-          <Text style={{ color: COLORS.white, fontSize: 13 }}>
-            {place.default}
-          </Text>
         </View>
       </ImageBackground>
     );
@@ -253,13 +269,21 @@ const HomeScreen = ({ navigation }) => {
 
   const Card01 = ({ place }) => {
     return (
-      <ImageBackground style={styles.rmCard01} source={place.image}>
+      <ImageBackground
+        style={styles.rmCard01}
+        source={{
+          uri: place.imageUri == "" ? LinkImg : place.imageUri,
+        }}
+      >
         <Text
           style={{
             color: COLORS.white,
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: "bold",
             marginTop: 10,
+            textShadowColor: "#060606",
+            textShadowOffset: { width: 2, height: 2 },
+            textShadowRadius: 2,
           }}
         >
           {place.name}
@@ -270,60 +294,27 @@ const HomeScreen = ({ navigation }) => {
             justifyContent: "space-between",
             alignItems: "flex-end",
           }}
-        >
-          <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
-            <View style={{ flexDirection: "row" }}>
-              <Icon name="visibility" size={22} color={COLORS.white} />
-              <Text
-                style={{
-                  flexDirection: "row",
-                  marginLeft: 5,
-                  color: COLORS.white,
-                }}
-              >
-                {place.location}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row" }}>
-              <Icon name="star" size={22} color={COLORS.white} />
-              <Text
-                style={{
-                  flexDirection: "row",
-                  marginLeft: 5,
-                  color: COLORS.white,
-                }}
-              >
-                5.0
-              </Text>
-            </View>
-          </View>
-          <Text style={{ color: COLORS.white, fontSize: 13 }}>
-            {place.default}
-          </Text>
-        </View>
+        ></View>
       </ImageBackground>
     );
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <StatusBar translucent={false} backgroundColor={COLORS.primary} />
-      <View style={styles.header}>
-        <Icon name="sort" size={28} color={COLORS.white} />
-        <Icon name="notifications-none" size={28} color={COLORS.white} />
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.authBackground }}>
+      <StatusBar translucent={false} backgroundColor={Colors.authBackground} />
+
       <ScrollView showsHorizontalScrollIndicator={false}>
-        <View
+        <ImageBackground
+          source={{
+            uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          }}
           style={{
-            backgroundColor: COLORS.primary,
-            height: 90,
+            backgroundColor: COLORS.dark,
+            height: 150,
             paddingHorizontal: 20,
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text
-              style={styles.headerTitle}
-            >{`Hello ${user.displayName}`}</Text>
             <View style={styles.inputContainer}>
               <Icon name="search" size={28} />
               <TextInput
@@ -334,7 +325,7 @@ const HomeScreen = ({ navigation }) => {
               />
             </View>
           </View>
-        </View>
+        </ImageBackground>
         {isShow && (
           <View
             style={{
@@ -345,7 +336,7 @@ const HomeScreen = ({ navigation }) => {
               left: 20,
               zIndex: 1,
               marginTop: 50,
-              backgroundColor: "red",
+              backgroundColor: "#ffffff",
             }}
           >
             {filterdArtistData.map((artist, index) => {
@@ -371,15 +362,14 @@ const HomeScreen = ({ navigation }) => {
           </View>
         )}
 
-        <ListCategory />
-        <Text style={styles.sectionTitle}>Nổi bật</Text>
+        <Text style={styles.sectionTitle1}>Nổi bật</Text>
         <View>
           <FlatList
             contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={places}
-            renderItem={({ item }) => <Card place={item} />}
+            data={songs}
+            renderItem={({ item }) => <Card song={item} />}
           />
           <Text style={styles.sectionTitle}>Của bạn</Text>
           <FlatList
@@ -387,7 +377,7 @@ const HomeScreen = ({ navigation }) => {
             contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={places}
+            data={songs}
             renderItem={({ item }) => <RecommendCard place={item} />}
           />
           <Text style={styles.sectionTitle}>Lựa chọn hôm nay</Text>
@@ -396,7 +386,7 @@ const HomeScreen = ({ navigation }) => {
             contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={places}
+            data={songs}
             renderItem={({ item }) => <Card01 place={item} />}
           />
         </View>
@@ -426,20 +416,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: COLORS.primary,
+    backgroundColor: Colors.white,
   },
   headerTitle: {
-    color: COLORS.white,
+    color: "#ffffff",
     fontWeight: "bold",
     fontSize: 23,
   },
   inputContainer: {
     height: 60,
     width: "100%",
-    backgroundColor: "#ece8e8",
+    backgroundColor: "#f9f9f9",
     borderRadius: 10,
     position: "absolute",
-    top: 60,
+    top: 120,
     flexDirection: "row",
     paddingHorizontal: 20,
     alignItems: "center",
@@ -464,6 +454,15 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontWeight: "bold",
     fontSize: 20,
+    color: Colors.defaultTextColor,
+  },
+  sectionTitle1: {
+    marginHorizontal: 20,
+    marginVertical: 20,
+    marginTop: 50,
+    fontWeight: "bold",
+    fontSize: 20,
+    color: Colors.defaultTextColor,
   },
   cardImage: {
     height: 220,

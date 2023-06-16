@@ -1,5 +1,6 @@
 export const Colors = {
-  authButtonColor: "#4a89b5",
-  authBackground: "#d2dbf6",
-  defaultTextColor: "black",
+  authButtonColor: "#D5C038",
+  authBackground: "#1A202B",
+  defaultTextColor: "#FFFFFF",
+  defaultTextColor1: "#EEEEEE",
 };

@@ -18,6 +18,7 @@ import FollowingDetail from "./FollowingDetail.screen";
 import { AuthenticationContext } from "../../providers/authentication.context";
 import { AudioContext } from "../../providers/audio.context";
 import { ArtistContext } from "../../providers/artist.context";
+import { Colors } from "../../theme/color";
 const UserProfile = ({ navigation }) => {
   const { updateUserInfor, user } = useContext(AuthenticationContext);
   const { getFollowerArtistsByUserId, followedArtistIds } =
@@ -48,7 +49,7 @@ const UserProfile = ({ navigation }) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <View ew style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
           <Ionicons name="chevron-back" size={32} color="black" />
@@ -74,39 +75,23 @@ const UserProfile = ({ navigation }) => {
           )}
 
           <AntDesign
-            style={{ position: "absolute", bottom: 0, left: 40 }}
+            style={{ position: "absolute", bottom: 0, left: 40, top: 2 }}
             name="camerao"
             size={24}
-            color="gray"
+            color="#bab7b7"
           />
         </TouchableOpacity>
-        <Text
-          style={{
-            fontWeight: 500,
-            paddingLeft: 12,
-            fontSize: fontSizes.label,
-          }}
-        >
-          {user.displayName}
-        </Text>
-        <TouchableOpacity
-          onPress={() => logout()}
-          style={{
-            padding: 8,
-            borderRadius: 4,
-            marginRight: 8,
-            backgroundColor: "tomato",
-            position: "absolute",
-
-            bottom: 0,
-            right: 0,
-          }}
-        >
-          <Text style={{ fontSize: 16, fontWeight: 500, textAlign: "left" }}>
-            Sign out
-          </Text>
-        </TouchableOpacity>
       </View>
+      <Text
+        style={{
+          fontWeight: 500,
+          paddingLeft: 0,
+          fontSize: fontSizes.label,
+          color: Colors.defaultTextColor,
+        }}
+      >
+        {user.displayName}
+      </Text>
       <View
         style={{
           flexDirection: "row",
@@ -127,8 +112,34 @@ const UserProfile = ({ navigation }) => {
           }}
           style={styles.follow}
         >
-          <Text style={styles.followText}>{followedArtistIds.length}</Text>
-          <Text style={styles.followText}> Following</Text>
+          <Text style={styles.followText}>
+            Following {followedArtistIds.length}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => logout()}
+          style={{
+            padding: 5,
+            borderRadius: 10,
+            marginRight: 40,
+            backgroundColor: "#000000",
+            position: "absolute",
+            marginTop: 0,
+
+            bottom: 0,
+            right: 0,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: 500,
+              textAlign: "left",
+              color: Colors.defaultTextColor,
+            }}
+          >
+            Sign out
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -171,6 +182,7 @@ export default UserProfile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.authBackground,
     justifyContent: "flex-start",
     alignItems: "center",
   },
@@ -183,7 +195,9 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: fontSizes.heading3,
+    color: Colors.defaultTextColor,
     fontWeight: 500,
+    marginRight: 5,
     textAlign: "center",
   },
   avatar: {
@@ -194,21 +208,32 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     width: "100%",
-    flexDirection: "row",
-    marginTop: 40,
-    paddingLeft: 24,
+
+    marginTop: 20,
+    paddingLeft: 0,
     alignItems: "center",
   },
   follow: {
     flexDirection: "row",
   },
   followText: {
+    padding: 5,
+    borderRadius: 10,
+    marginRight: 10,
+    backgroundColor: "#000000",
+    //position: "absolute",
+    marginTop: 0,
+
+    bottom: 0,
+    right: 0,
     fontWeight: 400,
     fontSize: fontSizes.normalTextSize,
+    color: Colors.defaultTextColor1,
   },
   title: {
     marginLeft: 20,
     fontSize: fontSizes.label,
     fontWeight: 500,
+    color: Colors.defaultTextColor,
   },
 });

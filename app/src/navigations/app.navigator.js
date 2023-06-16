@@ -10,6 +10,7 @@ import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
 
 //Library Screen
 import PlayList from "../screens/Libarary.screen";
+import { Colors } from "../theme/color";
 
 const Tab = createBottomTabNavigator();
 
@@ -17,6 +18,9 @@ export const AppNavigator = () => {
   return (
     <>
       <Tab.Navigator
+        style={{
+          backgroundColor: Colors.authBackground,
+        }}
         initialRouteName="Home"
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -54,8 +58,20 @@ export const AppNavigator = () => {
           component={PlayList}
         />
       </Tab.Navigator>
-      <View style={{ position: "absolute", bottom: 48, left: 0, right: 0 }}>
-        <BottomPlayer></BottomPlayer>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 48,
+          left: 0,
+          right: 0,
+          backgroundColor: Colors.authBackground,
+        }}
+      >
+        <BottomPlayer
+          style={{
+            backgroundColor: Colors.authBackground,
+          }}
+        ></BottomPlayer>
       </View>
     </>
   );
