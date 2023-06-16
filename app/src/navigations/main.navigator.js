@@ -12,14 +12,14 @@ import { AdminNavigator } from "./admin.navigator";
 import { AdminContextProvider } from "../providers/admin.context";
 
 const Navigator = () => {
-  const { isAuthenticated, isLoading, user } = useContext(
+  const { isAuthenticated, isCheckingLoggedin, isLoading, user } = useContext(
     AuthenticationContext
   );
   const { isPlayerVisible, setPlayerVisbile } = useContext(AudioContext);
-  if (isLoading) {
+  if (isCheckingLoggedin) {
     return <WelcomeScreen></WelcomeScreen>;
   }
-  if (user.displayName == "admin") {
+  if (user != null && user.displayName == "admin") {
     return (
       <NavigationContainer>
         <AdminContextProvider>

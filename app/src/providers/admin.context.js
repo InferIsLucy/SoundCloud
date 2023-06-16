@@ -21,7 +21,7 @@ export const AdminContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshFlatlist, setRefreshFlatList] = useState(false);
   useEffect(() => {
-    // addField("songs", "likes", []);
+    // addField("artists", "dateOfBirth", new Date(1998, 7, 16));
   }, []);
   const addField = async (collectionName, fieldName, value) => {
     try {
@@ -105,18 +105,6 @@ export const AdminContextProvider = ({ children }) => {
     } catch (error) {
       console.error("Error retrieving documents:", error);
       throw error;
-    }
-  };
-  const logout = async () => {
-    try {
-      await SecureStore.deleteItemAsync(USER_ID);
-      const id = await SecureStore.getItemAsync(USER_ID);
-      deleteUserExpoPushToken();
-      signOut(auth);
-      setIsAuthenticated(false);
-      setUser(null);
-    } catch (err) {
-      console.log("Sign out failed", err);
     }
   };
   return (

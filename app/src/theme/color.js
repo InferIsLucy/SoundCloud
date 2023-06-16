@@ -3,4 +3,5 @@ export const Colors = {
   authBackground: "#d2dbf6",
   defaultTextColor: "black",
   textColor: "#444054",
+  bodyTextColor: "#514b75",
 };

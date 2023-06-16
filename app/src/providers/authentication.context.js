@@ -72,9 +72,9 @@ export const AuthenticationContextProvider = ({ children }) => {
         const data = JSON.parse(userId);
         await getUserFromDb(data);
         setIsAuthenticated(true);
-        setIsCheckingLoggedIn(false);
-        setIsLoading(false);
       }
+      setIsLoading(false);
+      setIsCheckingLoggedIn(false);
     } catch (err) {
       console.log("err", err);
       setIsCheckingLoggedIn(false);
@@ -196,7 +196,6 @@ export const AuthenticationContextProvider = ({ children }) => {
     try {
       await SecureStore.deleteItemAsync(USER_ID);
       const id = await SecureStore.getItemAsync(USER_ID);
-
       deleteUserExpoPushToken();
       signOut(auth);
       setIsAuthenticated(false);

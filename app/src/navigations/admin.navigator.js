@@ -6,6 +6,8 @@ import AdminInfor from "../screens/Admin/AdminInfor.screen";
 import SongManager from "../screens/Admin/SongManager.screen";
 import ArtistManager from "../screens/Admin/ArtistManager.screen";
 import UploadScreen from "../screens/Admin/Upload.screen";
+import { Modal } from "react-native";
+import DetailItem from "../screens/Admin/components/DetailItem.component";
 const Tab = createBottomTabNavigator();
 
 export const AdminNavigator = () => {

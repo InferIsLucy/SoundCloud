@@ -11,5 +11,5 @@ export function convertFirebaseTimestamp(timestamp) {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  return `${hours} giờ ${day}/${month}/${year}`;
+  return `${day}/${month}/${year}`;
 }

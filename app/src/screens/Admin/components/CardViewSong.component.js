@@ -1,18 +1,30 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useContext } from "react";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
 import { ImageBackground } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "../theme/color";
+import { Colors } from "../../../theme/color";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-import { getSongArtistFromArray } from "../utils/Converters";
+import { getSongArtistFromArray } from "../../../utils/Converters";
 import { AntDesign } from "@expo/vector-icons";
-import { AdminContext } from "../providers/admin.context";
-import { SongRef } from "../screens/Admin/const";
-import { convertFirebaseTimestamp } from "../utils/TimeFormater";
+import { AdminContext } from "../../../providers/admin.context";
+import { SongRef } from "../const";
+import { convertFirebaseTimestamp } from "../../../utils/TimeFormater";
+import { AudioContext } from "../../../providers/audio.context";
+import { ArtistContext } from "../../../providers/artist.context";
+import ArtistTag from "./ArtistTag.component";
 const CardView = ({ ...props }) => {
-  const { imageLeft, imageRight, song, artist, setModalVisible } = props;
+  const { imageLeft, imageRight, song, setModalVisible } = props;
+  const { artists } = useContext(ArtistContext);
   const { deleteDocument, setRefreshFlatList } = useContext(AdminContext);
+  const [songArtists, setSongArtists] = useState([]);
   const handleDeleteDocument = async () => {
     try {
       await deleteDocument(SongRef, song.id);
@@ -22,6 +34,20 @@ const CardView = ({ ...props }) => {
       console.log("error when delete", e);
     }
   };
+  //get song's artists
+  useEffect(() => {
+    const list = [];
+    song.artist.forEach((songArtist) => {
+      let check = {};
+      artists.forEach((artist) => {
+        if (artist.id == songArtist.id) {
+          check = artist;
+        }
+      });
+      list.push(check);
+    });
+    setSongArtists(list);
+  }, []);
   return (
     <LinearGradient
       colors={[
@@ -99,6 +125,14 @@ const CardView = ({ ...props }) => {
       >
         {`Thời gian phát hành: ${convertFirebaseTimestamp(song.publishDate)} `}
       </Text>
+      <FlatList
+        style={{ marginTop: 24 }}
+        horizontal={true}
+        data={songArtists}
+        renderItem={({ item, index }) => <ArtistTag artist={item} />}
+        keyExtractor={(item) => item.id}
+      />
+
       <View style={styles.btnWraper}>
         <TouchableOpacity
           onPress={handleDeleteDocument}

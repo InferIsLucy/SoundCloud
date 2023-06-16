@@ -18,7 +18,7 @@ const ItemComponent = ({
   song = null,
   artist = null,
   setRefreshFlatList,
-  setDetailModelVisible,
+  setDetailModalVisible,
 }) => {
   const { deleteDocument, restoreDocument } = useContext(AdminContext);
   const { songs } = useContext(AudioContext);

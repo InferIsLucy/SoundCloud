@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { getSongArtistFromArray } from "../../../utils/Converters";
-import CardView from "../../../components/CardView";
-const DetailItem = ({ song = null, artist = null, setDetailModelVisible }) => {
+import CardView from "./CardViewSong.component";
+import CardViewArtist from "./CardViewArtist.component";
+const DetailItem = ({ song = null, artist = null, setDetailModalVisible }) => {
   if (song == null && artist == null) return;
   let item = {};
   if (song) {
@@ -15,12 +16,19 @@ const DetailItem = ({ song = null, artist = null, setDetailModelVisible }) => {
   }
   return (
     <View>
-      <CardView
-        song={song}
-        imageLeft={item.imageUri}
-        imageRight={item.imageUri}
-        setModalVisible={setDetailModelVisible}
-      ></CardView>
+      {song ? (
+        <CardView
+          song={song}
+          imageLeft={item.imageUri}
+          setModalVisible={setDetailModalVisible}
+        ></CardView>
+      ) : (
+        <CardViewArtist
+          artist={artist}
+          imageLeft={item.imageUri}
+          setModalVisible={setDetailModalVisible}
+        ></CardViewArtist>
+      )}
     </View>
   );
 };

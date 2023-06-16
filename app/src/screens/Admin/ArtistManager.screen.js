@@ -1,4 +1,11 @@
-import { StyleSheet, TextInput, Text, FlatList, View } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  Text,
+  FlatList,
+  View,
+  Modal,
+} from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import ItemComponent from "./components/ItemList.component";
 import { AudioContext } from "../../providers/audio.context";
@@ -6,13 +13,17 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { ArtistContext } from "../../providers/artist.context";
 import { ArtistRef, SongRef } from "./const";
 import { AdminContext } from "../../providers/admin.context";
+import { TouchableOpacity } from "react-native";
+import DetailItem from "./components/DetailItem.component";
 const ArtistManager = () => {
   const { getDocs, refreshFlatlist, setRefreshFlatList } =
     useContext(AdminContext);
   const [filterdArtistData, setFilteredArtists] = useState([]);
   const [artists, setArtists] = useState([]);
   const [search, setsearch] = useState("");
-  const [isShow, setIsShow] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+
   const searchFilter = (text) => {
     if (text !== "") {
       const artistData = artists.filter((artist) => {
@@ -24,11 +35,9 @@ const ArtistManager = () => {
       });
       setFilteredArtists(artistData);
       setsearch(text);
-      setIsShow(true);
     } else {
       setFilteredArtists(artists);
       setsearch(text);
-      setIsShow(false);
     }
   };
   const refreshSearch = () => {
@@ -62,13 +71,33 @@ const ArtistManager = () => {
         style={{ marginTop: 12, marginBottom: 60 }}
         data={filterdArtistData}
         renderItem={({ item, index }) => (
-          <ItemComponent
-            setRefreshFlatList={setRefreshFlatList}
-            artist={item}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedItem(item);
+              setDetailModalVisible((prev) => !prev);
+            }}
+          >
+            <ItemComponent
+              setRefreshFlatList={setRefreshFlatList}
+              artist={item}
+            />
+          </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
       />
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={detailModalVisible}
+        onRequestClose={() => {
+          setDetailModalVisible(!detailModalVisible);
+        }}
+      >
+        <DetailItem
+          setDetailModalVisible={setDetailModalVisible}
+          artist={selectedItem}
+        ></DetailItem>
+      </Modal>
     </View>
   );
 };
@@ -79,10 +108,12 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     paddingTop: 60,
+    backgroundColor: "#140d36",
   },
   heading: {
     fontSize: 36,
     textAlign: "center",
+    color: "white",
     fontWeight: "bold",
     marginBottom: 12,
   },

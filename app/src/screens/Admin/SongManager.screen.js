@@ -23,8 +23,8 @@ const SongManager = () => {
   const { artists } = useContext(ArtistContext);
   const [filteredSongs, setFilteredSongs] = useState([]);
   const [songs, setSongs] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
   const [search, setsearch] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
 
   const searchFilter = (text) => {
@@ -87,7 +87,7 @@ const SongManager = () => {
             }}
           >
             <ItemComponent
-              setDetailModelVisible={setDetailModalVisible}
+              setDetailModalVisible={setDetailModalVisible}
               setRefreshFlatList={setRefreshFlatList}
               song={item}
             />
@@ -104,7 +104,7 @@ const SongManager = () => {
         }}
       >
         <DetailItem
-          setDetailModelVisible={setDetailModalVisible}
+          setDetailModalVisible={setDetailModalVisible}
           song={selectedItem}
         ></DetailItem>
       </Modal>
@@ -118,11 +118,13 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     paddingTop: 60,
+    backgroundColor: "#140d36",
   },
   heading: {
     fontSize: 36,
     textAlign: "center",
     fontWeight: "bold",
+    color: "white",
     marginBottom: 12,
   },
   inputContainer: {
