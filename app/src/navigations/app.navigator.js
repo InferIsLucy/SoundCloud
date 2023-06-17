@@ -9,8 +9,12 @@ import UserProfile from "../screens/UserProfile/UserProfile.screen";
 import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
 
 //Library Screen
+<<<<<<< HEAD
 import PlayList from "../screens/Libarary.screen";
 import { Colors } from "../theme/color";
+=======
+import PlayList from "../screens/Library.screen";
+>>>>>>> c3bdd7d941d7eb3aa125f7e667ce3de38647fc06
 
 const Tab = createBottomTabNavigator();
 

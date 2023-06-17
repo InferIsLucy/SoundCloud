@@ -12,6 +12,7 @@ import { firebase } from "../config/firebase";
 import { getSongArtistFromArray } from "../utils/Converters";
 import * as SecureStore from "expo-secure-store";
 import { AuthenticationContext } from "./authentication.context";
+import { ArtistContext } from "./artist.context";
 
 export const AudioContext = createContext();
 Audio.setAudioModeAsync({
@@ -19,13 +20,13 @@ Audio.setAudioModeAsync({
   playThroughEarpieceAndroid: false,
   shouldDuckAndroid: true,
 });
-
 const REACT_IDS = "reactIdList";
 const songStorage = firebase.storage().ref("songs");
 const songsRef = firebase.firestore().collection("songs");
 const userRef = firebase.firestore().collection("users");
 export const AudioContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
+  const { artists, isFetchingArtist } = useContext(ArtistContext);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [audioObj, setAudioObj] = useState(null);
@@ -39,29 +40,27 @@ export const AudioContextProvider = ({ children }) => {
   const [songs, setSongs] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [listeningHistory, setListeningHistory] = useState([]);
-
-  // a toggle listener to notify player screen that song changed
-  const [listener, setListener] = useState(false);
   const savedPosition = useRef(0);
   const currentSongIndex = useRef(-1);
   const currentSongId = useRef(-1);
-  // function listFilesAndDirectories(reference, pageToken) {
-  //   return reference.list({ pageToken }).then((result) => {
-  //     // Loop over each item
-  //     result.items.forEach((ref) => {
-  //       ref
-  //         .getDownloadURL()
-  //         .then((url) => {
-  //           console.log("url", url);
-  //         })
-  //         .catch((err) => console.log("error when get download url"));
-  //     });
-  //     if (result.nextPageToken) {
-  //       return listFilesAndDirectories(reference, result.nextPageToken);
-  //     }
-  //     return Promise.resolve();
-  //   });
-  // }
+
+  function listFilesAndDirectories(reference, pageToken) {
+    return reference.list({ pageToken }).then((result) => {
+      // Loop over each item
+      result.items.forEach((ref) => {
+        ref
+          .getDownloadURL()
+          .then((url) => {
+            console.log("url", url);
+          })
+          .catch((err) => console.log("error when get download url"));
+      });
+      if (result.nextPageToken) {
+        return listFilesAndDirectories(reference, result.nextPageToken);
+      }
+      return Promise.resolve();
+    });
+  }
   // useEffect(() => {
   //   listFilesAndDirectories(songStorage).then(() => {
   //     console.log("Finished listing");
@@ -108,7 +107,6 @@ export const AudioContextProvider = ({ children }) => {
     setRepeatMode(newRepeatMode);
   };
   const initializeAudioObject = async (uri) => {
-    console.log("init audio object");
     try {
       setIsPlaying(false);
       const { sound: playbackObject } = await Audio.Sound.createAsync({
@@ -381,18 +379,23 @@ export const AudioContextProvider = ({ children }) => {
   };
   const getRemoteSongs = async () => {
     try {
-      const querySnapshot = await songsRef.get();
+      const querySnapshot = await songsRef.where("deletedAt", "==", null).get();
       const newSongs = [];
       querySnapshot.forEach((documentSnapshot) => {
+        const artistListFromSong = documentSnapshot.data().artist;
+        const artistList = artists.filter((artist) => {
+          return artistListFromSong.some((item) => item.id == artist.id);
+        });
         newSongs.push({
           id: documentSnapshot.id,
           ...documentSnapshot.data(),
-          artistString: getSongArtistFromArray(documentSnapshot.data().artist),
+          artist: artistList,
+          artistString: getSongArtistFromArray(artistList),
         });
       });
       getLikedSongs(newSongs);
       currentSongIndex.current = 0;
-      return newSongs; // Return the remote songs array
+      return newSongs;
     } catch (err) {
       console.log("error when get all songs", err);
     }
@@ -401,7 +404,6 @@ export const AudioContextProvider = ({ children }) => {
     const listSong = listeningHistoryIds.map((id) => {
       return songs.find((song) => song.id === id);
     });
-
     setListeningHistory(listSong);
   };
   const addSongToHistory = async (userId, songId) => {
@@ -426,15 +428,15 @@ export const AudioContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const listLocal = await loadLocalSongs(); // Await the local songs array
-      const listRemote = await getRemoteSongs(); // Await the remote songs array
-      setSongs([...listLocal, ...listRemote]);
-    };
-    if (isAuthenticated) {
-      fetchData();
+    if (isAuthenticated && !isFetchingArtist) {
+      fetchSongs();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isFetchingArtist]);
+  const fetchSongs = async () => {
+    const listLocal = await loadLocalSongs(); // Await the local songs array
+    const listRemote = await getRemoteSongs(); // Await the remote songs array
+    setSongs([...listLocal, ...listRemote]);
+  };
   useEffect(() => {
     if (isAuthenticated) {
       getListeningHistory(user.listeningHistory || []);
@@ -477,10 +479,11 @@ export const AudioContextProvider = ({ children }) => {
         setCurrentSong,
         setAudioObj,
         setPlayerVisbile,
-        handleSongEnd,
         setSongStatus: setSongStatus,
+        handleSongEnd,
         checkIfReact,
         sendReact,
+        fetchSongs,
         addSongToHistory,
         audioEvents: {
           setIsPlaying,

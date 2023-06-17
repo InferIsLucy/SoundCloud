@@ -9,17 +9,17 @@ import { ArtistContextProvider } from "./src/providers/artist.context";
 export default function App() {
   return (
     <AuthenticationContextProvider>
-      <AudioContextProvider>
-        <NotificationContextProvider>
-          <ArtistContextProvider>
+      <ArtistContextProvider>
+        <AudioContextProvider>
+          <NotificationContextProvider>
             <CommentContextProvider>
               <PlaylistContextProvider>
                 <Navigator></Navigator>
               </PlaylistContextProvider>
             </CommentContextProvider>
-          </ArtistContextProvider>
-        </NotificationContextProvider>
-      </AudioContextProvider>
+          </NotificationContextProvider>
+        </AudioContextProvider>
+      </ArtistContextProvider>
     </AuthenticationContextProvider>
   );
 }
