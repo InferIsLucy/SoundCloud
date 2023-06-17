@@ -8,6 +8,7 @@ import { AppNavigator } from "./app.navigator";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import { AudioContext } from "../providers/audio.context";
 import WelcomeScreen from "../screens/Authentication/Welcome.screen";
+import { Colors } from "../theme/color";
 import { AdminNavigator } from "./admin.navigator";
 import { AdminContextProvider } from "../providers/admin.context";
 

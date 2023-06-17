@@ -23,6 +23,7 @@ import { fontSizes } from "../theme/fontSizes";
 import ItemPlayList from "./MusicPlayer/components/ItemPlayList.component";
 import places from "../consts/places";
 import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "../theme/color";
 import { AudioContext } from "../providers/audio.context";
 const color = {
   APP_BG: "#fff",
@@ -38,7 +39,8 @@ const PlayList = () => {
   const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
     useContext(PlaylistContext);
   const { songs, listeningHistory } = useContext(AudioContext);
-
+  const LinkImg =
+    "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
   const [modalVisible, setModalVisible] = useState(false);
   const [localSongs, setLocalSongs] = useState([]);
   useEffect(() => {
@@ -53,7 +55,7 @@ const PlayList = () => {
         <ImageBackground
           style={styles.cardImage}
           source={{
-            uri: song.imageUri == "" ? null : song.imageUri,
+            uri: song.imageUri == "" ? LinkImg : song.imageUri,
           }}
         >
           <Text
@@ -95,7 +97,7 @@ const PlayList = () => {
     );
   };
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+    <ScrollView style={{ flex: 1, backgroundColor: Colors.authBackground }}>
       <View style={styles.header}>
         <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
           <Ionicons name="chevron-back" size={32} color="black" />
@@ -126,7 +128,7 @@ const PlayList = () => {
             horizontal
             showsHorizontalScrollIndicator={false}
             data={localSongs}
-            renderItem={({ item }) => <ItemPlayList song={item} />}
+            renderItem={({ item }) => <Card song={item} />}
           />
           <Text style={styles.sectionTitle}>My Play List</Text>
           <TouchableOpacity
@@ -165,6 +167,7 @@ const PlayList = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    backgroundColor: Colors.authBackground,
   },
   playListBanner: {
     padding: 5,
@@ -177,11 +180,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   playListBtn: {
-    color: color.ACTIVE_BG,
+    color: "#d8d826",
+    borderRadius: 10,
+    //backgroundColor: "#000000",
     letterSpacing: 1,
     fontSize: 14,
+    left: 15,
     fontWeight: "bold",
-    padding: 5,
+    padding: 10,
   },
   rmCard01: {
     width: width - 250,
@@ -204,6 +210,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontWeight: "bold",
     fontSize: 20,
+    color: Colors.defaultTextColor,
   },
   cardImage: {
     height: 220,
@@ -215,6 +222,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: fontSizes.heading3,
+    color: Colors.defaultTextColor,
     fontWeight: 500,
     textAlign: "center",
   },

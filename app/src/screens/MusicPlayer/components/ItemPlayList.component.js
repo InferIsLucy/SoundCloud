@@ -49,7 +49,7 @@ export default memo(ItemPlayList);
 const styles = StyleSheet.create({
   container: {
     height: 88,
-    backgroundColor: "#231b4d",
+    backgroundColor: "#101010",
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 20,
