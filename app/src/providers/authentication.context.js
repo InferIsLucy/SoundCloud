@@ -61,6 +61,7 @@ export const AuthenticationContextProvider = ({ children }) => {
 
   //check if user logged in
   useEffect(() => {
+    // logout();
     getUserIdFromStorage();
   }, []);
   const getUserIdFromStorage = async () => {

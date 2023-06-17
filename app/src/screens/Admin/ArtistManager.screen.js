@@ -10,11 +10,15 @@ import React, { useContext, useEffect, useState } from "react";
 import ItemComponent from "./components/ItemList.component";
 import { AudioContext } from "../../providers/audio.context";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { AntDesign } from "@expo/vector-icons";
+
 import { ArtistContext } from "../../providers/artist.context";
 import { ArtistRef, SongRef } from "./const";
 import { AdminContext } from "../../providers/admin.context";
 import { TouchableOpacity } from "react-native";
 import DetailItem from "./components/DetailItem.component";
+import AddArtistModal from "./components/AddArtistModal.component";
+import ArtistListModal from "./components/ArtistListModal.component";
 const ArtistManager = () => {
   const { getDocs, refreshFlatlist, setRefreshFlatList } =
     useContext(AdminContext);
@@ -25,7 +29,7 @@ const ArtistManager = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const searchFilter = (text) => {
     if (text !== "") {
       const artistData = artists.filter((artist) => {
@@ -49,7 +53,6 @@ const ArtistManager = () => {
   };
   const onRefresh = async () => {
     setRefreshing(true);
-
     await fetchData();
     setRefreshing(false);
   };
@@ -61,14 +64,29 @@ const ArtistManager = () => {
       <View>
         <Text style={styles.heading}>Artist List</Text>
       </View>
-      <View style={styles.inputContainer}>
-        <Icon name="search" size={28} />
-        <TextInput
-          value={search}
-          onChangeText={(text) => searchFilter(text)}
-          placeholder="Search...                                                       ."
-          style={{ color: "black", fontSize: 18 }}
-        />
+      <View style={{ flexDirection: "row" }}>
+        <View style={styles.inputContainer}>
+          <Icon name="search" size={28} />
+          <TextInput
+            value={search}
+            onChangeText={(text) => searchFilter(text)}
+            placeholder="Search...                                                       ."
+            style={{ color: "black", fontSize: 18 }}
+          />
+        </View>
+        <TouchableOpacity
+          style={{
+            padding: 4,
+            marginHorizontal: 8,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={() => {
+            setIsAddModalVisible(true);
+          }}
+        >
+          <AntDesign name="adduser" size={24} color="white" />
+        </TouchableOpacity>
       </View>
       <FlatList
         refreshing={refreshing}
@@ -104,6 +122,12 @@ const ArtistManager = () => {
           artist={selectedItem}
         ></DetailItem>
       </Modal>
+      <AddArtistModal
+        visible={isAddModalVisible}
+        onClose={() => {
+          setIsAddModalVisible(false);
+        }}
+      ></AddArtistModal>
     </View>
   );
 };
@@ -114,6 +138,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     paddingTop: 60,
+    flex: 1,
     backgroundColor: "#140d36",
   },
   heading: {
@@ -125,7 +150,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     height: 60,
-    width: "100%",
+    flex: 1,
     backgroundColor: "#ece8e8",
     borderRadius: 10,
     flexDirection: "row",

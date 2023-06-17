@@ -21,9 +21,10 @@ export const AdminContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshFlatlist, setRefreshFlatList] = useState(false);
   useEffect(() => {
-    // addField("artists", "dateOfBirth", new Date(1998, 7, 16));
+    // addField("artists", "email", "");
   }, []);
   const addField = async (collectionName, fieldName, value) => {
+    setIsLoading(true);
     try {
       const collectionRef = firebase.firestore().collection(collectionName);
       const querySnapshot = await collectionRef.get();
@@ -37,28 +38,35 @@ export const AdminContextProvider = ({ children }) => {
       console.log(
         `Field "${fieldName}" added to all documents in collection "${collectionName}" with the value "${value}".`
       );
+      setIsLoading(false);
     } catch (error) {
       console.error("Error adding field:", error);
       throw error;
+      setIsLoading(false);
     }
   };
   const updateField = async (collectionName, docId, fieldName, newValue) => {
+    setIsLoading(true);
+
     try {
       const collectionRef = firebase.firestore().collection(collectionName);
       const docRef = collectionRef.doc(docId);
-
       await docRef.update({ [fieldName]: newValue });
-
       console.log(
         `Field "${fieldName}" in document with ID "${docId}" in collection "${collectionName}" has been updated to "${newValue}".`
       );
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
+
       console.error("Error updating field:", error);
       throw error;
     }
   };
 
   const deleteDocument = async (collectionName, docId) => {
+    setIsLoading(true);
+
     try {
       const collectionRef = firebase.firestore().collection(collectionName);
       const docRef = collectionRef.doc(docId);
@@ -73,6 +81,22 @@ export const AdminContextProvider = ({ children }) => {
       throw error;
     }
   };
+  const addDocument = async (collectionName, doc) => {
+    setIsLoading(true);
+
+    try {
+      const collectionRef = firebase.firestore().collection(collectionName);
+      await collectionRef.add(doc);
+      console.log(`Document added to collection "${collectionName}".`);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error adding document:", error);
+      setIsLoading(false);
+
+      throw error;
+    }
+  };
+
   const restoreDocument = async (collectionName, docId) => {
     try {
       const collectionRef = firebase.firestore().collection(collectionName);
@@ -89,6 +113,8 @@ export const AdminContextProvider = ({ children }) => {
     }
   };
   const getDeleteDocs = async (collectionName) => {
+    setIsLoading(true);
+
     try {
       const collectionRef = firebase.firestore().collection(collectionName);
       const querySnapshot = await collectionRef
@@ -100,13 +126,19 @@ export const AdminContextProvider = ({ children }) => {
         ...doc.data(),
       }));
       console.log("Retrieving documents successfully ", deleteDocs.length);
+      setIsLoading(false);
+
       return deleteDocs;
     } catch (error) {
+      setIsLoading(false);
+
       console.error("Error retrieving documents:", error);
       throw error;
     }
   };
   const getDocs = async (collectionName, field, condition, value) => {
+    setIsLoading(true);
+
     try {
       const collectionRef = firebase.firestore().collection(collectionName);
       const querySnapshot = await collectionRef
@@ -117,8 +149,12 @@ export const AdminContextProvider = ({ children }) => {
         id: doc.id,
         ...doc.data(),
       }));
+      setIsLoading(false);
+
       return deleteDocs;
     } catch (error) {
+      setIsLoading(false);
+
       console.error("Error retrieving documents:", error);
       throw error;
     }
@@ -137,6 +173,7 @@ export const AdminContextProvider = ({ children }) => {
       console.log(`${path} upload successful`);
       const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
       console.log(`${path} URL:`, downloadURL);
+
       return downloadURL;
     } catch (error) {
       console.log(`Error uploading ${path}:`, error);
@@ -147,12 +184,14 @@ export const AdminContextProvider = ({ children }) => {
   return (
     <AdminContext.Provider
       value={{
+        isLoading,
         refreshFlatlist,
         setRefreshFlatList,
         addField,
         deleteDocument,
         getDeleteDocs,
         getDocs,
+        addDocument,
         uploadFile,
         updateField,
         restoreDocument,

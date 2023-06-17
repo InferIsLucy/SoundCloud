@@ -3,6 +3,8 @@ import React, { useContext, memo, useEffect } from "react";
 import { AudioContext } from "../../../providers/audio.context";
 import { formatTime } from "../../../utils/TimeFormater";
 import { AuthenticationContext } from "../../../providers/authentication.context";
+
+//SongItem
 const ItemPlayList = ({ song = {} }) => {
   const { setPlayerVisbile, setCurrentSong, addSongToHistory } =
     useContext(AudioContext);

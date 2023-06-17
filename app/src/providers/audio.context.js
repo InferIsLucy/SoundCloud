@@ -433,6 +433,7 @@ export const AudioContextProvider = ({ children }) => {
     }
   }, [isAuthenticated, isFetchingArtist]);
   const fetchSongs = async () => {
+    console.log("fetching songs");
     const listLocal = await loadLocalSongs(); // Await the local songs array
     const listRemote = await getRemoteSongs(); // Await the remote songs array
     setSongs([...listLocal, ...listRemote]);

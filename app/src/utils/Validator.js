@@ -24,3 +24,20 @@ export const loginSchema = object({
     .email("Email không hợp lệ")
     .required("Email không được để trống"),
 });
+
+export const isValidAge = (birthDate, ageLimit = 16) => {
+  const today = new Date();
+  const age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+  return age >= ageLimit;
+};
+
+export const isStringNullOrEmpty = (str) => {
+  return !str || str.trim().length === 0;
+};

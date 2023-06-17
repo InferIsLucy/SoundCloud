@@ -2,8 +2,7 @@ import { StyleSheet, Text, Image, View } from "react-native";
 import React from "react";
 import { Colors } from "../../../theme/color";
 
-//item artist selected in manager artist screen
-const ArtistTag = ({ artist }) => {
+const ArtistItem = ({ artist, onRemove }) => {
   return (
     <View style={styles.container}>
       <Image style={styles.avatar} source={{ uri: artist.avtUri }}></Image>
@@ -12,7 +11,7 @@ const ArtistTag = ({ artist }) => {
   );
 };
 
-export default ArtistTag;
+export default ArtistItem;
 
 const styles = StyleSheet.create({
   container: {

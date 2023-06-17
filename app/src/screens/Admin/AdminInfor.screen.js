@@ -1,11 +1,19 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { AudioContext } from "../../providers/audio.context";
 import ItemComponent from "./components/ItemList.component";
 import { AdminContext } from "../../providers/admin.context";
 import { ArtistRef, SongRef } from "./const";
+import { AuthenticationContext } from "../../providers/authentication.context";
 const AdminInfor = () => {
-  const { songs, fetchSongs } = useContext(AudioContext);
+  const { songs } = useContext(AudioContext);
+  const { logout } = useContext(AuthenticationContext);
   const { getDeleteDocs, refreshFlatlist, setRefreshFlatList } =
     useContext(AdminContext);
   const [deletedSongs, setDeletedSongs] = useState([]);
@@ -24,6 +32,14 @@ const AdminInfor = () => {
   return (
     <View>
       <View>
+        <TouchableOpacity
+          style={{ backgroundColor: "red", padding: 12 }}
+          onPress={() => {
+            logout();
+          }}
+        >
+          <Text>ClickToLogout</Text>
+        </TouchableOpacity>
         <Text>Deleted Songs</Text>
         <FlatList
           extraData={refreshFlatlist}

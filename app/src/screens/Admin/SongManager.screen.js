@@ -6,19 +6,18 @@ import {
   View,
   Modal,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import ItemComponent from "./components/ItemList.component";
-import { AudioContext } from "../../providers/audio.context";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { ArtistContext } from "../../providers/artist.context";
 import { SongRef } from "./const";
 import { AdminContext } from "../../providers/admin.context";
 import DetailItem from "./components/DetailItem.component";
 const SongManager = () => {
-  const { getDocs, refreshFlatlist, setRefreshFlatList } =
+  const { getDocs, refreshFlatlist, isLoading, setRefreshFlatList } =
     useContext(AdminContext);
   const { artists, isFetchingArtist } = useContext(ArtistContext);
   const [filteredSongs, setFilteredSongs] = useState([]);
@@ -27,6 +26,7 @@ const SongManager = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [fetchingData, setFetchingData] = useState(false);
 
   const searchFilter = (text) => {
     if (text !== "") {
@@ -51,7 +51,7 @@ const SongManager = () => {
     await fetchData();
     setRefreshing(false);
   };
-  fetchData = async () => {
+  const fetchData = async () => {
     const list = await getDocs(SongRef, "deletedAt", "==", null);
     const modifiedList = list.map((song) => {
       if (song.isLocalSong == null) {
@@ -104,6 +104,7 @@ const SongManager = () => {
         )}
         keyExtractor={(item) => item.id}
       />
+
       <Modal
         animationType="fade"
         transparent={true}
@@ -127,6 +128,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     paddingTop: 60,
+    flex: 1,
     backgroundColor: "#140d36",
   },
   heading: {

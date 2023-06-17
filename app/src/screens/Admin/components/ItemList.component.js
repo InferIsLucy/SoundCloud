@@ -23,7 +23,7 @@ const ItemComponent = ({
   setDetailModalVisible,
 }) => {
   const { deleteDocument, restoreDocument } = useContext(AdminContext);
-  const { songs } = useContext(AudioContext);
+  const { songs, fetchSongs } = useContext(AudioContext);
   const [listSongOfArtist, setListSong] = useState([]);
   let item = {};
   if (song) {
@@ -43,10 +43,11 @@ const ItemComponent = ({
       });
       setListSong(() => list);
     }
-  }, []);
+  }, [songs]);
   const handleDeleteDocument = async () => {
     try {
       if (artist) {
+        // delete songs of artist
         const deletePromises = songs.map(async (song) => {
           if (song.isLocalSong == null) {
             const checkIfIncluded = song.artist.filter((ar) => {
@@ -61,6 +62,8 @@ const ItemComponent = ({
       }
       await deleteDocument(song ? SongRef : ArtistRef, item.id);
       setRefreshFlatList((prev) => !prev);
+      //refetch songs from db
+      fetchSongs();
     } catch (e) {
       console.log("error when delete", e);
     }
@@ -83,6 +86,7 @@ const ItemComponent = ({
         await Promise.all(restorePromises);
       }
       setRefreshFlatList((prev) => !prev);
+      fetchSongs();
     } catch (e) {
       console.log("error when restoring", e);
     }
