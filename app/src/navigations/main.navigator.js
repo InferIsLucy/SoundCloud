@@ -8,14 +8,11 @@ import { AppNavigator } from "./app.navigator";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import { AudioContext } from "../providers/audio.context";
 import WelcomeScreen from "../screens/Authentication/Welcome.screen";
-<<<<<<< HEAD
 import { Colors } from "../theme/color";
-=======
 import { AdminNavigator } from "./admin.navigator";
 import { AdminContextProvider } from "../providers/admin.context";
 
 const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
->>>>>>> c3bdd7d941d7eb3aa125f7e667ce3de38647fc06
 const Navigator = () => {
   const { isAuthenticated, isCheckingLoggedin, isLoading, user } = useContext(
     AuthenticationContext
@@ -24,50 +21,6 @@ const Navigator = () => {
   if (isCheckingLoggedin) {
     return <WelcomeScreen></WelcomeScreen>;
   }
-<<<<<<< HEAD
-  return (
-    <>
-      <Modal
-        animationType="fade"
-        transparent={false}
-        visible={isPlayerVisible}
-        onRequestClose={() => {
-          setPlayerVisbile(!isPlayerVisible);
-        }}
-      >
-        <PlayerScreen></PlayerScreen>
-      </Modal>
-      <NavigationContainer
-        style={{
-          backgroundColor: Colors.authBackground,
-        }}
-      >
-        <SafeAreaView
-          style={{
-            flex: 1,
-            backgroundColor: Colors.authBackground,
-          }}
-        >
-          {isAuthenticated == false ? (
-            <AuthNavigator
-              style={{
-                backgroundColor: Colors.authBackground,
-              }}
-            ></AuthNavigator>
-          ) : (
-            <AppNavigator>
-              {" "}
-              style=
-              {{
-                backgroundColor: Colors.authBackground,
-              }}
-            </AppNavigator>
-          )}
-        </SafeAreaView>
-      </NavigationContainer>
-    </>
-  );
-=======
   if (user != null && user.displayName == "admin") {
     return (
       <NavigationContainer>
@@ -106,7 +59,6 @@ const Navigator = () => {
         </NavigationContainer>
       </>
     );
->>>>>>> c3bdd7d941d7eb3aa125f7e667ce3de38647fc06
 };
 
 export default Navigator;

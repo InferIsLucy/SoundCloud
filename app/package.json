@@ -32,11 +32,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.7",
-<<<<<<< HEAD
     "react-native-linear-gradient": "^2.7.2",
-=======
-    "react-native-imaged-card-view": "^0.0.11",
->>>>>>> c3bdd7d941d7eb3aa125f7e667ce3de38647fc06
     "react-native-paper": "^5.6.0",
     "react-native-sound": "^0.11.2",
     "react-native-track-player": "^3.2.0",
