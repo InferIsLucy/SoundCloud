@@ -12,6 +12,7 @@ import { firebase } from "../config/firebase";
 import { getSongArtistFromArray } from "../utils/Converters";
 import * as SecureStore from "expo-secure-store";
 import { AuthenticationContext } from "./authentication.context";
+import { ArtistContext } from "./artist.context";
 
 export const AudioContext = createContext();
 Audio.setAudioModeAsync({
@@ -25,6 +26,7 @@ const songsRef = firebase.firestore().collection("songs");
 const userRef = firebase.firestore().collection("users");
 export const AudioContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
+  const { artists, isFetchingArtist } = useContext(ArtistContext);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [audioObj, setAudioObj] = useState(null);
@@ -41,23 +43,24 @@ export const AudioContextProvider = ({ children }) => {
   const savedPosition = useRef(0);
   const currentSongIndex = useRef(-1);
   const currentSongId = useRef(-1);
-  // function listFilesAndDirectories(reference, pageToken) {
-  //   return reference.list({ pageToken }).then((result) => {
-  //     // Loop over each item
-  //     result.items.forEach((ref) => {
-  //       ref
-  //         .getDownloadURL()
-  //         .then((url) => {
-  //           console.log("url", url);
-  //         })
-  //         .catch((err) => console.log("error when get download url"));
-  //     });
-  //     if (result.nextPageToken) {
-  //       return listFilesAndDirectories(reference, result.nextPageToken);
-  //     }
-  //     return Promise.resolve();
-  //   });
-  // }
+
+  function listFilesAndDirectories(reference, pageToken) {
+    return reference.list({ pageToken }).then((result) => {
+      // Loop over each item
+      result.items.forEach((ref) => {
+        ref
+          .getDownloadURL()
+          .then((url) => {
+            console.log("url", url);
+          })
+          .catch((err) => console.log("error when get download url"));
+      });
+      if (result.nextPageToken) {
+        return listFilesAndDirectories(reference, result.nextPageToken);
+      }
+      return Promise.resolve();
+    });
+  }
   // useEffect(() => {
   //   listFilesAndDirectories(songStorage).then(() => {
   //     console.log("Finished listing");
@@ -380,10 +383,15 @@ export const AudioContextProvider = ({ children }) => {
       const querySnapshot = await songsRef.where("deletedAt", "==", null).get();
       const newSongs = [];
       querySnapshot.forEach((documentSnapshot) => {
+        const artistListFromSong = documentSnapshot.data().artist;
+        const artistList = artists.filter((artist) => {
+          return artistListFromSong.some((item) => item.id == artist.id);
+        });
         newSongs.push({
           id: documentSnapshot.id,
           ...documentSnapshot.data(),
-          artistString: getSongArtistFromArray(documentSnapshot.data().artist),
+          artist: artistList,
+          artistString: getSongArtistFromArray(artistList),
         });
       });
       getLikedSongs(newSongs);
@@ -421,10 +429,10 @@ export const AudioContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isFetchingArtist) {
       fetchSongs();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isFetchingArtist]);
   const fetchSongs = async () => {
     const listLocal = await loadLocalSongs(); // Await the local songs array
     const listRemote = await getRemoteSongs(); // Await the remote songs array

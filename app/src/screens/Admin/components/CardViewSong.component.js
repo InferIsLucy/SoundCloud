@@ -12,19 +12,24 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../../../theme/color";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-import { getSongArtistFromArray } from "../../../utils/Converters";
+import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
+
+import { getSongArtistFromArray } from "../../../utils/Converters";
 import { AdminContext } from "../../../providers/admin.context";
 import { SongRef } from "../const";
 import { convertFirebaseTimestamp } from "../../../utils/TimeFormater";
 import { AudioContext } from "../../../providers/audio.context";
 import { ArtistContext } from "../../../providers/artist.context";
 import ArtistTag from "./ArtistTag.component";
+
 const CardView = ({ ...props }) => {
   const { imageLeft, imageRight, song, setModalVisible } = props;
   const { artists } = useContext(ArtistContext);
-  const { deleteDocument, setRefreshFlatList } = useContext(AdminContext);
+  const { deleteDocument, uploadFile, updateField, setRefreshFlatList } =
+    useContext(AdminContext);
   const [songArtists, setSongArtists] = useState([]);
+  const [avatarUri, setAvatarUri] = useState(song.imageUri);
   const handleDeleteDocument = async () => {
     try {
       await deleteDocument(SongRef, song.id);
@@ -32,6 +37,24 @@ const CardView = ({ ...props }) => {
       setModalVisible(false);
     } catch (e) {
       console.log("error when delete", e);
+    }
+  };
+  const handleChangeSongImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        console.log("result image picker", result);
+        const downloadUri = await uploadFile(result.uri, "images/");
+        await updateField(SongRef, song.id, "avtUri", downloadUri);
+        setAvatarUri(result.uri);
+      }
+    } catch (err) {
+      console.log("error when select image", err);
     }
   };
   //get song's artists
@@ -59,7 +82,16 @@ const CardView = ({ ...props }) => {
       ]}
       style={styles.background}
     >
-      <Image style={styles.imgLeft} source={{ uri: imageLeft }}></Image>
+      <ImageBackground
+        style={styles.bgImage}
+        imageStyle={styles.imgLeft}
+        source={{ uri: avatarUri }}
+      >
+        <TouchableOpacity onPress={handleChangeSongImage} style={styles.camera}>
+          <AntDesign name="camera" size={24} color="#a095cc" />
+        </TouchableOpacity>
+      </ImageBackground>
+
       <TouchableOpacity
         onPress={() => {
           setModalVisible((prev) => !prev);
@@ -156,13 +188,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   imgLeft: {
-    height: 180,
     borderRadius: 20,
+  },
+  bgImage: {
+    position: "absolute",
+    height: 180,
     width: 120,
     top: -20,
     left: -40,
-    resizeMode: "contain",
+  },
+  camera: {
     position: "absolute",
+    left: 50,
+    bottom: 12,
   },
   background: {
     marginTop: 60,

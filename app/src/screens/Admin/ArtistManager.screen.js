@@ -23,6 +23,7 @@ const ArtistManager = () => {
   const [search, setsearch] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const searchFilter = (text) => {
     if (text !== "") {
@@ -40,17 +41,18 @@ const ArtistManager = () => {
       setsearch(text);
     }
   };
-  const refreshSearch = () => {
-    setfilterdData([]);
-    setsearch("");
-    setFilteredArtists([]);
+  const fetchData = async () => {
+    const list = await getDocs(ArtistRef, "deletedAt", "==", null);
+    setArtists(list);
+    setFilteredArtists(list.filter((artist) => artist.deletedAt == null));
+  };
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
   };
   useEffect(() => {
-    (async () => {
-      const list = await getDocs(ArtistRef, "deletedAt", "==", null);
-      setArtists(list);
-      setFilteredArtists(list.filter((artist) => artist.deletedAt == null));
-    })();
+    fetchData();
   }, [refreshFlatlist]);
   return (
     <View style={styles.container}>
@@ -67,6 +69,8 @@ const ArtistManager = () => {
         />
       </View>
       <FlatList
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         extraData={refreshFlatlist}
         style={{ marginTop: 12, marginBottom: 60 }}
         data={filterdArtistData}

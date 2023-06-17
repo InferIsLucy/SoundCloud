@@ -3,6 +3,7 @@ import React from "react";
 import { getSongArtistFromArray } from "../../../utils/Converters";
 import CardView from "./CardViewSong.component";
 import CardViewArtist from "./CardViewArtist.component";
+
 const DetailItem = ({ song = null, artist = null, setDetailModalVisible }) => {
   if (song == null && artist == null) return;
   let item = {};
@@ -14,12 +15,13 @@ const DetailItem = ({ song = null, artist = null, setDetailModalVisible }) => {
       ...artist,
     };
   }
+
   return (
     <View>
       {song ? (
         <CardView
           song={song}
-          imageLeft={item.imageUri}
+          imageLft={item.imageUri}
           setModalVisible={setDetailModalVisible}
         ></CardView>
       ) : (

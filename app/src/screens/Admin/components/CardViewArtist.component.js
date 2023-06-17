@@ -1,6 +1,7 @@
 import {
   FlatList,
   Image,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,6 +15,7 @@ import { Feather } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 
 import { Colors } from "../../../theme/color";
 import { AdminContext } from "../../../providers/admin.context";
@@ -22,11 +24,19 @@ import { AudioContext } from "../../../providers/audio.context";
 import { ArtistContext } from "../../../providers/artist.context";
 import SongTag from "./SongTag.componet";
 import { convertFirebaseTimestamp } from "../../../utils/TimeFormater";
+import UpdateFieldComponent from "./UpdateFieldModal.component";
 const CardViewArtist = ({ ...props }) => {
-  const { imageLeft, artist, setModalVisible } = props;
+  const { imageLeft, artist, setModalVisible, listArtistSong } = props;
   const { songs } = useContext(AudioContext);
-  const { deleteDocument, setRefreshFlatList } = useContext(AdminContext);
+  const { deleteDocument, uploadFile, updateField, setRefreshFlatList } =
+    useContext(AdminContext);
   const [listSongOfArtist, setListSong] = useState([]);
+  const [isUpdateModalVisbile, setIsUpdateModalVisible] = useState(false);
+  const [artistName, setArtistName] = useState(artist.name);
+  const [selectedFieldName, setSelectedFieldName] = useState();
+  const [selectedValue, setSelectedValue] = useState();
+  const [setUIStateToNewValue, setCallbackUpdateUIState] = useState(null);
+  const [avatarUri, setAvatarUri] = useState(artist.avtUri);
   const [loves, setLoves] = useState("");
   const handleDeleteDocument = async () => {
     try {
@@ -50,7 +60,6 @@ const CardViewArtist = ({ ...props }) => {
       console.log("error when delete", e);
     }
   };
-  console.log("songs", songs.length);
   //get song's artists
   useEffect(() => {
     let count = 0;
@@ -58,9 +67,37 @@ const CardViewArtist = ({ ...props }) => {
       if (song.isLocalSong == null)
         return song.artist.some((songArtist) => songArtist.id == artist.id);
     });
-    console.log("list art", list.length);
+
     setListSong(list);
   }, []);
+  const handleChangeAvatar = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        console.log("result image picker", result);
+
+        const downloadUri = await uploadFile(result.uri, "images/");
+        await updateField(ArtistRef, artist.id, "avtUri", downloadUri);
+        setAvatarUri(result.uri);
+      }
+    } catch (err) {
+      console.log("error when select image", err);
+    }
+  };
+  const openUpdateModal = (fieldName, value, setUI) => {
+    console.log({ fieldName, value, setUI });
+    setIsUpdateModalVisible(true);
+    setSelectedFieldName(fieldName);
+    setSelectedValue(value);
+
+    // setCallbackUpdateUIState(setUI);
+    setCallbackUpdateUIState(() => setUI);
+  };
   return (
     <LinearGradient
       colors={[
@@ -72,7 +109,15 @@ const CardViewArtist = ({ ...props }) => {
       ]}
       style={styles.background}
     >
-      <Image style={styles.imgLeft} source={{ uri: imageLeft }}></Image>
+      <ImageBackground
+        style={styles.bgImage}
+        imageStyle={styles.imgLeft}
+        source={{ uri: avatarUri }}
+      >
+        <TouchableOpacity onPress={handleChangeAvatar} style={styles.camera}>
+          <AntDesign name="camera" size={24} color="#a095cc" />
+        </TouchableOpacity>
+      </ImageBackground>
       <TouchableOpacity
         onPress={() => {
           setModalVisible((prev) => !prev);
@@ -88,9 +133,17 @@ const CardViewArtist = ({ ...props }) => {
           width: "100%",
         }}
       >
-        <Text numberOfLines={2} style={styles.title}>
-          {artist.name}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text numberOfLines={2} style={styles.title}>
+            {artistName}
+          </Text>
+          <TouchableOpacity
+            onPress={() => openUpdateModal("name", artistName, setArtistName)}
+            style={{ marginLeft: 12 }}
+          >
+            <FontAwesome name="pencil" size={24} color="#514b75" />
+          </TouchableOpacity>
+        </View>
         <View
           style={{
             flexDirection: "row",
@@ -151,6 +204,15 @@ const CardViewArtist = ({ ...props }) => {
           <Text style={styles.btn}>Delete</Text>
         </TouchableOpacity>
       </View>
+      <UpdateFieldComponent
+        visible={isUpdateModalVisbile}
+        selectedFieldName={selectedFieldName}
+        selectedValue={selectedValue}
+        collectionName={ArtistRef}
+        docId={artist.id}
+        onClose={() => setIsUpdateModalVisible(false)}
+        updateNewValue={setUIStateToNewValue}
+      ></UpdateFieldComponent>
     </LinearGradient>
   );
 };
@@ -165,13 +227,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   imgLeft: {
-    height: 180,
     borderRadius: 20,
+    resizeMode: "cover",
+    position: "absolute",
+  },
+  bgImage: {
+    position: "absolute",
+    height: 180,
     width: 120,
     top: -20,
     left: -40,
-    resizeMode: "contain",
+  },
+  camera: {
     position: "absolute",
+    left: 50,
+    bottom: 12,
   },
   background: {
     marginTop: 60,
@@ -188,7 +258,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontWeight: "bold",
     fontSize: 26,
-    width: 200,
     marginLeft: 12,
   },
   subtitle: {

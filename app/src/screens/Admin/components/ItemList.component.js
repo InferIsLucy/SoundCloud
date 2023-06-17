@@ -6,10 +6,12 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React, { useContext, memo, useEffect } from "react";
+import React, { useContext, memo, useEffect, useState } from "react";
 import { EvilIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+
 import { AdminContext } from "../../../providers/admin.context";
 import { SongRef, ArtistRef } from "../const";
 import { getSongArtistFromArray } from "../../../utils/Converters";
@@ -22,15 +24,25 @@ const ItemComponent = ({
 }) => {
   const { deleteDocument, restoreDocument } = useContext(AdminContext);
   const { songs } = useContext(AudioContext);
+  const [listSongOfArtist, setListSong] = useState([]);
   let item = {};
   if (song) {
-    item = { ...song, artistString: getSongArtistFromArray(song.artist) };
+    item = { ...song, text: getSongArtistFromArray(song.artist) };
   } else {
     item = {
       imageUri: artist.avtUri,
       ...artist,
+      text: `${listSongOfArtist.length} bài hát`,
     };
   }
+  useEffect(() => {
+    const list = songs.filter((song) => {
+      if (song.isLocalSong == null)
+        return song.artist.some((songArtist) => songArtist.id == artist.id);
+    });
+
+    setListSong(() => list);
+  }, []);
   const handleDeleteDocument = async () => {
     try {
       if (artist) {
@@ -115,7 +127,7 @@ const ItemComponent = ({
           {item.name}
         </Text>
         <Text numberOfLines={1} style={{ color: "#cac5e5" }}>
-          {item.artistString}
+          {item.text}
         </Text>
       </View>
       {item.deletedAt == null ? (

@@ -42,6 +42,22 @@ export const AdminContextProvider = ({ children }) => {
       throw error;
     }
   };
+  const updateField = async (collectionName, docId, fieldName, newValue) => {
+    try {
+      const collectionRef = firebase.firestore().collection(collectionName);
+      const docRef = collectionRef.doc(docId);
+
+      await docRef.update({ [fieldName]: newValue });
+
+      console.log(
+        `Field "${fieldName}" in document with ID "${docId}" in collection "${collectionName}" has been updated to "${newValue}".`
+      );
+    } catch (error) {
+      console.error("Error updating field:", error);
+      throw error;
+    }
+  };
+
   const deleteDocument = async (collectionName, docId) => {
     try {
       const collectionRef = firebase.firestore().collection(collectionName);
@@ -107,6 +123,27 @@ export const AdminContextProvider = ({ children }) => {
       throw error;
     }
   };
+  // path = "mp3/" for example
+  const uploadFile = async (fileURL, path) => {
+    const response = await fetch(fileURL);
+    const blob = await response.blob();
+    const fileName = fileURL.substring(fileURL.lastIndexOf("/") + 1);
+
+    const storageRef = firebase.storage().ref().child(`${path}/${fileName}`);
+    const uploadTask = storageRef.put(blob);
+
+    try {
+      await uploadTask;
+      console.log(`${path} upload successful`);
+      const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+      console.log(`${path} URL:`, downloadURL);
+      return downloadURL;
+    } catch (error) {
+      console.log(`Error uploading ${path}:`, error);
+      return null;
+    }
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -116,6 +153,8 @@ export const AdminContextProvider = ({ children }) => {
         deleteDocument,
         getDeleteDocs,
         getDocs,
+        uploadFile,
+        updateField,
         restoreDocument,
       }}
     >

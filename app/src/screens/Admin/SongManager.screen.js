@@ -20,12 +20,13 @@ import DetailItem from "./components/DetailItem.component";
 const SongManager = () => {
   const { getDocs, refreshFlatlist, setRefreshFlatList } =
     useContext(AdminContext);
-  const { artists } = useContext(ArtistContext);
+  const { artists, isFetchingArtist } = useContext(ArtistContext);
   const [filteredSongs, setFilteredSongs] = useState([]);
   const [songs, setSongs] = useState([]);
   const [search, setsearch] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const searchFilter = (text) => {
     if (text !== "") {
@@ -45,22 +46,28 @@ const SongManager = () => {
       setsearch(text);
     }
   };
-  const refreshSearch = () => {
-    setfilterdData([]);
-    setsearch("");
-    setFilteredArtists([]);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
+  fetchData = async () => {
+    const list = await getDocs(SongRef, "deletedAt", "==", null);
+    const modifiedList = list.map((song) => {
+      if (song.isLocalSong == null) {
+        const artistListFromSong = song.artist;
+        const artistList = artists.filter((artist) => {
+          return artistListFromSong.some((item) => item.id == artist.id);
+        });
+        return { ...song, artist: artistList };
+      }
+    });
+    setSongs(() => modifiedList);
+    setFilteredSongs(() => modifiedList);
   };
   useEffect(() => {
-    (async () => {
-      const list = await getDocs(SongRef, "deletedAt", "==", null);
-      setSongs(list);
-      setFilteredSongs(
-        list.filter(
-          (song) => song.isLocalSong == null && song.deletedAt == null
-        )
-      );
-    })();
-  }, [refreshFlatlist]);
+    if (!isFetchingArtist) fetchData();
+  }, [refreshFlatlist, isFetchingArtist]);
   return (
     <View style={styles.container}>
       <View>
@@ -76,6 +83,8 @@ const SongManager = () => {
         />
       </View>
       <FlatList
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         extraData={refreshFlatlist}
         style={{ marginTop: 12, marginBottom: 60 }}
         data={filteredSongs}

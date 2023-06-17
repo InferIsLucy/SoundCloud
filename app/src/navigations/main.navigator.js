@@ -11,6 +11,7 @@ import WelcomeScreen from "../screens/Authentication/Welcome.screen";
 import { AdminNavigator } from "./admin.navigator";
 import { AdminContextProvider } from "../providers/admin.context";
 
+const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
 const Navigator = () => {
   const { isAuthenticated, isCheckingLoggedin, isLoading, user } = useContext(
     AuthenticationContext
@@ -23,7 +24,9 @@ const Navigator = () => {
     return (
       <NavigationContainer>
         <AdminContextProvider>
-          <AdminNavigator></AdminNavigator>
+          <SafeAreaView style={{ flex: 1, marginTop: STATUS_BAR_HEIGHT }}>
+            <AdminNavigator></AdminNavigator>
+          </SafeAreaView>
         </AdminContextProvider>
       </NavigationContainer>
     );

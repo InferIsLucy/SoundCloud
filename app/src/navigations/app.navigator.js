@@ -9,7 +9,7 @@ import UserProfile from "../screens/UserProfile/UserProfile.screen";
 import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
 
 //Library Screen
-import PlayList from "../screens/Libarary.screen";
+import PlayList from "../screens/Library.screen";
 
 const Tab = createBottomTabNavigator();
 

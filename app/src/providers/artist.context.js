@@ -11,6 +11,7 @@ export const ArtistContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
   const [isLoading, setIsLoading] = useState(false);
   const [artists, setArtists] = useState([]);
+  const [isFetchingArtist, setIsFetchingArtist] = useState(false);
   const [followedArtistIds, setFolloweredArtistIds] = useState([]);
   useEffect(() => {
     if (isAuthenticated) {
@@ -20,6 +21,7 @@ export const ArtistContextProvider = ({ children }) => {
   }, [isAuthenticated]);
   const getArtists = async () => {
     setIsLoading(true);
+    setIsFetchingArtist(true);
     try {
       const querySnapshot = await artistRef.get();
       const artistList = [];
@@ -32,6 +34,7 @@ export const ArtistContextProvider = ({ children }) => {
       });
       setIsLoading(false);
       setArtists(artistList);
+      setIsFetchingArtist(false);
     } catch (err) {
       console.log("error when get all artists", err);
       setIsLoading(false);
@@ -87,6 +90,7 @@ export const ArtistContextProvider = ({ children }) => {
       value={{
         isLoading,
         artists,
+        isFetchingArtist,
         toggleFollowing,
         getArtists,
         checkIfFollowed,
