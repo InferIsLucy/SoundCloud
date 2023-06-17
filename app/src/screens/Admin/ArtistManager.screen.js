@@ -18,6 +18,7 @@ import DetailItem from "./components/DetailItem.component";
 const ArtistManager = () => {
   const { getDocs, refreshFlatlist, setRefreshFlatList } =
     useContext(AdminContext);
+  const { fetchSongs } = useContext(AudioContext);
   const [filterdArtistData, setFilteredArtists] = useState([]);
   const [artists, setArtists] = useState([]);
   const [search, setsearch] = useState("");
@@ -48,6 +49,7 @@ const ArtistManager = () => {
   };
   const onRefresh = async () => {
     setRefreshing(true);
+
     await fetchData();
     setRefreshing(false);
   };

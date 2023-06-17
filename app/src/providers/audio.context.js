@@ -107,7 +107,6 @@ export const AudioContextProvider = ({ children }) => {
     setRepeatMode(newRepeatMode);
   };
   const initializeAudioObject = async (uri) => {
-    console.log("init audio object");
     try {
       setIsPlaying(false);
       const { sound: playbackObject } = await Audio.Sound.createAsync({
@@ -480,8 +479,8 @@ export const AudioContextProvider = ({ children }) => {
         setCurrentSong,
         setAudioObj,
         setPlayerVisbile,
-        handleSongEnd,
         setSongStatus: setSongStatus,
+        handleSongEnd,
         checkIfReact,
         sendReact,
         fetchSongs,

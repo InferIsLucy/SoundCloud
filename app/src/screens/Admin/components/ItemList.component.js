@@ -36,17 +36,17 @@ const ItemComponent = ({
     };
   }
   useEffect(() => {
-    const list = songs.filter((song) => {
-      if (song.isLocalSong == null)
-        return song.artist.some((songArtist) => songArtist.id == artist.id);
-    });
-
-    setListSong(() => list);
+    if (artist) {
+      const list = songs.filter((song) => {
+        if (song.isLocalSong == null)
+          return song.artist.some((songArtist) => songArtist.id == artist.id);
+      });
+      setListSong(() => list);
+    }
   }, []);
   const handleDeleteDocument = async () => {
     try {
       if (artist) {
-        console.log(artist.id);
         const deletePromises = songs.map(async (song) => {
           if (song.isLocalSong == null) {
             const checkIfIncluded = song.artist.filter((ar) => {

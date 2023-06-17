@@ -14,9 +14,11 @@ const AdminInfor = () => {
   useEffect(() => {
     (async () => {
       const listSong = await getDeleteDocs(SongRef);
-      setDeletedSongs(listSong);
+
+      setDeletedSongs(() => listSong);
       const listArtist = await getDeleteDocs(ArtistRef);
-      setDeletedArtists(listArtist);
+
+      setDeletedArtists(() => listArtist);
     })();
   }, [songs, refreshFlatlist]);
   return (
