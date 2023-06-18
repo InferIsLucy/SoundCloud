@@ -21,7 +21,7 @@ export const AdminContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshFlatlist, setRefreshFlatList] = useState(false);
   useEffect(() => {
-    // addField("artists", "email", "");
+    // addField("artists", "followers", []);
   }, []);
   const addField = async (collectionName, fieldName, value) => {
     setIsLoading(true);
@@ -63,7 +63,6 @@ export const AdminContextProvider = ({ children }) => {
       throw error;
     }
   };
-
   const deleteDocument = async (collectionName, docId) => {
     setIsLoading(true);
 
@@ -96,7 +95,6 @@ export const AdminContextProvider = ({ children }) => {
       throw error;
     }
   };
-
   const restoreDocument = async (collectionName, docId) => {
     try {
       const collectionRef = firebase.firestore().collection(collectionName);

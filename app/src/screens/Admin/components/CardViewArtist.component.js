@@ -165,6 +165,18 @@ const CardViewArtist = ({ ...props }) => {
             marginTop: 12,
           }}
         >
+          <Text numberOfLines={1} style={styles.listens}>
+            {` ${artist.followers.length} người theo dõi`}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 12,
+            marginTop: 12,
+          }}
+        >
           <FontAwesome name="birthday-cake" size={16} color="#514b75" />
           <Text numberOfLines={1} style={styles.listens}>
             {`${convertFirebaseTimestamp(artist.dateOfBirth)}`}
@@ -246,7 +258,7 @@ const styles = StyleSheet.create({
   background: {
     marginTop: 60,
     marginLeft: 50,
-    height: 320,
+    height: 360,
     margin: 24,
     borderRadius: 12,
     elevation: 4,

@@ -27,7 +27,22 @@ app.post("/notify", (req, res) => {
     });
   }
 });
-
+app.post("/notifyToUsers", (req, res) => {
+  const { tokenList, title, message } = req.body;
+  console.log("tokenList", tokenList);
+  if (title != null && message != null) {
+    tokenList.forEach((token) => {
+      sendNotification(token, title, message);
+    });
+    res.json({
+      message: "success",
+    });
+  } else {
+    res.json({
+      message: "failed",
+    });
+  }
+});
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

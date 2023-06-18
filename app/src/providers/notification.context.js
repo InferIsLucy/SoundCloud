@@ -26,7 +26,6 @@ const NEW_MESSAGE_TITLE = "New message";
 export const NotificationContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
   const { setPlayerVisbile } = useContext(AudioContext);
-
   const notificationListener = useRef();
   const responseListener = useRef();
   async function registerForPushNotificationsAsync() {
@@ -44,7 +43,6 @@ export const NotificationContextProvider = ({ children }) => {
         return;
       }
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
     } else {
       alert("Must use physical device for Push Notifications");
     }
@@ -71,6 +69,17 @@ export const NotificationContextProvider = ({ children }) => {
       } catch (err) {
         console.log("error when send notification", err);
       }
+    }
+  };
+  const sendNotificationToListUser = async (tokenList, title, message) => {
+    try {
+      await NotificationApi.sendNotificationToUserList(
+        tokenList,
+        title,
+        message
+      );
+    } catch (err) {
+      console.log("error when send notification", err);
     }
   };
   const saveUserExpoPushToken = (token) => {
@@ -103,9 +112,7 @@ export const NotificationContextProvider = ({ children }) => {
         saveUserExpoPushToken(token)
       );
       notificationListener.current =
-        Notifications.addNotificationReceivedListener((notification) => {
-          setPlayerVisbile(true);
-        });
+        Notifications.addNotificationReceivedListener((notification) => {});
       responseListener.current =
         Notifications.addNotificationResponseReceivedListener((response) => {
           console.log(response);
@@ -119,7 +126,9 @@ export const NotificationContextProvider = ({ children }) => {
     }
   }, [isAuthenticated]);
   return (
-    <NotificationContext.Provider value={{ sendNotification }}>
+    <NotificationContext.Provider
+      value={{ sendNotification, sendNotificationToListUser }}
+    >
       {children}
     </NotificationContext.Provider>
   );

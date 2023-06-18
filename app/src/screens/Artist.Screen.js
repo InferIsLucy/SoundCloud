@@ -24,9 +24,9 @@ const ArtistScreen = ({ artist = {}, setModalVisible }) => {
   const [artistSongs, setArtistSongs] = useState([]);
   const [isFollowed, setIsFollowed] = useState(false);
   useEffect(() => {
-    const filteredSongs = songs.filter((song) =>
-      song.artist.some((artistObj) => artistObj.id === artist.id)
-    );
+    const filteredSongs = songs.filter((song) => {
+      return song.artist.some((artistObj) => artistObj.id === artist.id);
+    });
     // lấy bài hát của nhạc sĩ
     setArtistSongs(filteredSongs);
   }, []);

@@ -38,17 +38,17 @@ const { width } = Dimensions.get("screen");
 const PlayList = () => {
   const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
     useContext(PlaylistContext);
-  const { songs, listeningHistory } = useContext(AudioContext);
+  const { songs, listeningHistory, localSongs } = useContext(AudioContext);
   const LinkImg =
     "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
   const [modalVisible, setModalVisible] = useState(false);
-  const [localSongs, setLocalSongs] = useState([]);
-  useEffect(() => {
-    const list = songs.filter((song) => {
-      return song.isLocalSong == true;
-    });
-    setLocalSongs(list);
-  }, []);
+  // const [localSongs, setLocalSongs] = useState([]);
+  // useEffect(() => {
+  //   const list = songs.filter((song) => {
+  //     return song.isLocalSong == true;
+  //   });
+  //   setLocalSongs(list);
+  // }, []);
   const Card = ({ song = {} }) => {
     return (
       <View activeOpacity={0.8}>

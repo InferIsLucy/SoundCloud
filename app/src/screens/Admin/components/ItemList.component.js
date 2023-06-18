@@ -130,9 +130,19 @@ const ItemComponent = ({
         >
           {item.name}
         </Text>
-        <Text numberOfLines={1} style={{ color: "#cac5e5" }}>
-          {item.text}
-        </Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text numberOfLines={1} style={{ color: "#cac5e5" }}>
+            {item.text}
+          </Text>
+          {artist && (
+            <Text
+              numberOfLines={1}
+              style={{ marginLeft: 12, color: "#cac5e5" }}
+            >
+              {`${artist.followers.length} người theo dõi`}
+            </Text>
+          )}
+        </View>
       </View>
       {item.deletedAt == null ? (
         <>

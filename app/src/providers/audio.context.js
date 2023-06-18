@@ -364,7 +364,7 @@ export const AudioContextProvider = ({ children }) => {
           ...file,
           duration: file.duration * 1000,
           name: file.filename,
-          artists: [],
+          artist: [],
           imageUri: "",
           isLocalSong: true,
         }));
@@ -472,7 +472,8 @@ export const AudioContextProvider = ({ children }) => {
         likedSongs,
         currentSongIndex,
         currentSong,
-        songs,
+        songs: songs.filter((song) => song.isLocalSong == null),
+        localSongs: songs.filter((song) => song.isLocalSong != null),
         songDuration,
         isPlayerVisible,
         savedPosition,

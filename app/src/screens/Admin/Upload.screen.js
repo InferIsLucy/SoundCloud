@@ -25,9 +25,13 @@ import { isStringNullOrEmpty, isValidAge } from "../../utils/Validator";
 import ArtistListModal from "./components/ArtistListModal.component";
 import AddArtistModal from "./components/AddArtistModal.component";
 import ArtistItem from "./components/ArtistItem.component";
+import { AuthenticationContext } from "../../providers/authentication.context";
+import { NotificationContext } from "../../providers/notification.context";
 
 const UploadScreen = () => {
   const { uploadFile, addDocument } = useContext(AdminContext);
+  const { getListUser } = useContext(AuthenticationContext);
+  const { sendNotificationToListUser } = useContext(NotificationContext);
   const [imageSongUri, setImageSongUri] = useState(null);
   const [mp3Uri, setMp3Uri] = useState(null);
   const [mp3Name, setMp3Name] = useState("");
@@ -53,6 +57,21 @@ const UploadScreen = () => {
       }
       const downloadImageUri = await uploadFile(imageSongUri, "images/");
       const downloadSongUri = await uploadFile(mp3Uri, "songs/");
+      const allUserId = selectedArtists.reduce(
+        (acc, artist) => acc.concat(artist.followers),
+        []
+      );
+      const uniqueIds = allUserId.filter(
+        (value, index, self) => self.indexOf(value) === index
+      );
+      console.log("uniqueIds", uniqueIds);
+
+      const users = await getListUser(uniqueIds);
+      const userTokens = users.map((user) => {
+        if (user.expoNotifyToken) return user.expoNotifyToken;
+      });
+      console.log("notifiedUserTokens", userTokens);
+
       const newSong = {
         name,
         publishDate,
@@ -64,7 +83,12 @@ const UploadScreen = () => {
         listens: 0,
         duration: 0,
       };
-      addDocument(SongRef, newSong);
+      await addDocument(SongRef, newSong);
+      await sendNotification(
+        userTokens,
+        "THÔNG BÁO MỚI",
+        `Bài hát ${name} vừa được phát hành.`
+      );
       Alert.alert("Success!");
       refreshForm();
       setIsLoading(false);
@@ -72,6 +96,9 @@ const UploadScreen = () => {
       console.log(er);
       setIsLoading(false);
     }
+  };
+  const sendNotification = async (userTokens, title, message) => {
+    await sendNotificationToListUser(userTokens, title, message);
   };
   const refreshForm = () => {
     setImageSongUri(null);

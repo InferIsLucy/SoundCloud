@@ -27,7 +27,7 @@ const PlayerScreen = () => {
   const {
     songs,
     handleSongEnd,
-    currentSong,
+    currentSong = {},
     audioObj,
     isLoading,
     isPlaying,

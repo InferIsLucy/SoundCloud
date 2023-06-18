@@ -8,4 +8,11 @@ export const NotificationApi = {
       title,
     });
   },
+  sendNotificationToUserList: async (tokenList, title, message) => {
+    return await axiosClient.post("/notifyToUsers", {
+      tokenList,
+      message,
+      title,
+    });
+  },
 };

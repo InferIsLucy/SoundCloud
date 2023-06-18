@@ -50,6 +50,18 @@ export const AuthenticationContextProvider = ({ children }) => {
         throw err;
       });
   };
+  const getListUser = async (listUserId) => {
+    try {
+      const querySnapshot = await usersRef
+        .where("userId", "in", listUserId)
+        .get();
+      const users = querySnapshot.docs.map((doc) => doc.data());
+      return users;
+    } catch (err) {
+      console.log("error when get list user", err);
+      throw err;
+    }
+  };
   const saveUserId = async (userId) => {
     try {
       const id = JSON.stringify(userId);
@@ -215,6 +227,7 @@ export const AuthenticationContextProvider = ({ children }) => {
         auth,
         isCheckingLoggedin,
         setError,
+        getListUser,
         sendPasswordResetEmail,
         createUserWithEmail,
         updateUserInfor,

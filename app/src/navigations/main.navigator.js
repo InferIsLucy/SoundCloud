@@ -25,7 +25,7 @@ const Navigator = () => {
     return (
       <NavigationContainer>
         <AdminContextProvider>
-          <SafeAreaView style={{ flex: 1, marginTop: STATUS_BAR_HEIGHT }}>
+          <SafeAreaView style={{ flex: 1 }}>
             <AdminNavigator></AdminNavigator>
           </SafeAreaView>
         </AdminContextProvider>
