@@ -17,6 +17,7 @@ import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import * as DocumentPicker from "expo-document-picker";
+import { Audio } from "expo-av";
 
 import { ArtistRef, SongRef } from "./const";
 import { AdminContext } from "../../providers/admin.context";
@@ -27,8 +28,10 @@ import AddArtistModal from "./components/AddArtistModal.component";
 import ArtistItem from "./components/ArtistItem.component";
 import { AuthenticationContext } from "../../providers/authentication.context";
 import { NotificationContext } from "../../providers/notification.context";
+import { AudioContext } from "../../providers/audio.context";
 
 const UploadScreen = () => {
+  const playbackObject = new Audio.Sound();
   const { uploadFile, addDocument } = useContext(AdminContext);
   const { getListUser } = useContext(AuthenticationContext);
   const { sendNotificationToListUser } = useContext(NotificationContext);
@@ -57,6 +60,11 @@ const UploadScreen = () => {
       }
       const downloadImageUri = await uploadFile(imageSongUri, "images/");
       const downloadSongUri = await uploadFile(mp3Uri, "songs/");
+
+      const { sound: playbackObject } = await Audio.Sound.createAsync({
+        uri: downloadSongUri,
+      });
+      const status = await playbackObject.getStatusAsync();
       const allUserId = selectedArtists.reduce(
         (acc, artist) => acc.concat(artist.followers),
         []
@@ -64,13 +72,12 @@ const UploadScreen = () => {
       const uniqueIds = allUserId.filter(
         (value, index, self) => self.indexOf(value) === index
       );
-      console.log("uniqueIds", uniqueIds);
 
       const users = await getListUser(uniqueIds);
       const userTokens = users.map((user) => {
         if (user.expoNotifyToken) return user.expoNotifyToken;
       });
-      console.log("notifiedUserTokens", userTokens);
+      console.log("status", status.durationMillis);
 
       const newSong = {
         name,
@@ -81,7 +88,7 @@ const UploadScreen = () => {
         likes: [],
         artist: selectedArtists,
         listens: 0,
-        duration: 0,
+        duration: status.durationMillis,
       };
       await addDocument(SongRef, newSong);
       await sendNotification(
