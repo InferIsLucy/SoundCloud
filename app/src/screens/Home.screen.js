@@ -94,7 +94,6 @@ const HomeScreen = ({ navigation }) => {
     setsearch("");
     setfilterdArtistData([]);
   };
-  console.log("re-render");
   const handleItemClick = (song, type) => {
     switch (type) {
       case "new":

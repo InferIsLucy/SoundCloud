@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  BackHandler,
   View,
 } from "react-native";
 import React, {
@@ -16,33 +17,44 @@ import React, {
 import Slider from "@react-native-community/slider";
 import { Colors } from "../../theme/color";
 import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 
 import PlayerController from "./components/PlayerController.component";
 import BottomReactionBar from "./components/BottomBar.component";
 import CommentScreen from "../commentScreen/Comment.screen";
 import { AudioContext } from "../../providers/audio.context";
 import { formatTime } from "../../utils/TimeFormater";
+import OptionsModal from "./components/OptionsModal.component";
 
 const PlayerScreen = ({ navigation }) => {
   const {
-    songs,
     handleSongEnd,
     currentSong = {},
     audioObj,
-    isLoading,
     isPlaying,
-    currentSongIndex,
     //playback status
-    currentPosition: pos,
-    playbackStatus,
     setBottomBarVisible,
-    savedPosition,
   } = useContext(AudioContext);
 
   const [currentPosition, setCurrentPosition] = useState(0);
   const [songDuration, setSongDuration] = useState(0);
   const [commentsVisible, setCommentsVisible] = useState(false);
+  const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
   // const intervalRef = useRef(null);
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack();
+      setBottomBarVisible(true);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
   useEffect(() => {
     setBottomBarVisible(false);
   }, []);
@@ -54,11 +66,7 @@ const PlayerScreen = ({ navigation }) => {
           intervalRef.current = setInterval(async () => {
             {
               const status = await audioObj.getStatusAsync();
-              console.log(
-                status.positionMillis,
-                status.durationMillis,
-                !status.isLoading
-              );
+
               if (
                 status.positionMillis == status.durationMillis &&
                 !status.isLooping
@@ -84,7 +92,12 @@ const PlayerScreen = ({ navigation }) => {
   }, [audioObj, currentSong, isPlaying]);
 
   return (
-    <View style={[{ opacity: commentsVisible ? 0.5 : 1 }, styles.container]}>
+    <View
+      style={[
+        { opacity: commentsVisible || isOptionModalVisible ? 0.5 : 1 },
+        styles.container,
+      ]}
+    >
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
@@ -98,20 +111,21 @@ const PlayerScreen = ({ navigation }) => {
         <View
           style={{
             flex: 1,
-            marginRight: 32,
           }}
         >
           <Text style={styles.text2}>now playing</Text>
-          <Text
-            numberOfLines={1}
-            style={[
-              styles.text1,
-              { marginLeft: 24, marginRight: 24, fontWeight: 500 },
-            ]}
-          >
+          <Text numberOfLines={1} style={[styles.text1, { fontWeight: 500 }]}>
             {currentSong.name || "Song Name"}
           </Text>
         </View>
+        <TouchableOpacity
+          onPress={() => {
+            setIsOptionModalVisible(true);
+          }}
+          style={{ paddingLeft: 8, paddingRight: 4 }}
+        >
+          <Feather name="more-vertical" size={32} color="white" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.artworkWrapper}>
@@ -214,6 +228,13 @@ const PlayerScreen = ({ navigation }) => {
           ></CommentScreen>
         </View>
       </Modal>
+      <OptionsModal
+        visible={isOptionModalVisible}
+        song={currentSong}
+        onClose={() => {
+          setIsOptionModalVisible(false);
+        }}
+      ></OptionsModal>
     </View>
   );
 };

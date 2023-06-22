@@ -86,7 +86,47 @@ export const PlaylistContextProvider = ({ children }) => {
       return null;
     }
   };
+  const addSongToPlaylist = async (songId, playlist) => {
+    try {
+      if (!playlist.songIds.includes(songId)) {
+        await playlistRef.doc(playlist.id).update({
+          songIds: [...playlist.songIds, songId],
+        });
+        setPlaylists((prevPlaylists) =>
+          prevPlaylists.map((pl) =>
+            pl.id === playlist.id
+              ? { ...pl, songIds: [...pl.songIds, songId] }
+              : pl
+          )
+        );
+      }
+    } catch (error) {
+      console.log("Error adding song to playlist:", error);
+    }
+  };
 
+  const deleteSongInPlaylist = async (songId, playlist) => {
+    try {
+      await playlistRef.doc(playlist.id).update({
+        songIds: playlist.songIds.filter((id) => id !== songId),
+      });
+      setPlaylists((prevPlaylists) =>
+        prevPlaylists.map((pl) =>
+          pl.id === playlist.id
+            ? { ...pl, songIds: pl.songIds.filter((id) => id !== songId) }
+            : pl
+        )
+      );
+    } catch (error) {
+      console.log("Error deleting song in playlist:", error);
+    }
+  };
+
+  const getPlaylistSongs = (songs, playlist) => {
+    return songs.filter((song) => {
+      playlist.songIds.include(song.id);
+    });
+  };
   return (
     <PlaylistContext.Provider
       value={{
@@ -94,6 +134,9 @@ export const PlaylistContextProvider = ({ children }) => {
         createNewPlaylist,
         updatePlaylist,
         deletePlaylist,
+        deleteSongInPlaylist,
+        addSongToPlaylist,
+        getPlaylistSongs,
       }}
     >
       {children}

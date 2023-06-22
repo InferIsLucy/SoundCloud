@@ -12,6 +12,7 @@ import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
 import { Colors } from "../theme/color";
 import PlayList from "../screens/Library.screen";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
+import Timer from "../screens/MusicPlayer/components/Timer";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -71,21 +72,15 @@ export const AppNavigator = () => {
         <Stack.Screen name="AppTabs" component={Tabs} />
         <Stack.Screen name="Player" component={PlayerScreen} />
       </Stack.Navigator>
-
+      <BottomPlayer></BottomPlayer>
       <View
         style={{
           position: "absolute",
-          bottom: 48,
-          left: 0,
-          right: 0,
-          backgroundColor: Colors.authBackground,
+          top: 12,
+          right: 12,
         }}
       >
-        <BottomPlayer
-          style={{
-            backgroundColor: Colors.authBackground,
-          }}
-        ></BottomPlayer>
+        <Timer duration={15}></Timer>
       </View>
     </>
   );

@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-import ItemPlayList from "./components/ItemPlayList.component";
+import SongItem from "./components/SongItem.component";
 import { ImageBackground } from "react-native";
 import { AudioContext } from "../../providers/audio.context";
 
@@ -74,7 +74,7 @@ const PlayList = ({ navigation }) => {
           <Entypo name="beamed-note" size={24} color="white" />
           <Text style={{ color: "white", marginLeft: 4 }}>Song Playlist</Text>
         </View>
-        <ItemPlayList navigation={navigation} song={songs[0]}></ItemPlayList>
+        <SongItem navigation={navigation} song={songs[0]}></SongItem>
       </View>
     </View>
   );

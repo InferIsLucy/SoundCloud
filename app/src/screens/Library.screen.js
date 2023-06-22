@@ -20,7 +20,7 @@ import { PlaylistContext } from "../providers/playlist.context";
 import ListPlayList from "./MusicPlayer/components/ListPlayList.component";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { fontSizes } from "../theme/fontSizes";
-import ItemPlayList from "./MusicPlayer/components/ItemPlayList.component";
+import SongItem from "./MusicPlayer/components/SongItem.component";
 import places from "../consts/places";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../theme/color";

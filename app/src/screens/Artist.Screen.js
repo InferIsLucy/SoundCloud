@@ -13,7 +13,7 @@ import { Spacer } from "../components/spacer";
 import { Ionicons } from "@expo/vector-icons";
 import { AudioContext } from "../providers/audio.context";
 
-import ItemPlayList from "./MusicPlayer/components/ItemPlayList.component";
+import SongItem from "./MusicPlayer/components/SongItem.component";
 import { AuthenticationContext } from "../providers/authentication.context";
 import { ArtistContext } from "../providers/artist.context";
 const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
@@ -135,11 +135,7 @@ const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
         <FlatList
           data={artistSongs}
           renderItem={({ item, index }) => (
-            <ItemPlayList
-              navigation={navigation}
-              songIndex={index}
-              song={item}
-            />
+            <SongItem navigation={navigation} songIndex={index} song={item} />
           )}
           keyExtractor={(item) => item.id}
         />

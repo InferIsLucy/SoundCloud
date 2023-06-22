@@ -13,7 +13,7 @@ import * as ImagePicker from "expo-image-picker";
 import { fontSizes } from "../../theme/fontSizes";
 import { Spacer } from "../../components/spacer";
 import { Ionicons } from "@expo/vector-icons";
-import ItemPlayList from "../MusicPlayer/components/ItemPlayList.component";
+import SongItem from "../MusicPlayer/components/SongItem.component";
 import FollowingDetail from "./FollowingDetail.screen";
 import { AuthenticationContext } from "../../providers/authentication.context";
 import { AudioContext } from "../../providers/audio.context";
@@ -155,11 +155,7 @@ const UserProfile = ({ navigation }) => {
         <FlatList
           data={likedSongs}
           renderItem={({ item, index }) => (
-            <ItemPlayList
-              navigation={navigation}
-              songIndex={index}
-              song={item}
-            />
+            <SongItem navigation={navigation} songIndex={index} song={item} />
           )}
           keyExtractor={(item) => item.id}
         />

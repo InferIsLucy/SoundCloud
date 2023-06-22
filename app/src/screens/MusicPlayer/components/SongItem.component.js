@@ -5,7 +5,7 @@ import { formatTime } from "../../../utils/TimeFormater";
 import { AuthenticationContext } from "../../../providers/authentication.context";
 
 //SongItem
-const ItemPlayList = ({ navigation, song = {} }) => {
+const SongItem = ({ navigation, song = {} }) => {
   const { setCurrentSong, addSongToHistory } = useContext(AudioContext);
   const { user } = useContext(AuthenticationContext);
   const handleItemClick = (song) => {
@@ -46,7 +46,7 @@ const ItemPlayList = ({ navigation, song = {} }) => {
   );
 };
 
-export default memo(ItemPlayList);
+export default memo(SongItem);
 
 const styles = StyleSheet.create({
   container: {
