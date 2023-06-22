@@ -134,9 +134,6 @@ const PlayList = ({ navigation }) => {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: Colors.authBackground }}>
       <View style={styles.header}>
-        <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
-          <Ionicons name="chevron-back" size={32} color="black" />
-        </TouchableOpacity>
         <View
           style={{
             flex: 1,
@@ -269,12 +266,13 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.heading3,
     color: Colors.defaultTextColor,
     fontWeight: 500,
+    marginLeft: 35,
     textAlign: "center",
   },
   header: {
     height: 60,
     paddingTop: 12,
-    flexDirection: "row",
+    //flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
   },

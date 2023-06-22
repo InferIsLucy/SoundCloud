@@ -93,7 +93,7 @@ const PlayerScreen = ({ navigation }) => {
           }}
           style={{ paddingLeft: 8, paddingRight: 4 }}
         >
-          <Ionicons name="chevron-back" size={32} color="black" />
+          <Ionicons name="chevron-back" size={32} color="#ffffff" />
         </TouchableOpacity>
         <View
           style={{

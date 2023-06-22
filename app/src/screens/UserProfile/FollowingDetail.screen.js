@@ -11,6 +11,7 @@ import { fontSizes } from "../../theme/fontSizes";
 import React, { useContext, useEffect, useState } from "react";
 import FollowingItem from "./components/FollowingItem.component";
 import { ArtistContext } from "../../providers/artist.context";
+import { Colors } from "../../theme/color";
 const FollowingDetail = ({ artistIds = [], setModalVisible }) => {
   const { artists } = useContext(ArtistContext);
   const [followArtists, setFollowArtists] = useState([]);
@@ -22,13 +23,19 @@ const FollowingDetail = ({ artistIds = [], setModalVisible }) => {
     );
   }, []);
   return (
-    <View>
+    <View
+      style={{
+        width: "100%",
+        height: "100%",
+        backgroundColor: Colors.authBackground,
+      }}
+    >
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => setModalVisible(false)}
           style={{ paddingLeft: 8, paddingRight: 4 }}
         >
-          <Ionicons name="chevron-back" size={32} color="black" />
+          <Ionicons name="chevron-back" size={32} color="#ffffff" />
         </TouchableOpacity>
         <View
           style={{
@@ -63,5 +70,6 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.heading3,
     fontWeight: 500,
     textAlign: "center",
+    color: Colors.defaultTextColor,
   },
 });
