@@ -74,7 +74,6 @@ export const PlaylistContextProvider = ({ children }) => {
       console.log("Error deleting playlist:", error);
     }
   };
-
   const loadSongOfPlaylist = (playlistId) => {
     const playlist = playlists.find((playlist) => playlist.id === playlistId);
     if (playlist) {
@@ -123,9 +122,8 @@ export const PlaylistContextProvider = ({ children }) => {
   };
 
   const getPlaylistSongs = (songs, playlist) => {
-    return songs.filter((song) => {
-      playlist.songIds.include(song.id);
-    });
+    const res = songs.filter((song) => playlist.songIds.includes(song.id));
+    return res;
   };
   return (
     <PlaylistContext.Provider

@@ -47,6 +47,7 @@ const PlayList = ({ navigation }) => {
     localSongs,
     addSongToHistory,
     setCurrentSong,
+    isBottomBarVisible,
   } = useContext(AudioContext);
   const LinkImg =
     "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
@@ -132,7 +133,13 @@ const PlayList = ({ navigation }) => {
     navigation.navigate("Player");
   };
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: Colors.authBackground }}>
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: Colors.authBackground,
+        marginBottom: isBottomBarVisible ? 90 : 10,
+      }}
+    >
       <View style={styles.header}>
         <View
           style={{
@@ -188,11 +195,16 @@ const PlayList = ({ navigation }) => {
         /> */}
         {playlists.map((playlist) => {
           return (
-            <ListPlayList
+            <TouchableOpacity
               key={`key ${playlist.id}`}
-              Item={playlist.name}
-              O={playlist.id}
-            />
+              onPress={() => {
+                navigation.navigate("DetailPlaylist", {
+                  playlist,
+                });
+              }}
+            >
+              <ListPlayList Item={playlist.name} O={playlist.id} />
+            </TouchableOpacity>
           );
         })}
 

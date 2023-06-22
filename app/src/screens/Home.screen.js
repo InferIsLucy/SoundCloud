@@ -28,8 +28,14 @@ import { Box } from "@react-native-material/core";
 
 const { width } = Dimensions.get("screen");
 const HomeScreen = ({ navigation }) => {
-  const { songs, currentSong, setPlaylist, setCurrentSong, addSongToHistory } =
-    useContext(AudioContext);
+  const {
+    songs,
+    currentSong,
+    setPlaylist,
+    isBottomBarVisible,
+    setCurrentSong,
+    addSongToHistory,
+  } = useContext(AudioContext);
   const LinkImg =
     "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
 
@@ -345,7 +351,7 @@ const HomeScreen = ({ navigation }) => {
       <StatusBar translucent={false} backgroundColor={Colors.authBackground} />
 
       <ScrollView
-        style={{ marginBottom: currentSong ? 100 : 15 }}
+        style={{ marginBottom: isBottomBarVisible ? 100 : 15 }}
         showsHorizontalScrollIndicator={false}
       >
         <ImageBackground

@@ -9,7 +9,6 @@ const BottomPlayer = () => {
   const { isPlaying, audioEvents, isBottomBarVisible, currentSong } =
     useContext(AudioContext);
   const navigation = useNavigation();
-  console.log("isBottomBarr", isBottomBarVisible);
   // to show bottom player or not
   if (currentSong == null || !isBottomBarVisible) {
     return <></>;

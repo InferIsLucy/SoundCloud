@@ -13,14 +13,19 @@ import { Colors } from "../theme/color";
 import PlayList from "../screens/Library.screen";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import Timer from "../screens/MusicPlayer/components/Timer";
+import DetailPlaylist from "../screens/MusicPlayer/DetailPlayList.screen";
+import { AudioContext } from "../providers/audio.context";
+import { useContext } from "react";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const Tabs = () => {
+  const { isBottomBarVisible } = useContext(AudioContext);
   return (
     <Tab.Navigator
       style={{
+        marginTop: isBottomBarVisible ? 100 : 15,
         backgroundColor: Colors.authBackground,
       }}
       initialRouteName="Home"
@@ -71,6 +76,7 @@ export const AppNavigator = () => {
       >
         <Stack.Screen name="AppTabs" component={Tabs} />
         <Stack.Screen name="Player" component={PlayerScreen} />
+        <Stack.Screen name="DetailPlaylist" component={DetailPlaylist} />
       </Stack.Navigator>
       <BottomPlayer></BottomPlayer>
       <View

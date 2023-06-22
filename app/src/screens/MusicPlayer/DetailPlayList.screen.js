@@ -1,20 +1,42 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React, { useContext } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import SongItem from "./components/SongItem.component";
 import { ImageBackground } from "react-native";
 import { AudioContext } from "../../providers/audio.context";
+import { PlaylistContext } from "../../providers/playlist.context";
 
 //DetailPlaylist
-const PlayList = ({ navigation }) => {
-  const { songs, currentSong } = useContext(AudioContext);
+const DetailPlaylist = ({ navigation, route }) => {
+  const { playlist } = route.params;
+  console.log("show", playlist);
+  const { songs, currentSong, setPlaylist } = useContext(AudioContext);
+  const { getPlaylistSongs } = useContext(PlaylistContext);
+  const [playlistSongs, setPlaylistSongs] = useState([]);
+  useEffect(() => {
+    const result = getPlaylistSongs(songs, playlist);
+    setPlaylistSongs(result);
+    setPlaylist(result);
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.header1}>
-          <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={{ paddingLeft: 8, paddingRight: 4 }}
+          >
             <Ionicons name="chevron-back" size={32} color="#cac5e5" />
           </TouchableOpacity>
           <View
@@ -54,9 +76,7 @@ const PlayList = ({ navigation }) => {
         >
           <Image
             style={{ width: 160, height: 160, borderRadius: 24 }}
-            source={{
-              uri: "https://scontent.fsgn13-4.fna.fbcdn.net/v/t39.30808-6/345233585_3487344644926329_8037647308456647249_n.jpg?stp=dst-jpg_s600x600&_nc_cat=110&ccb=1-7&_nc_sid=730e14&_nc_ohc=VbpDJyKRgJQAX9ENQew&_nc_ht=scontent.fsgn13-4.fna&oh=00_AfCmPytdWUlbad82ZV66FR1hC5HftsYHUBs251YtDTypeg&oe=645B8F2C",
-            }}
+            source={require("../../../assets/girl_listening_to_music.png")}
           ></Image>
         </View>
       </View>
@@ -74,13 +94,18 @@ const PlayList = ({ navigation }) => {
           <Entypo name="beamed-note" size={24} color="white" />
           <Text style={{ color: "white", marginLeft: 4 }}>Song Playlist</Text>
         </View>
-        <SongItem navigation={navigation} song={songs[0]}></SongItem>
+        <FlatList
+          data={playlistSongs}
+          renderItem={({ item }) => (
+            <SongItem navigation={navigation} song={item}></SongItem>
+          )}
+        />
       </View>
     </View>
   );
 };
 
-export default PlayList;
+export default DetailPlaylist;
 
 const styles = StyleSheet.create({
   container: {
