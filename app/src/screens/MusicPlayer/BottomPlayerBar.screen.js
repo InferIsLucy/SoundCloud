@@ -3,16 +3,18 @@ import React, { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { AudioContext } from "../../providers/audio.context";
-const BottomPlayer = () => {
-  const { isPlaying, audioEvents, setPlayerVisbile, currentSong } =
+const BottomPlayer = ({ navigation }) => {
+  const { isPlaying, audioEvents, isBottomBarVisible, currentSong } =
     useContext(AudioContext);
-  if (currentSong == null) {
+
+  // to show bottom player or not
+  if (currentSong == null || !isBottomBarVisible) {
     return <></>;
   }
   return (
     <TouchableOpacity
       onPress={() => {
-        setPlayerVisbile((prev) => !prev);
+        navigation.navigate("Player");
       }}
       style={styles.container}
     >

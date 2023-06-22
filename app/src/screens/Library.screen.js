@@ -25,6 +25,7 @@ import places from "../consts/places";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../theme/color";
 import { AudioContext } from "../providers/audio.context";
+import { AuthenticationContext } from "../providers/authentication.context";
 const color = {
   APP_BG: "#fff",
   FONT: "#303d49",
@@ -35,13 +36,23 @@ const color = {
   ACTIVE_FONT: "#fff",
 };
 const { width } = Dimensions.get("screen");
-const PlayList = () => {
+const PlayList = ({ navigation }) => {
   const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
     useContext(PlaylistContext);
-  const { songs, listeningHistory, localSongs } = useContext(AudioContext);
+  const { user } = useContext(AuthenticationContext);
+  const {
+    songs,
+    listeningHistory,
+    setPlaylist,
+    localSongs,
+    addSongToHistory,
+    setCurrentSong,
+  } = useContext(AudioContext);
   const LinkImg =
     "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
   const [modalVisible, setModalVisible] = useState(false);
+  const [isHistoryItemClicked, setIsHistoryItemClicked] = useState(false);
+  const [isLocalItemClicked, setIslocalItemClicked] = useState(false);
   // const [localSongs, setLocalSongs] = useState([]);
   // useEffect(() => {
   //   const list = songs.filter((song) => {
@@ -96,6 +107,30 @@ const PlayList = () => {
       </View>
     );
   };
+  const handleItemClick = (song, type) => {
+    switch (type) {
+      case "history":
+        //check if fisrt time click on item
+        if (!isHistoryItemClicked) {
+          setPlaylist(listeningHistory);
+        }
+        setIsHistoryItemClicked(false);
+        setIslocalItemClicked(true);
+        break;
+      case "local":
+        if (!isLocalItemClicked) {
+          setPlaylist(localSongs);
+        }
+        setIsHistoryItemClicked(true);
+        setIslocalItemClicked(false);
+        break;
+    }
+    handlePlaySong(song);
+  };
+  const handlePlaySong = (song) => {
+    setCurrentSong(() => song);
+    navigation.navigate("Player");
+  };
   return (
     <ScrollView style={{ flex: 1, backgroundColor: Colors.authBackground }}>
       <View style={styles.header}>
@@ -119,7 +154,13 @@ const PlayList = () => {
             data={listeningHistory}
             horizontal
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <Card song={item} />}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => handleItemClick(item, "history")}
+              >
+                <Card song={item} />
+              </TouchableOpacity>
+            )}
           />
           <Text style={styles.sectionTitle}>Your local song</Text>
           <FlatList
@@ -128,7 +169,11 @@ const PlayList = () => {
             horizontal
             showsHorizontalScrollIndicator={false}
             data={localSongs}
-            renderItem={({ item }) => <Card song={item} />}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleItemClick(item, "local")}>
+                <Card song={item} />
+              </TouchableOpacity>
+            )}
           />
           <Text style={styles.sectionTitle}>My Play List</Text>
           <TouchableOpacity

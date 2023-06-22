@@ -23,13 +23,14 @@ const UserProfile = ({ navigation }) => {
   const { updateUserInfor, user } = useContext(AuthenticationContext);
   const { getFollowerArtistsByUserId, followedArtistIds } =
     useContext(ArtistContext);
-  const { likedSongs } = useContext(AudioContext);
+  const { likedSongs, setPlaylist } = useContext(AudioContext);
   const [avatarUri, setAvatarUri] = useState(user.avatar);
   const { logout } = useContext(AuthenticationContext);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     getFollowerArtistsByUserId(user.userId);
+    setPlaylist(() => likedSongs);
   }, []);
   const handleChangeAvatar = async () => {
     try {
@@ -154,7 +155,11 @@ const UserProfile = ({ navigation }) => {
         <FlatList
           data={likedSongs}
           renderItem={({ item, index }) => (
-            <ItemPlayList songIndex={index} song={item} />
+            <ItemPlayList
+              navigation={navigation}
+              songIndex={index}
+              song={item}
+            />
           )}
           keyExtractor={(item) => item.id}
         />

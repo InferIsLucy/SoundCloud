@@ -23,7 +23,7 @@ import CommentScreen from "../commentScreen/Comment.screen";
 import { AudioContext } from "../../providers/audio.context";
 import { formatTime } from "../../utils/TimeFormater";
 
-const PlayerScreen = () => {
+const PlayerScreen = ({ navigation }) => {
   const {
     songs,
     handleSongEnd,
@@ -32,29 +32,47 @@ const PlayerScreen = () => {
     isLoading,
     isPlaying,
     currentSongIndex,
-    setPlayerVisbile,
+    //playback status
+    currentPosition: pos,
+    playbackStatus,
+    setBottomBarVisible,
     savedPosition,
   } = useContext(AudioContext);
+
   const [currentPosition, setCurrentPosition] = useState(0);
+  const [songDuration, setSongDuration] = useState(0);
   const [commentsVisible, setCommentsVisible] = useState(false);
+  // const intervalRef = useRef(null);
+  useEffect(() => {
+    setBottomBarVisible(false);
+  }, []);
   const intervalRef = useRef(null);
-  // useEffect(() => {
-  //   if (savedPosition.current != 0) {
-  //     setCurrentPosition(savedPosition.current);
-  //   }
-  // }, [currentSong]);
-  useLayoutEffect(() => {
-    if (!isLoading) {
-      if (isPlaying) {
+  useEffect(() => {
+    if (audioObj != null) {
+      if (audioObj._loaded) {
         if (!intervalRef.current) {
-          setIntervalRef();
+          intervalRef.current = setInterval(async () => {
+            {
+              const status = await audioObj.getStatusAsync();
+              console.log(
+                status.positionMillis,
+                status.durationMillis,
+                !status.isLoading
+              );
+              if (
+                status.positionMillis == status.durationMillis &&
+                !status.isLooping
+              ) {
+                console.log("handleSongEnd");
+                handleSongEnd();
+                return;
+              }
+              setCurrentPosition(() => status.positionMillis);
+              setSongDuration(() => status.durationMillis);
+            }
+          }, 1000);
         }
-      } else {
-        if (intervalRef.current) clearInterval(intervalRef.current);
       }
-    } else {
-      // to reset position when load new song
-      setCurrentPosition(0);
     }
 
     return () => {
@@ -63,22 +81,15 @@ const PlayerScreen = () => {
         intervalRef.current = null;
       }
     };
-  }, [isLoading, isPlaying]);
-  const setIntervalRef = () => {
-    intervalRef.current = setInterval(() => {
-      savedPosition.current = savedPosition.current + 1000;
-      setCurrentPosition((prev) => savedPosition.current);
-      if (savedPosition.current - 1000 >= currentSong.duration) {
-        handleSongEnd();
-      }
-    }, 1000);
-  };
+  }, [audioObj, currentSong, isPlaying]);
+
   return (
     <View style={[{ opacity: commentsVisible ? 0.5 : 1 }, styles.container]}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
-            setPlayerVisbile((prev) => !prev);
+            navigation.goBack();
+            setBottomBarVisible(true);
           }}
           style={{ paddingLeft: 8, paddingRight: 4 }}
         >
@@ -130,41 +141,48 @@ const PlayerScreen = () => {
       </View>
 
       <View style={styles.progressBar}>
-        <Text style={[styles.duration, { bottom: 0 }]}>
-          {formatTime(currentPosition)}
-        </Text>
-        <Slider
-          tapToSeek={true}
-          style={{ width: 320, height: 40 }}
-          minimumValue={0}
-          onSlidingComplete={async (value) => {
-            //value is second unit -> convert to millisecond
-            try {
-              await audioObj.setPositionAsync(value);
-              setCurrentPosition(value);
-              savedPosition.current = value;
-            } catch (e) {
-              console.log("error onSliding duration bar", e);
-            }
-          }}
-          onTouchStart={() => {
-            clearInterval(intervalRef.current);
-          }}
-          onValueChange={(value) => {
-            setCurrentPosition(value);
-          }}
-          onTouchEnd={() => {
-            setIntervalRef();
-          }}
-          value={currentPosition}
-          thumbTintColor={"#f8f8f8"}
-          minimumTrackTintColor={"#cfcfcf"}
-          maximumValue={currentSong.duration}
-          maximumTrackTintColor="#000000"
-        />
-        <Text style={[styles.duration, { bottom: 0, right: 0 }]}>
-          {formatTime(currentSong.duration) || ""}
-        </Text>
+        {true && (
+          <>
+            <Text style={[styles.duration, { bottom: 0 }]}>
+              {songDuration == 0 ? "0:00" : formatTime(currentPosition)}
+            </Text>
+            <Slider
+              tapToSeek={true}
+              disabled={songDuration == 0 ? true : false}
+              style={{ width: 320, height: 40 }}
+              minimumValue={0}
+              onSlidingComplete={async (value) => {
+                //value is second unit -> convert to millisecond
+                try {
+                  // if (audioObj._isLoading) return;
+                  await audioObj.setPositionAsync(value);
+                  setCurrentPosition(value);
+                  // savedPosition.current = value;
+                } catch (e) {
+                  console.log("error onSliding duration bar", e);
+                }
+              }}
+              onTouchStart={() => {
+                // clearInterval(intervalRef.current);
+              }}
+              onValueChange={(value) => {
+                setCurrentPosition(value);
+              }}
+              onTouchEnd={() => {
+                // setIntervalRef();
+              }}
+              value={currentPosition}
+              thumbTintColor={"#f8f8f8"}
+              minimumTrackTintColor={"#cfcfcf"}
+              maximumValue={songDuration}
+              maximumTrackTintColor="#000000"
+            />
+            <Text style={[styles.duration, { bottom: 0, right: 0 }]}>
+              {/* {formatTime(currentSong.duration) || ""} */}
+              {formatTime(songDuration) || ""}
+            </Text>
+          </>
+        )}
       </View>
 
       {/* music controller */}

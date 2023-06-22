@@ -30,20 +30,22 @@ export const AudioContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [audioObj, setAudioObj] = useState(null);
-  const [isPlayerVisible, setPlayerVisbile] = useState(false);
+  const [isBottomBarVisible, setBottomBarVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(null);
-  const [songStatus, setSongStatus] = useState({});
+  const [playbackStatus, setPlaybackStatus] = useState({});
   const [currentSong, setCurrentSong] = useState(null);
   const [songDuration, setSongDuration] = useState("");
   const [repeatMode, setRepeatMode] = useState(0); // 0 - none, 1- all,2 - one
   const [shuffleMode, setShuffleMode] = useState(false);
   const [songs, setSongs] = useState([]);
+  const [playlist, setPlaylist] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [listeningHistory, setListeningHistory] = useState([]);
+  const [currentPosition, setCurrentPosition] = useState([]);
   const savedPosition = useRef(0);
   const currentSongIndex = useRef(-1);
   const currentSongId = useRef(-1);
-
+  const currentPositionRef = useRef(0);
   function listFilesAndDirectories(reference, pageToken) {
     return reference.list({ pageToken }).then((result) => {
       // Loop over each item
@@ -61,11 +63,6 @@ export const AudioContextProvider = ({ children }) => {
       return Promise.resolve();
     });
   }
-  // useEffect(() => {
-  //   listFilesAndDirectories(songStorage).then(() => {
-  //     console.log("Finished listing");
-  //   });
-  // }, []);
   const getLikedSongs = (list) => {
     const listSong = list.filter((song) => {
       if (song.likes) {
@@ -82,7 +79,7 @@ export const AudioContextProvider = ({ children }) => {
   };
   const togglePlayStatus = async () => {
     //getting songs
-    if (isLoading == true) {
+    if (isLoading == true || audioObj == null) {
       return;
     }
 
@@ -106,6 +103,7 @@ export const AudioContextProvider = ({ children }) => {
     }
     setRepeatMode(newRepeatMode);
   };
+
   const initializeAudioObject = async (uri) => {
     try {
       setIsPlaying(false);
@@ -114,8 +112,10 @@ export const AudioContextProvider = ({ children }) => {
       });
       setAudioObj(playbackObject);
       const status = await playbackObject.getStatusAsync();
+      // Load the playbackObject and obtain the reference.
+      audioObj.setOnPlaybackStatusUpdate(_onPlaybackStatusUpdate);
       setSongDuration(formatTime(status.durationMillis));
-      setSongStatus(status);
+      setPlaybackStatus(status);
       await playbackObject.playAsync();
       setIsPlaying(true);
       // console.log("status", status);
@@ -123,6 +123,12 @@ export const AudioContextProvider = ({ children }) => {
       console.log("error when initialize audio object");
     }
   };
+  _onPlaybackStatusUpdate = (playbackStatus) => {
+    if (playbackStatus.didJustFinish && !playbackStatus.isLooping) {
+      console.log("song end!!!");
+    }
+  };
+
   const getLocalAudioFiles = async () => {
     try {
       const mediaFiles = await MediaLibrary.getAssetsAsync({
@@ -191,41 +197,50 @@ export const AudioContextProvider = ({ children }) => {
         await audioObj.stopAsync();
         // setIsPlaying(false);
         await audioObj.unloadAsync();
+        // const newSound = new Audio.Sound();
         await audioObj.loadAsync({ uri: songUri });
+        await audioObj.playAsync();
+        // await audioObj.loadAsync({ uri: songUri });
+        // setAudioObj(() => newSound);
         const status = await audioObj.getStatusAsync();
         setSongDuration(formatTime(status.durationMillis / 1000));
-        setSongStatus(status);
-        await audioObj.playAsync();
+        // currentSong.duration = status.durationMillis
+        setPlaybackStatus(() => status);
+        // await audioObj.playAsync();
         setIsPlaying(true);
       } catch (err) {
         throw err;
       }
     }
   };
+  console.log(
+    "Playback status audio context    ==== ",
+    playbackStatus.positionMillis
+  );
   const moveToNext = () => {
+    console.log("isLoading", isLoading);
     if (isLoading) {
       return;
     }
 
     let nextIndex;
-
     // Kiểm tra trạng thái repeatMode
     switch (repeatMode) {
       case 0: // Không lặp lại (None)
         // Tăng chỉ mục bài hát hiện tại
         currentSongIndex.current =
-          currentSongIndex.current === songs.length - 1
+          currentSongIndex.current === playlist.length - 1
             ? currentSongIndex.current
             : currentSongIndex.current + 1;
         // Kiểm tra nếu chỉ mục vượt quá số lượng bài hát
-        if (currentSongIndex.current > songs.length - 1) {
+        if (currentSongIndex.current > playlist.length - 1) {
           return;
         }
         nextIndex = currentSongIndex.current;
         break;
       case 1: // Lặp lại danh sách phát (All)
         // Kiểm tra nếu là bài hát cuối cùng
-        if (currentSongIndex.current === songs.length - 1) {
+        if (currentSongIndex.current === playlist.length - 1) {
           // Quay lại bài hát đầu tiên
           nextIndex = 0;
         } else {
@@ -240,14 +255,15 @@ export const AudioContextProvider = ({ children }) => {
       default:
         break;
     }
-
+    console.log("nextIindex", nextIndex);
     // Kiểm tra trạng thái shuffleMode
     if (shuffleMode) {
-      nextIndex = getRandomIndex(songs.length, currentSongIndex.current);
+      nextIndex = getRandomIndex(playlist.length, currentSongIndex.current);
     }
-
     try {
-      setCurrentSong(songs[nextIndex]);
+      console.log("nextIindex", nextIndex);
+      console.log("playlist", playlist.length);
+      setCurrentSong(playlist[nextIndex]);
     } catch (e) {
       console.log("error", e);
       currentSongIndex.current--;
@@ -279,7 +295,7 @@ export const AudioContextProvider = ({ children }) => {
         // Kiểm tra nếu là bài hát đầu tiên
         if (currentSongIndex.current === 0) {
           // Chuyển đến bài hát cuối cùng
-          prevIndex = songs.length - 1;
+          prevIndex = playlist.length - 1;
         } else {
           // Giảm chỉ mục bài hát hiện tại
           currentSongIndex.current--;
@@ -295,11 +311,11 @@ export const AudioContextProvider = ({ children }) => {
 
     // Kiểm tra trạng thái shuffleMode
     if (shuffleMode) {
-      prevIndex = getRandomIndex(songs.length, currentSongIndex.current);
+      prevIndex = getRandomIndex(playlist.length, currentSongIndex.current);
     }
 
     try {
-      setCurrentSong(songs[prevIndex]);
+      if (playlist[prevIndex] != null) setCurrentSong(playlist[prevIndex]);
     } catch (e) {
       console.log("error", e);
       currentSongIndex.current++;
@@ -437,28 +453,30 @@ export const AudioContextProvider = ({ children }) => {
     const listLocal = await loadLocalSongs(); // Await the local songs array
     const listRemote = await getRemoteSongs(); // Await the remote songs array
     setSongs([...listLocal, ...listRemote]);
+    setPlaylist([...listLocal, ...listRemote]);
   };
   useEffect(() => {
     if (isAuthenticated) {
       getListeningHistory(user.listeningHistory || []);
     }
   }, [songs, isAuthenticated]);
-  useEffect(() => {
-    return audioObj
-      ? () => {
-          console.log("Unloading Sound");
-          audioObj.unloadAsync();
-          setAudioObj(null);
-        }
-      : undefined;
-  }, [audioObj]);
+  // useEffect(() => {
+  //   return audioObj
+  //     ? () => {
+  //         console.log("Unloading Sound");
+  //         audioObj.unloadAsync();
+  //         setAudioObj(null);
+  //       }
+  //     : undefined;
+  // }, [audioObj]);
+
   // console.log("isPlaying", isPlaying);
   // console.log("audioObj", audioObj);
   // console.log("songs", songs);
   // console.log("currentSong", currentSong);
   // console.log("currentSongIndex.current", currentSongIndex.current);
   // console.log("currentSongId.current", currentSongId.current);
-  // console.log("songStatus", songStatus);
+  // console.log("playbackStatus", playbackStatus);
 
   return (
     <AudioContext.Provider
@@ -468,20 +486,23 @@ export const AudioContextProvider = ({ children }) => {
         shuffleMode,
         isPlaying,
         isLoading,
-        songStatus,
+        playbackStatus,
         likedSongs,
         currentSongIndex,
         currentSong,
+        currentPosition: currentPositionRef.current,
+        playlist,
         songs: songs.filter((song) => song.isLocalSong == null),
         localSongs: songs.filter((song) => song.isLocalSong != null),
         songDuration,
-        isPlayerVisible,
+        isBottomBarVisible,
         savedPosition,
         listeningHistory,
+        setPlaylist,
         setCurrentSong,
         setAudioObj,
-        setPlayerVisbile,
-        setSongStatus: setSongStatus,
+        setBottomBarVisible,
+        setPlaybackStatus,
         handleSongEnd,
         checkIfReact,
         sendReact,

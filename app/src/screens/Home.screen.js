@@ -28,7 +28,7 @@ import { Box } from "@react-native-material/core";
 
 const { width } = Dimensions.get("screen");
 const HomeScreen = ({ navigation }) => {
-  const { songs, currentSong, setCurrentSong, setPlayerVisbile } =
+  const { songs, currentSong, setPlaylist, setCurrentSong, addSongToHistory } =
     useContext(AudioContext);
   const LinkImg =
     "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
@@ -41,6 +41,25 @@ const HomeScreen = ({ navigation }) => {
   const [isShow, setIsShow] = useState(false);
   const [selectedArtist, setSelectedArtist] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
+  const [newReleasedSongs, setNewReleasedSongs] = useState([]);
+  const [randomSongs, setRandomSongs] = useState([]);
+  useEffect(() => {
+    const randomSongs = getRandomSongs(5);
+    const newSongs = getNewSongs();
+    setRandomSongs(randomSongs);
+    setNewReleasedSongs(newSongs);
+  }, [songs]);
+  function getRandomSongs(count) {
+    const shuffledSongs = [...songs].sort(() => 0.5 - Math.random());
+    return shuffledSongs.slice(0, count);
+  }
+  function getNewSongs() {
+    const oneWeekAgo = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+    return songs.filter((song) => song.publishDate.toMillis() >= oneWeekAgo);
+  }
+  const [isRandomSongClicked, setIsRandomSongClicked] = useState(false);
+  const [isNewSongClicked, setIsNewSongClicked] = useState(false);
+
   const searchFilter = (text) => {
     if (text !== "") {
       const newData = songs.filter((song) => {
@@ -75,16 +94,40 @@ const HomeScreen = ({ navigation }) => {
     setsearch("");
     setfilterdArtistData([]);
   };
+  console.log("re-render");
+  const handleItemClick = (song, type) => {
+    switch (type) {
+      case "new":
+        //check if fisrt time click on item
+        if (!isNewSongClicked) {
+          setPlaylist(() => newReleasedSongs);
+        }
+        setIsNewSongClicked(false);
+        setIsRandomSongClicked(true);
+        break;
+      case "random":
+        if (!isRandomSongClicked) {
+          setPlaylist(() => randomSongs);
+        }
+        setIsNewSongClicked(true);
+        setIsRandomSongClicked(false);
+        break;
+      case "search":
+        setPlaylist([song]);
+        refreshSearch();
+
+        break;
+    }
+    handlePlaySong(song);
+    addSongToHistory(user.userId, song.id);
+  };
+  const handlePlaySong = (song) => {
+    setCurrentSong(() => song);
+    navigation.navigate("Player");
+  };
   const ItemView = ({ song, index }) => {
     return (
-      <TouchableOpacity
-        onPress={() => {
-          refreshSearch();
-          setCurrentSong(song);
-          setPlayerVisbile((prev) => !prev);
-        }}
-        style={styles.itemStyle}
-      >
+      <View style={styles.itemStyle}>
         <View style={styles.itemContainer}>
           <Image
             style={{
@@ -101,7 +144,7 @@ const HomeScreen = ({ navigation }) => {
           </View>
           <View style={styles.option}></View>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
   const ArtistSearchItem = ({ artist = [], index }) => {
@@ -294,10 +337,18 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.authBackground }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: Colors.authBackground,
+      }}
+    >
       <StatusBar translucent={false} backgroundColor={Colors.authBackground} />
 
-      <ScrollView showsHorizontalScrollIndicator={false}>
+      <ScrollView
+        style={{ marginBottom: currentSong ? 100 : 15 }}
+        showsHorizontalScrollIndicator={false}
+      >
         <ImageBackground
           source={{
             uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
@@ -325,7 +376,7 @@ const HomeScreen = ({ navigation }) => {
             style={{
               position: "absolute",
 
-              top: 80,
+              top: 140,
               right: 20,
               left: 20,
               zIndex: 1,
@@ -346,35 +397,44 @@ const HomeScreen = ({ navigation }) => {
             {filterdData.map((song, index) => {
               return (
                 //Song searched Item
-                <ItemView
+                <TouchableOpacity
                   key={`inas + ${index}`}
-                  index={index}
-                  song={song}
-                ></ItemView>
+                  onPress={() => handleItemClick(song, "search")}
+                >
+                  <ItemView index={index} song={song}></ItemView>
+                </TouchableOpacity>
               );
             })}
           </View>
         )}
 
-        <Text style={styles.sectionTitle1}>Nổi bật</Text>
+        <Text style={styles.sectionTitle1}>Mới phát hành</Text>
         <View>
           <FlatList
             contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={songs}
-            renderItem={({ item }) => <Card song={item} />}
+            data={newReleasedSongs}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleItemClick(item, "new")}>
+                <Card song={item} />
+              </TouchableOpacity>
+            )}
           />
-          <Text style={styles.sectionTitle}>Của bạn</Text>
+          <Text style={styles.sectionTitle}>Tạo ngẫu nhiên</Text>
           <FlatList
             snapToInterval={width - 20}
             contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={songs}
-            renderItem={({ item }) => <RecommendCard place={item} />}
+            data={randomSongs}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleItemClick(item, "random")}>
+                <RecommendCard place={item} />
+              </TouchableOpacity>
+            )}
           />
-          <Text style={styles.sectionTitle}>Lựa chọn hôm nay</Text>
+          {/* <Text style={styles.sectionTitle}>Lựa chọn hôm nay</Text>
           <FlatList
             snapToInterval={width - 20}
             contentContainerStyle={{ paddingLeft: 20 }}
@@ -382,7 +442,7 @@ const HomeScreen = ({ navigation }) => {
             showsHorizontalScrollIndicator={false}
             data={songs}
             renderItem={({ item }) => <Card01 place={item} />}
-          />
+          /> */}
         </View>
       </ScrollView>
       <View>

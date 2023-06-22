@@ -3,7 +3,7 @@ import { AuthenticationContextProvider } from "./src/providers/authentication.co
 import { AudioContextProvider } from "./src/providers/audio.context";
 import { CommentContextProvider } from "./src/providers/comment.context";
 import { PlaylistContextProvider } from "./src/providers/playlist.context";
-import { NotificationContextProvider } from "./src/providers/notification.context";
+import NotificationContextProvider from "./src/providers/notification.context";
 import { ArtistContextProvider } from "./src/providers/artist.context";
 
 export default function App() {

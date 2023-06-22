@@ -8,7 +8,7 @@ import { ImageBackground } from "react-native";
 import { AudioContext } from "../../providers/audio.context";
 
 //DetailPlaylist
-const PlayList = () => {
+const PlayList = ({ navigation }) => {
   const { songs, currentSong } = useContext(AudioContext);
   return (
     <View style={styles.container}>
@@ -74,7 +74,7 @@ const PlayList = () => {
           <Entypo name="beamed-note" size={24} color="white" />
           <Text style={{ color: "white", marginLeft: 4 }}>Song Playlist</Text>
         </View>
-        <ItemPlayList song={songs[0]}></ItemPlayList>
+        <ItemPlayList navigation={navigation} song={songs[0]}></ItemPlayList>
       </View>
     </View>
   );

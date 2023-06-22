@@ -16,7 +16,7 @@ import { AudioContext } from "../providers/audio.context";
 import ItemPlayList from "./MusicPlayer/components/ItemPlayList.component";
 import { AuthenticationContext } from "../providers/authentication.context";
 import { ArtistContext } from "../providers/artist.context";
-const ArtistScreen = ({ artist = {}, setModalVisible }) => {
+const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
   const { songs } = useContext(AudioContext);
   const { user } = useContext(AuthenticationContext);
   const { followedArtistIds, checkIfFollowed, toggleFollowing } =
@@ -135,7 +135,11 @@ const ArtistScreen = ({ artist = {}, setModalVisible }) => {
         <FlatList
           data={artistSongs}
           renderItem={({ item, index }) => (
-            <ItemPlayList songIndex={index} song={item} />
+            <ItemPlayList
+              navigation={navigation}
+              songIndex={index}
+              song={item}
+            />
           )}
           keyExtractor={(item) => item.id}
         />

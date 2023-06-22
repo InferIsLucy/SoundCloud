@@ -4,6 +4,7 @@ import React, {
   createContext,
   useRef,
   useContext,
+  memo,
 } from "react";
 import { firebase } from "../config/firebase";
 import { AuthenticationContext } from "./authentication.context";
@@ -23,9 +24,8 @@ Notifications.setNotificationHandler({
 });
 const usersRef = firebase.firestore().collection("users");
 const NEW_MESSAGE_TITLE = "New message";
-export const NotificationContextProvider = ({ children }) => {
+const NotificationContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
-  const { setPlayerVisbile } = useContext(AudioContext);
   const notificationListener = useRef();
   const responseListener = useRef();
   async function registerForPushNotificationsAsync() {
@@ -133,3 +133,4 @@ export const NotificationContextProvider = ({ children }) => {
     </NotificationContext.Provider>
   );
 };
+export default memo(NotificationContextProvider);

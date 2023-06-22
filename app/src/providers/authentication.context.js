@@ -96,7 +96,6 @@ export const AuthenticationContextProvider = ({ children }) => {
   };
   const updateUserInfor = async (newUserInfor) => {
     const { avatar } = newUserInfor;
-
     const response = await fetch(avatar); // URL hợp lệ hoặc đường dẫn tệp tin cục bộ
     const blob = await response.blob();
     const filename = avatar.substring(avatar.lastIndexOf("/") + 1);

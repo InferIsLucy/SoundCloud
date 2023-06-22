@@ -17,7 +17,6 @@ const Navigator = () => {
   const { isAuthenticated, isCheckingLoggedin, isLoading, user } = useContext(
     AuthenticationContext
   );
-  const { isPlayerVisible, setPlayerVisbile } = useContext(AudioContext);
   if (isCheckingLoggedin) {
     return <WelcomeScreen></WelcomeScreen>;
   }
@@ -25,7 +24,7 @@ const Navigator = () => {
     return (
       <NavigationContainer>
         <AdminContextProvider>
-          <SafeAreaView style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1, marginTop: STATUS_BAR_HEIGHT }}>
             <AdminNavigator></AdminNavigator>
           </SafeAreaView>
         </AdminContextProvider>
@@ -34,7 +33,7 @@ const Navigator = () => {
   } else
     return (
       <>
-        <Modal
+        {/* <Modal
           animationType="fade"
           transparent={false}
           visible={isPlayerVisible}
@@ -43,7 +42,7 @@ const Navigator = () => {
           }}
         >
           <PlayerScreen></PlayerScreen>
-        </Modal>
+        </Modal> */}
         <NavigationContainer>
           <SafeAreaView
             style={{

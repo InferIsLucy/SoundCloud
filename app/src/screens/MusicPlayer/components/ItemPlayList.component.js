@@ -5,18 +5,20 @@ import { formatTime } from "../../../utils/TimeFormater";
 import { AuthenticationContext } from "../../../providers/authentication.context";
 
 //SongItem
-const ItemPlayList = ({ song = {} }) => {
-  const { setPlayerVisbile, setCurrentSong, addSongToHistory } =
-    useContext(AudioContext);
+const ItemPlayList = ({ navigation, song = {} }) => {
+  const { setCurrentSong, addSongToHistory } = useContext(AudioContext);
   const { user } = useContext(AuthenticationContext);
+  const handleItemClick = (song) => {
+    setCurrentSong(song);
+    navigation.navigate("Player");
+  };
   return (
     <TouchableOpacity
       onPress={() => {
-        setCurrentSong(song);
-        setPlayerVisbile((value) => !value);
         if (song.isLocalSong == null) {
           addSongToHistory(user.userId, song.id);
         }
+        handleItemClick(song);
       }}
       style={styles.container}
     >
