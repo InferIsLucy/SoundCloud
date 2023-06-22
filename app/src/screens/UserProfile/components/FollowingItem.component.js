@@ -1,6 +1,7 @@
 import { StyleSheet, Text, Image, View, TouchableOpacity } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { Colors } from "../../../theme/color";
 import { ArtistContext } from "../../../providers/artist.context";
 import { AuthenticationContext } from "../../../providers/authentication.context";
 const FollowingItem = ({ artist = {} }) => {
@@ -57,7 +58,7 @@ export default FollowingItem;
 const styles = StyleSheet.create({
   container: {
     height: 88,
-    backgroundColor: "#231b4d",
+    backgroundColor: Colors.authBackground,
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 4,
@@ -72,5 +73,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     elevation: 10,
   },
-  img: { borderRadius: 50, width: 40, height: 40, resizeMode: "cover" },
+  img: { borderRadius: 120, width: 100, height: 100, resizeMode: "cover" },
 });

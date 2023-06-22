@@ -52,9 +52,6 @@ const UserProfile = ({ navigation }) => {
   return (
     <View ew style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={{ paddingLeft: 8, paddingRight: 4 }}>
-          <Ionicons name="chevron-back" size={32} color="black" />
-        </TouchableOpacity>
         <View
           style={{
             flex: 1,
@@ -198,7 +195,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.heading3,
     color: Colors.defaultTextColor,
     fontWeight: 500,
-    marginRight: 5,
+    marginLeft: 35,
     textAlign: "center",
   },
   avatar: {

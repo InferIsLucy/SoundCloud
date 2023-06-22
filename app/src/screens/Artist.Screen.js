@@ -12,7 +12,7 @@ import { fontSizes } from "../theme/fontSizes";
 import { Spacer } from "../components/spacer";
 import { Ionicons } from "@expo/vector-icons";
 import { AudioContext } from "../providers/audio.context";
-
+import { Colors } from "../theme/color";
 import SongItem from "./MusicPlayer/components/SongItem.component";
 import { AuthenticationContext } from "../providers/authentication.context";
 import { ArtistContext } from "../providers/artist.context";
@@ -48,7 +48,7 @@ const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
           }}
           style={{ paddingLeft: 8, paddingRight: 4 }}
         >
-          <Ionicons name="chevron-back" size={32} color="black" />
+          <Ionicons name="chevron-back" size={32} color="#ffffff" />
         </TouchableOpacity>
         <View
           style={{
@@ -75,6 +75,7 @@ const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
         </TouchableOpacity>
         <Text
           style={{
+            color: Colors.defaultTextColor,
             fontWeight: 500,
             paddingLeft: 12,
             fontSize: fontSizes.label,
@@ -105,7 +106,7 @@ const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
             width: 100,
             borderRadius: 4,
             marginRight: 8,
-            backgroundColor: "tomato",
+            backgroundColor: "#e7e7e7",
             position: "absolute",
             alignItems: "center",
             bottom: 0,
@@ -148,6 +149,7 @@ export default ArtistScreen;
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: Colors.authBackground,
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
@@ -163,6 +165,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.heading3,
     fontWeight: 500,
     textAlign: "center",
+    color: Colors.defaultTextColor,
   },
   avatar: {
     width: 100,
@@ -178,13 +181,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   follow: {
+    marginLeft: 15,
     flexDirection: "row",
   },
   followText: {
+    color: Colors.defaultTextColor1,
     fontWeight: 400,
     fontSize: fontSizes.normalTextSize,
   },
   title: {
+    color: Colors.defaultTextColor,
     marginLeft: 20,
     fontSize: fontSizes.label,
     fontWeight: 500,
