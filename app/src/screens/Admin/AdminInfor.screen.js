@@ -30,17 +30,10 @@ const AdminInfor = () => {
     })();
   }, [songs, refreshFlatlist]);
   return (
-    <View>
+    <View style={styles.container}>
+      <Text style={styles.heading1}>History Deleted</Text>
       <View>
-        <TouchableOpacity
-          style={{ backgroundColor: "red", padding: 12 }}
-          onPress={() => {
-            logout();
-          }}
-        >
-          <Text>ClickToLogout</Text>
-        </TouchableOpacity>
-        <Text>Deleted Songs</Text>
+        <Text style={styles.heading}>Deleted Songs</Text>
         <FlatList
           extraData={refreshFlatlist}
           style={{ marginTop: 12, marginBottom: 60 }}
@@ -55,7 +48,7 @@ const AdminInfor = () => {
         />
       </View>
       <View>
-        <Text>Deleted Artists</Text>
+        <Text style={styles.heading}>Deleted Artists</Text>
         <FlatList
           extraData={refreshFlatlist}
           style={{ marginTop: 12, marginBottom: 60 }}
@@ -69,10 +62,57 @@ const AdminInfor = () => {
           keyExtractor={(item) => item.id}
         />
       </View>
+      <View style={styles.btnWraper}>
+        <TouchableOpacity
+          style={{ backgroundColor: "#19022b", padding: 12, borderRadius: 25 }}
+          onPress={() => {
+            logout();
+          }}
+        >
+          <Text style={styles.text}>Logout</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 export default AdminInfor;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    height: "100%",
+
+    backgroundColor: "#140d36",
+  },
+
+  heading: {
+    fontSize: 20,
+    textAlign: "left",
+    color: "white",
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  heading1: {
+    fontSize: 34,
+    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
+    marginBottom: 0,
+  },
+  btnWraper: {
+    flexDirection: "row",
+    position: "absolute",
+
+    bottom: 12,
+    right: 12,
+  },
+  text: {
+    fontSize: 20,
+
+    textAlign: "left",
+    color: "white",
+    fontWeight: "bold",
+  },
+});

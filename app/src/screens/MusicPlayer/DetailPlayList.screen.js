@@ -9,6 +9,7 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
+import { Colors } from "../../theme/color";
 import { Feather } from "@expo/vector-icons";
 import SongItem from "./components/SongItem.component";
 import { ImageBackground } from "react-native";
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
 
     justifyContent: "flex-start",
   },
-  header: {},
+  header: { backgroundColor: "#1c1348" },
   header1: {
     height: 200,
     paddingTop: 24,

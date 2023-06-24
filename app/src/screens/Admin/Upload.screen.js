@@ -18,7 +18,6 @@ import { AntDesign } from "@expo/vector-icons";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import * as DocumentPicker from "expo-document-picker";
 import { Audio } from "expo-av";
-
 import { ArtistRef, SongRef } from "./const";
 import { AdminContext } from "../../providers/admin.context";
 import { formatDate } from "../../utils/TimeFormater";
@@ -151,25 +150,25 @@ const UploadScreen = () => {
         isLoading ? [styles.container, { opacity: 0.5 }] : styles.container
       }
     >
+      <View>
+        <Text style={styles.heading}>Upload Song</Text>
+      </View>
       {isLoading && (
         <ActivityIndicator
           style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
         ></ActivityIndicator>
       )}
-      <ImageBackground
-        style={styles.bgImage}
-        imageStyle={styles.imgLeft}
-        source={
-          imageSongUri
-            ? { uri: imageSongUri }
-            : require("../../../assets/noImage.jpg")
-        }
-      >
-        <TouchableOpacity onPress={selectImage} style={styles.camera}>
-          <AntDesign name="camera" size={24} color="#a095cc" />
-        </TouchableOpacity>
-      </ImageBackground>
-
+      <TouchableOpacity onPress={selectImage}>
+        <ImageBackground
+          style={styles.bgImage}
+          imageStyle={styles.imgLeft}
+          source={
+            imageSongUri
+              ? { uri: imageSongUri }
+              : require("../../../assets/noImage.jpg")
+          }
+        ></ImageBackground>
+      </TouchableOpacity>
       <View
         style={{
           marginTop: 32,
@@ -177,20 +176,22 @@ const UploadScreen = () => {
         }}
       >
         <Text numberOfLines={2} style={styles.title}>
-          UploadSong
+          Upload Image
         </Text>
         <View style={{ flexDirection: "row", marginLeft: 12, marginTop: 12 }}>
-          <Ionicons name="person" size={24} color="#514b75" />
+          <Ionicons name="person" size={24} color="#ffffff" />
           <TextInput
             value={name}
             placeholder="Song name"
+            color="#ffffff"
+            textColor="white"
             onChangeText={(text) => setName(text)}
             numberOfLines={1}
             style={styles.subtitle}
           ></TextInput>
         </View>
         <View style={{ flexDirection: "row", marginLeft: 12, marginTop: 12 }}>
-          <Ionicons name="person" size={24} color="#514b75" />
+          <Ionicons name="person" size={24} color="#ffffff" />
           <Text style={styles.subtitle}>
             {mp3Name == "" ? "Empty mp3 file" : mp3Name}
           </Text>
@@ -201,7 +202,7 @@ const UploadScreen = () => {
           }}
           style={styles.item}
         >
-          <Ionicons name="calendar" size={16} color="#514b75" />
+          <Ionicons name="calendar" size={24} color="#ffffff" />
           <Text style={styles.listens}>
             {`Pick publish date: ${formatDate(publishDate)}`}
           </Text>
@@ -272,27 +273,32 @@ export default UploadScreen;
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
+    paddingTop: 60,
     flex: 1,
+    backgroundColor: "#140d36",
   },
   heading: {
     fontSize: 36,
     textAlign: "center",
-    fontWeight: "bold",
     color: "white",
-    marginBottom: 12,
+    fontWeight: "bold",
+    marginBottom: 0,
+    bottom: 25,
   },
+
   btn: {
     fontSize: 16,
-    color: "#514b75",
+    color: "#ffffff",
     marginLeft: 4,
     fontWeight: "bold",
   },
   imgLeft: {
-    borderRadius: 20,
+    borderRadius: 200,
   },
   bgImage: {
-    width: 100,
-    height: 100,
+    marginLeft: 80,
+    width: 250,
+    height: 250,
   },
   background: {
     marginTop: 60,
@@ -301,7 +307,7 @@ const styles = StyleSheet.create({
     margin: 24,
     borderRadius: 12,
     elevation: 4,
-    backgroundColor: "gray",
+    backgroundColor: "#ffffff",
     alignItems: "center",
   },
   camera: {
@@ -310,25 +316,28 @@ const styles = StyleSheet.create({
     bottom: 12,
   },
   title: {
-    color: Colors.textColor,
+    color: Colors.defaultTextColor,
     textAlign: "left",
     fontWeight: "bold",
-    fontSize: 26,
+    fontSize: 24,
     width: 200,
-    marginLeft: 12,
+    bottom: 20,
+    marginLeft: 135,
   },
   subtitle: {
-    color: "#514b75",
+    color: Colors.defaultTextColor,
     textAlign: "left",
     fontWeight: "bold",
     fontSize: 20,
     width: 200,
+    marginLeft: 12,
   },
   listens: {
-    color: "#514b75",
+    color: "#ffffff",
     textAlign: "left",
     fontWeight: "bold",
     fontSize: 16,
+    marginLeft: 12,
     width: 200,
   },
   item: {

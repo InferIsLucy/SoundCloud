@@ -4,7 +4,7 @@ import React from "react";
 const WelcomeScreen = () => {
   return (
     <Image
-      source={require("../../../assets/intro1.png")}
+      source={require("../../../assets/Intro.png")}
       resizeMode="contain"
       style={{ flex: 1, width: "100%", height: "100%" }}
     ></Image>
