@@ -65,9 +65,9 @@ const DetailPlaylist = ({ navigation, route }) => {
           style={[
             {
               padding: 32,
-              backgroundColor: "#29205d",
+              backgroundColor: "#474554",
               position: "absolute",
-              borderRadius: 24,
+              borderRadius: 60,
               bottom: 0,
               marginLeft: 24,
               elevation: 5,
@@ -82,7 +82,7 @@ const DetailPlaylist = ({ navigation, route }) => {
         </View>
       </View>
 
-      <View style={{ flex: 1, backgroundColor: "#1c1348" }}>
+      <View style={{ flex: 1, backgroundColor: Colors.authBackground }}>
         <View
           style={{
             paddingLeft: 24,
@@ -119,19 +119,19 @@ const styles = StyleSheet.create({
   header1: {
     height: 200,
     paddingTop: 24,
-    backgroundColor: "#140d36",
+    backgroundColor: Colors.authBackground,
     flexDirection: "row",
     alignItems: "flex-start",
   },
   header2: {
     height: 100,
-    backgroundColor: "#1c1348",
+    backgroundColor: Colors.authBackground,
   },
   boxWithShadow: {
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.8,
-    shadowRadius: 10,
+    shadowRadius: 15,
     elevation: 5,
   },
 });
