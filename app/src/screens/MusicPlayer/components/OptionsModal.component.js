@@ -14,13 +14,9 @@ import SongItem from "./SongItem.component";
 import { PlaylistContext } from "../../../providers/playlist.context";
 import { AudioContext } from "../../../providers/audio.context";
 
-const OptionsModal = ({ visible, onClose, song }) => {
+const OptionsModal = ({ visible, onClose, song, setTimerModalVisible }) => {
   const { playlists, addSongToPlaylist } = useContext(PlaylistContext);
-  const { setTimer } = useContext(AudioContext);
   const [playlistModalVisible, setPlaylistModalVisible] = useState(false);
-  const [timerModalVisible, setTimerModalVisible] = useState(false);
-
-  useEffect(() => setTimer(100), []);
   const handleAddSongToPlaylist = async (playlist) => {
     try {
       setPlaylistModalVisible(false);
@@ -29,6 +25,10 @@ const OptionsModal = ({ visible, onClose, song }) => {
     } catch (err) {
       Alert.alert("Failed!!!");
     }
+  };
+  const openTimerModal = () => {
+    onClose();
+    setTimerModalVisible(true);
   };
   return (
     <Modal
@@ -44,7 +44,7 @@ const OptionsModal = ({ visible, onClose, song }) => {
           <View
             style={[
               styles.container,
-              { opacity: playlistModalVisible || timerModalVisible ? 0.5 : 1 },
+              { opacity: playlistModalVisible ? 0.5 : 1 },
             ]}
           >
             <View
@@ -81,12 +81,7 @@ const OptionsModal = ({ visible, onClose, song }) => {
                 <Text style={styles.option}>Add to playlist</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setTimerModalVisible(true);
-              }}
-              style={styles.row}
-            >
+            <TouchableOpacity onPress={openTimerModal} style={styles.row}>
               <View style={[styles.column, styles.icon]}>
                 <Image
                   source={require("../../../../assets/stopwatch.png")}
@@ -98,50 +93,12 @@ const OptionsModal = ({ visible, onClose, song }) => {
               </View>
             </TouchableOpacity>
           </View>
-          {/* Playlist modal */}
-          <Modal
-            animationType="fade"
-            transparent={true}
-            onRequestClose={() => {
-              setPlaylistModalVisible(() => false);
-            }}
-            visible={playlistModalVisible}
-          >
-            <TouchableWithoutFeedback
-              onPress={() => setPlaylistModalVisible(() => false)}
-            >
-              <View style={{ flex: 1 }}>
-                <View style={{ flex: 1 }} />
-                <View style={styles.subModalContainer}>
-                  <Text style={styles.modalHeading}>Choose playlist</Text>
-                  <FlatList
-                    data={playlists}
-                    renderItem={({ item, index }) => (
-                      <TouchableOpacity
-                        onPress={() => handleAddSongToPlaylist(item)}
-                      >
-                        <PlaylistItem playlist={item} />
-                      </TouchableOpacity>
-                    )}
-                    keyExtractor={(item) => item.id}
-                  />
-                </View>
-                <View style={{ flex: 1.2 }} />
-              </View>
-            </TouchableWithoutFeedback>
-          </Modal>
-
-          {/* Timer modal */}
-          <Modal
-            animationType="fade"
-            transparent={true}
-            onRequestClose={() => {
-              setTimerModalVisible(false);
-            }}
-            visible={timerModalVisible}
-          >
-            {/* Your timer modal content */}
-          </Modal>
+          <PlaylistModal
+            playlistModalVisible={playlistModalVisible}
+            playlists={playlists}
+            handleAddSongToPlaylist={handleAddSongToPlaylist}
+            setPlaylistModalVisible={setPlaylistModalVisible}
+          ></PlaylistModal>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
@@ -166,10 +123,47 @@ const PlaylistItem = ({ playlist }) => {
     </View>
   );
 };
+const PlaylistModal = ({
+  playlistModalVisible,
+  setPlaylistModalVisible,
+  playlists,
+  handleAddSongToPlaylist,
+}) => {
+  return (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      onRequestClose={() => {
+        setPlaylistModalVisible(() => false);
+      }}
+      visible={playlistModalVisible}
+    >
+      <TouchableWithoutFeedback
+        onPress={() => setPlaylistModalVisible(() => false)}
+      >
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 1 }} />
+          <View style={styles.subModalContainer}>
+            <Text style={styles.modalHeading}>Choose playlist</Text>
+            <FlatList
+              data={playlists}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity onPress={() => handleAddSongToPlaylist(item)}>
+                  <PlaylistItem playlist={item} />
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
+          <View style={{ flex: 1.2 }} />
+        </View>
+      </TouchableWithoutFeedback>
+    </Modal>
+  );
+};
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-
     justifyContent: "flex-end",
   },
   modalHeading: {

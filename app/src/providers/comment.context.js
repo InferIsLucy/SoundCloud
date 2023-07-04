@@ -6,11 +6,13 @@ export const CommentContext = createContext();
 
 const commentsRef = firebase.firestore().collection("comments");
 const usersRef = firebase.firestore().collection("users");
+
+//TODO: move comment collection into user field "comments" on firestore database
 export const CommentContextProvider = ({ children }) => {
-  //lấy thông tin của user để đính kèm vào comment
   const { user } = useContext(AuthenticationContext);
   const { sendNotification } = useContext(NotificationContext);
   const [isLoading, setIsLoading] = useState(false);
+
   const addComment = async (songId, commentContent, replyCommentId = null) => {
     const newComment = {
       content: commentContent,
@@ -18,15 +20,14 @@ export const CommentContextProvider = ({ children }) => {
       userId: user.userId,
       userName: user.displayName,
       userAvatar: user.avatar,
+      deletedAt: null,
       createdAt: Date.now(),
       replyToId: replyCommentId,
     };
     try {
       const docRef = await commentsRef.add(newComment);
-      console.log("Comment added!");
       sendNotificationToReplyCommentOwner(replyCommentId, commentContent);
       //send notification to replied comment user
-
       //return added comment
       return { id: docRef.id, ...newComment };
     } catch (err) {
@@ -43,14 +44,15 @@ export const CommentContextProvider = ({ children }) => {
     try {
       const replyCommentSnapshot = await commentsRef.doc(replyCommentId).get();
       const replyCommentDoc = replyCommentSnapshot.data();
-
+      console.log("replytoId", replyCommentId);
       if (replyCommentDoc) {
         const userQuerySnapshot = await usersRef
           .where("userId", "==", replyCommentDoc.userId)
           .get();
-
         userQuerySnapshot.forEach((userDoc) => {
           const userReplied = userDoc.data();
+          console.log("notifytoken", userReplied.expoNotifyToken);
+
           sendNotification(
             userReplied.expoNotifyToken,
             commentContent,
@@ -65,11 +67,13 @@ export const CommentContextProvider = ({ children }) => {
     }
   };
   const loadComments = async (songId) => {
+    console.log("SongId", songId);
     setIsLoading(true);
     try {
       const querySnapshot = await commentsRef
         .where("songId", "==", songId)
         .where("replyToId", "==", null)
+        .where("deletedAt", "==", null)
         .get();
       const commentList = [];
       querySnapshot.forEach((documentSnapshot) => {
@@ -79,6 +83,7 @@ export const CommentContextProvider = ({ children }) => {
           createdAt: new Date(documentSnapshot.data().createdAt),
         });
       });
+      console.log("commentsList", commentList.length);
       commentList.sort((a, b) => a.createdAt - b.createdAt);
       setIsLoading(false);
       return commentList;
@@ -93,6 +98,7 @@ export const CommentContextProvider = ({ children }) => {
     try {
       const querySnapshot = await commentsRef
         .where("replyToId", "==", commentId)
+        .where("deletedAt", "==", null)
         .get();
       const commentList = [];
       querySnapshot.forEach((documentSnapshot) => {
@@ -109,11 +115,25 @@ export const CommentContextProvider = ({ children }) => {
       return [];
     }
   };
+  const deleteComment = async (commentId) => {
+    try {
+      await commentsRef.doc(commentId).update({ deletedAt: new Date() });
+      console.log("Comment marked as deleted successfully");
+    } catch (err) {
+      console.log("Error while marking comment as deleted:", err);
+    }
+  };
 
   const replyComment = async () => {};
   return (
     <CommentContext.Provider
-      value={{ isLoading, loadComments, addComment, loadReplyComments }}
+      value={{
+        isLoading,
+        loadComments,
+        addComment,
+        loadReplyComments,
+        deleteComment,
+      }}
     >
       {children}
     </CommentContext.Provider>

@@ -98,10 +98,16 @@ const ArtistListModal = ({
             }}
             keyExtractor={(item) => item.id}
           />
-          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
             <TouchableOpacity onPress={onClose} style={[styles.btnContainer]}>
               <AntDesign name="clouduploado" size={22} color="#514b75" />
-              <Text style={styles.btn}>Cancel</Text>
+              <Text style={styles.btn}>Add</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -117,19 +123,22 @@ const styles = StyleSheet.create({
     marginTop: 100,
     width: "100%",
     height: 500,
-    backgroundColor: "red",
   },
   body: {
     flex: 1,
     margin: 30,
-    padding: 6,
-    backgroundColor: "blue",
+    padding: 20,
+    borderRadius: 15,
+    backgroundColor: "white",
+  },
+  btn: {
+    fontSize: 16,
+    marginLeft: 8,
   },
   inputContainer: {
     height: 50,
     backgroundColor: "#ece8e8",
     borderRadius: 10,
-
     flexDirection: "row",
     paddingHorizontal: 20,
     alignItems: "center",

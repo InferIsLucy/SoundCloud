@@ -29,7 +29,11 @@ const ArtistTag2 = ({ artist = {}, defaultSelectedValue, toggleAddArtist }) => {
       <View style={{ flex: 1, marginLeft: 12 }}>
         <Text
           numberOfLines={1}
-          style={{ fontSize: 16, color: "white", fontWeight: 500 }}
+          style={
+            isSelected
+              ? { fontSize: 16, color: "white", fontWeight: 500 }
+              : { fontSize: 16, color: "black", fontWeight: 500 }
+          }
         >
           {artist.name}
         </Text>

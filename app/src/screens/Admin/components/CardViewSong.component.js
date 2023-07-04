@@ -124,7 +124,8 @@ const CardView = ({ ...props }) => {
             marginTop: 12,
           }}
         >
-          <Ionicons name="ear" size={16} color="#514b75" />
+          <Feather name="headphones" size={16} color="#514b75" />
+
           <Text numberOfLines={1} style={styles.listens}>
             {` ${song.listens} lượt nghe`}
           </Text>
@@ -137,7 +138,8 @@ const CardView = ({ ...props }) => {
             marginTop: 12,
           }}
         >
-          <Ionicons name="ear" size={16} color="#514b75" />
+          <AntDesign name="heart" size={16} color="#514b75" />
+
           <Text numberOfLines={1} style={styles.listens}>
             {` ${song.likes.length} lượt thích`}
           </Text>

@@ -26,6 +26,7 @@ const ArtistManager = () => {
   const [filterdArtistData, setFilteredArtists] = useState([]);
   const [artists, setArtists] = useState([]);
   const [search, setsearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -47,9 +48,16 @@ const ArtistManager = () => {
     }
   };
   const fetchData = async () => {
-    const list = await getDocs(ArtistRef, "deletedAt", "==", null);
-    setArtists(list);
-    setFilteredArtists(list.filter((artist) => artist.deletedAt == null));
+    try {
+      setIsLoading(true);
+      const list = await getDocs(ArtistRef, "deletedAt", "==", null);
+      setArtists(list);
+      setFilteredArtists(list.filter((artist) => artist.deletedAt == null));
+    } catch (err) {
+      console.log("err when fetch data artist", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
   const onRefresh = async () => {
     setRefreshing(true);
@@ -60,7 +68,13 @@ const ArtistManager = () => {
     fetchData();
   }, [refreshFlatlist]);
   return (
-    <View style={styles.container}>
+    <View
+      style={
+        isLoading || detailModalVisible
+          ? [styles.container, { opacity: 0.7 }]
+          : styles.container
+      }
+    >
       <View>
         <Text style={styles.heading}>Artist List</Text>
       </View>

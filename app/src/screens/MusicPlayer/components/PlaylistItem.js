@@ -18,13 +18,16 @@ import { Stack, IconButton } from "@react-native-material/core";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { PlaylistContext } from "../../../providers/playlist.context";
 
-const ListPlayList = ({ Item, O }) => {
+const PlaylistItem = ({ Item, O }) => {
   const [isShow, setIsShow] = useState(false);
   const [playListName, setPlaylistName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const { PlayLists, updatePlaylist, deletePlaylist } =
     useContext(PlaylistContext);
 
+  const onClose = () => {
+    setIsShow(false);
+  };
   const handleDeletePlaylist = (p) => {
     deletePlaylist(p);
   };
@@ -115,9 +118,7 @@ const ListPlayList = ({ Item, O }) => {
               <View style={[StyleSheet.absoluteFillObject, styles.modalBG]} />
             </TouchableWithoutFeedback>
             <View style={styles.inputContainer}>
-              <Text style={{ color: color.ACTIVE_BG }}>
-                Create New Playlist
-              </Text>
+              <Text style={{ color: color.ACTIVE_BG }}>Playlist name</Text>
               <TextInput
                 value={playListName}
                 onChangeText={(text) => setPlaylistName(text)}
@@ -154,7 +155,7 @@ const color = {
   ACTIVE_FONT: "#fff",
 };
 
-export default memo(ListPlayList);
+export default memo(PlaylistItem);
 const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {

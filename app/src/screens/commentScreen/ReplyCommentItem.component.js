@@ -1,12 +1,20 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import React from "react";
-import styles from "./comment/style";
+import React, { useContext } from "react";
+import styles from "./comment/style.js";
 import { Avatar } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
+import { AuthenticationContext } from "../../providers/authentication.context.js";
 const dayjs = require("dayjs");
 
-const ReplyCommentItem = ({ comment }) => {
-  console.log("ReplyCommentItem", comment);
+const ReplyCommentItem = ({
+  comment,
+  setBottomMenuVisible,
+  setSelectedComment,
+}) => {
+  const moreIconOnClick = () => {
+    // setSelectedComment(() => comment);
+    // setBottomMenuVisible(true);
+  };
   return (
     <View
       style={{
@@ -19,7 +27,7 @@ const ReplyCommentItem = ({ comment }) => {
         {comment.userAvatar == "" ? (
           <Avatar.Image
             size={35}
-            source={require("./../../../assets/useravatar.png")}
+            source={require("../../../assets/useravatar.png")}
           />
         ) : (
           <Avatar.Image
@@ -49,7 +57,7 @@ const ReplyCommentItem = ({ comment }) => {
             <Text numberOfLines={2}>{comment.content}</Text>
           </View>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={moreIconOnClick}>
           <Entypo
             name="dots-three-vertical"
             size={17}

@@ -31,12 +31,11 @@ const AdminInfor = () => {
   }, [songs, refreshFlatlist]);
   return (
     <View style={styles.container}>
-      <Text style={styles.heading1}>History Deleted</Text>
+      <Text style={styles.heading1}>History</Text>
       <View>
         <Text style={styles.heading}>Deleted Songs</Text>
         <FlatList
           extraData={refreshFlatlist}
-          style={{ marginTop: 12, marginBottom: 60 }}
           data={deletedSongs}
           renderItem={({ item, index }) => (
             <ItemComponent
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-
+    padding: 20,
     backgroundColor: "#140d36",
   },
 

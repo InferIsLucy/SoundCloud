@@ -25,6 +25,7 @@ import CommentScreen from "../commentScreen/Comment.screen";
 import { AudioContext } from "../../providers/audio.context";
 import { formatTime } from "../../utils/TimeFormater";
 import OptionsModal from "./components/OptionsModal.component";
+import SetTimerModal from "./components/TimerModel.component";
 
 const PlayerScreen = ({ navigation }) => {
   const {
@@ -40,19 +41,27 @@ const PlayerScreen = ({ navigation }) => {
   const [songDuration, setSongDuration] = useState(0);
   const [commentsVisible, setCommentsVisible] = useState(false);
   const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
-  // const intervalRef = useRef(null);
+  const [timerModalVisible, setTimerModalVisible] = useState(false);
+  // const intervalRef = useRef(null)
+  useLayoutEffect(() => {
+    (async () => {
+      try {
+        const status = await audioObj.current.getStatusAsync();
+        setCurrentPosition(() => status.positionMillis);
+        setSongDuration(() => status.durationMillis);
+      } catch {}
+    })();
+  }, []);
   useEffect(() => {
     const backAction = () => {
       navigation.goBack();
       setBottomBarVisible(true);
       return true;
     };
-
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       backAction
     );
-
     return () => backHandler.remove();
   }, []);
   useEffect(() => {
@@ -60,26 +69,30 @@ const PlayerScreen = ({ navigation }) => {
   }, []);
   const intervalRef = useRef(null);
   useEffect(() => {
-    if (audioObj != null) {
-      if (audioObj._loaded) {
+    if (audioObj.current != null) {
+      if (audioObj.current._loaded && isPlaying) {
         if (!intervalRef.current) {
           intervalRef.current = setInterval(async () => {
-            {
-              const status = await audioObj.getStatusAsync();
-
-              if (
-                status.positionMillis == status.durationMillis &&
-                !status.isLooping
-              ) {
-                console.log("handleSongEnd");
-                handleSongEnd();
-                return;
-              }
-              setCurrentPosition(() => status.positionMillis);
-              setSongDuration(() => status.durationMillis);
+            const status = await audioObj.current.getStatusAsync();
+            if (
+              status.isLoaded && // Kiểm tra bài hát đã tải xong
+              status.positionMillis === status.durationMillis
+            ) {
+              setCurrentPosition(status.positionMillis);
+              console.log("handleSongEnd");
+              handleSongEnd();
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+              return;
             }
+            setCurrentPosition(status.positionMillis);
+            setSongDuration(status.durationMillis);
           }, 1000);
         }
+      } else {
+        // Ngừng interval nếu bài hát đã dừng phát hoặc chưa tải xong
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     }
 
@@ -89,12 +102,16 @@ const PlayerScreen = ({ navigation }) => {
         intervalRef.current = null;
       }
     };
-  }, [audioObj, currentSong, isPlaying]);
-
+  }, [audioObj.current, currentSong, isPlaying]);
   return (
     <View
       style={[
-        { opacity: commentsVisible || isOptionModalVisible ? 0.5 : 1 },
+        {
+          opacity:
+            commentsVisible || isOptionModalVisible || timerModalVisible
+              ? 0.5
+              : 1,
+        },
         styles.container,
       ]}
     >
@@ -168,10 +185,9 @@ const PlayerScreen = ({ navigation }) => {
               onSlidingComplete={async (value) => {
                 //value is second unit -> convert to millisecond
                 try {
-                  // if (audioObj._isLoading) return;
-                  await audioObj.setPositionAsync(value);
+                  // if (audioObj.current._isLoading) return;
+                  await audioObj.current.setPositionAsync(value);
                   setCurrentPosition(value);
-                  // savedPosition.current = value;
                 } catch (e) {
                   console.log("error onSliding duration bar", e);
                 }
@@ -206,7 +222,7 @@ const PlayerScreen = ({ navigation }) => {
         song={currentSong}
       ></BottomReactionBar>
       <Modal
-        animationType="fade"
+        animationType="slide"
         transparent={true}
         visible={commentsVisible}
         onRequestClose={() => {
@@ -219,6 +235,9 @@ const PlayerScreen = ({ navigation }) => {
             bottom: 0,
             backgroundColor: "white",
             right: 0,
+
+            borderTopLeftRadius: 25,
+            borderTopRightRadius: 25,
             left: 0,
           }}
         >
@@ -231,10 +250,16 @@ const PlayerScreen = ({ navigation }) => {
       <OptionsModal
         visible={isOptionModalVisible}
         song={currentSong}
+        setTimerModalVisible={setTimerModalVisible}
         onClose={() => {
           setIsOptionModalVisible(false);
         }}
       ></OptionsModal>
+
+      <SetTimerModal
+        visible={timerModalVisible}
+        onClose={() => setTimerModalVisible(false)}
+      ></SetTimerModal>
     </View>
   );
 };

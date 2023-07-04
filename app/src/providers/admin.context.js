@@ -21,7 +21,7 @@ export const AdminContextProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshFlatlist, setRefreshFlatList] = useState(false);
   useEffect(() => {
-    // addField("artists", "followers", []);
+    // addField("comments", "deletedAt", null);
   }, []);
   const addField = async (collectionName, fieldName, value) => {
     setIsLoading(true);

@@ -12,8 +12,11 @@ export const PlaylistContext = createContext();
 const playlistRef = firebase.firestore().collection("playlists");
 export const PlaylistContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
-  const { songs } = useContext(AudioContext);
   const [playlists, setPlaylists] = useState([]);
+
+  const renderCount = useRef(0);
+  renderCount.current++;
+  console.log("PlaylistContext", renderCount.current);
 
   useEffect(() => {
     const loadPlaylists = async () => {
@@ -38,7 +41,7 @@ export const PlaylistContextProvider = ({ children }) => {
       const newPlaylist = {
         userId: userId,
         name: playlistName,
-        songsId: [],
+        songIds: [],
       };
       const docRef = await playlistRef.add(newPlaylist);
       setPlaylists((prevPlaylists) => [
@@ -51,7 +54,7 @@ export const PlaylistContextProvider = ({ children }) => {
     }
   };
 
-  const updatePlaylist = async (playlistId, newName, userId) => {
+  const updatePlaylist = async (playlistId, newName) => {
     try {
       await playlistRef.doc(playlistId).update({ name: newName });
       setPlaylists((prevPlaylists) =>

@@ -18,17 +18,15 @@ import { AntDesign } from "@expo/vector-icons";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import * as DocumentPicker from "expo-document-picker";
 import { Audio } from "expo-av";
-import { ArtistRef, SongRef } from "./const";
+import { FontAwesome5 } from "@expo/vector-icons";
+
 import { AdminContext } from "../../providers/admin.context";
-import { formatDate } from "../../utils/TimeFormater";
 import { isStringNullOrEmpty, isValidAge } from "../../utils/Validator";
 import ArtistListModal from "./components/ArtistListModal.component";
-import AddArtistModal from "./components/AddArtistModal.component";
 import ArtistItem from "./components/ArtistItem.component";
 import { AuthenticationContext } from "../../providers/authentication.context";
 import { NotificationContext } from "../../providers/notification.context";
-import { AudioContext } from "../../providers/audio.context";
-
+import { SongRef } from "./const";
 const UploadScreen = () => {
   const playbackObject = new Audio.Sound();
   const { uploadFile, addDocument } = useContext(AdminContext);
@@ -155,6 +153,7 @@ const UploadScreen = () => {
       </View>
       {isLoading && (
         <ActivityIndicator
+          size={"large"}
           style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
         ></ActivityIndicator>
       )}
@@ -172,17 +171,20 @@ const UploadScreen = () => {
       <View
         style={{
           marginTop: 32,
+          justifyContent: "center",
+          alignItems: "center",
           width: "100%",
         }}
       >
         <Text numberOfLines={2} style={styles.title}>
           Upload Image
         </Text>
-        <View style={{ flexDirection: "row", marginLeft: 12, marginTop: 12 }}>
-          <Ionicons name="person" size={24} color="#ffffff" />
+        <View style={{ flexDirection: "row", marginTop: 12 }}>
+          <FontAwesome5 name="compact-disc" size={24} color="#ffffff" />
           <TextInput
             value={name}
-            placeholder="Song name"
+            placeholder="Song name ..."
+            placeholderTextColor={"#b0aeae"}
             color="#ffffff"
             textColor="white"
             onChangeText={(text) => setName(text)}
@@ -190,13 +192,19 @@ const UploadScreen = () => {
             style={styles.subtitle}
           ></TextInput>
         </View>
-        <View style={{ flexDirection: "row", marginLeft: 12, marginTop: 12 }}>
-          <Ionicons name="person" size={24} color="#ffffff" />
-          <Text style={styles.subtitle}>
-            {mp3Name == "" ? "Empty mp3 file" : mp3Name}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: 12,
+          }}
+        >
+          <AntDesign name="file1" size={24} color="white" />
+          <Text numberOfLines={1} style={styles.subtitle}>
+            {mp3Name == "" ? "File is not uploaded" : mp3Name}
           </Text>
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             setShowDatePicker(true);
           }}
@@ -206,7 +214,7 @@ const UploadScreen = () => {
           <Text style={styles.listens}>
             {`Pick publish date: ${formatDate(publishDate)}`}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {showDatePicker && (
           <RNDateTimePicker
             maximumDate={new Date()}
@@ -224,10 +232,13 @@ const UploadScreen = () => {
 
       <TouchableOpacity
         onPress={() => setIsArtistListVisible(true)}
-        style={[styles.btnContainer, { width: 210 }]}
+        style={[
+          styles.btnContainer,
+          { width: 210, marginTop: 12, marginBottom: 12 },
+        ]}
       >
-        <AntDesign name="clouduploado" size={22} color="#514b75" />
-        <Text style={styles.btn}>Open Artist List</Text>
+        <AntDesign name="addusergroup" size={22} color="white" />
+        <Text style={styles.btn}> Add Artist</Text>
       </TouchableOpacity>
 
       <FlatList
@@ -244,15 +255,16 @@ const UploadScreen = () => {
           onPress={getMp3FileFromDevice}
           style={[styles.btnContainer, { width: 210 }]}
         >
-          <AntDesign name="clouduploado" size={22} color="#514b75" />
+          <AntDesign name="addfile" size={24} color="white" />
+
           <Text style={styles.btn}>GetMp3FileFromDevice</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleUploadSong}
           style={styles.btnContainer}
         >
-          <AntDesign name="clouduploado" size={22} color="#514b75" />
-          <Text style={styles.btn}>Upload</Text>
+          <AntDesign name="clouduploado" size={22} color="white" />
+          <Text style={styles.btn}>Upload </Text>
         </TouchableOpacity>
       </View>
 
@@ -274,6 +286,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     paddingTop: 60,
+    alignItems: "center",
     flex: 1,
     backgroundColor: "#140d36",
   },
@@ -296,7 +309,6 @@ const styles = StyleSheet.create({
     borderRadius: 200,
   },
   bgImage: {
-    marginLeft: 80,
     width: 250,
     height: 250,
   },
@@ -317,12 +329,11 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Colors.defaultTextColor,
-    textAlign: "left",
+    textAlign: "center",
     fontWeight: "bold",
     fontSize: 24,
     width: 200,
     bottom: 20,
-    marginLeft: 135,
   },
   subtitle: {
     color: Colors.defaultTextColor,
@@ -361,6 +372,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     position: "absolute",
     bottom: 12,
+    marginBottom: 20,
     right: 12,
   },
 });

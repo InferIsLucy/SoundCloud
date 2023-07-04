@@ -16,7 +16,7 @@ const PlayerController = () => {
         <MaterialCommunityIcons
           name="shuffle"
           size={controllSize}
-          color={shuffleMode ? "black" : "gray"}
+          color={shuffleMode ? "white" : "black"}
         />
       </TouchableOpacity>
 
@@ -24,36 +24,34 @@ const PlayerController = () => {
         <Entypo
           name="controller-jump-to-start"
           size={controllSize}
-          color="black"
+          color="white"
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={audioEvents.togglePlayStatus}>
         {isPlaying ? (
-          <Ionicons name="pause-circle-sharp" size={60} color="black" />
+          <Ionicons name="pause-circle-sharp" size={60} color="white" />
         ) : (
-          <Ionicons name="play-circle-sharp" size={60} color="black" />
+          <Ionicons name="play-circle-sharp" size={60} color="white" />
         )}
       </TouchableOpacity>
       <TouchableOpacity onPress={audioEvents.playNext}>
-        <Entypo name="controller-next" size={controllSize} color="black" />
+        <Entypo name="controller-next" size={controllSize} color="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={audioEvents.toggleRepeatMode}>
         {repeatMode == 2 ? (
           <MaterialCommunityIcons
             name="repeat-once"
             size={controllSize}
-            color="black"
+            color="white"
           />
         ) : (
           <MaterialCommunityIcons
             name="repeat"
             size={controllSize}
-            color={repeatMode == 0 ? "gray" : "black"}
+            color={repeatMode == 0 ? "black" : "white"}
           />
         )}
       </TouchableOpacity>
-
-      {/* bottom reaction bar */}
     </View>
   );
 };

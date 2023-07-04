@@ -28,6 +28,7 @@ const NotificationContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(AuthenticationContext);
   const notificationListener = useRef();
   const responseListener = useRef();
+  console.log("Notification Context");
   async function registerForPushNotificationsAsync() {
     let token;
     if (Device.isDevice) {

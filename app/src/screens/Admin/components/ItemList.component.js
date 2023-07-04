@@ -20,7 +20,7 @@ const ItemComponent = ({
   song = null,
   artist = null,
   setRefreshFlatList,
-  setDetailModalVisible,
+  setIsSongLoading,
 }) => {
   const { deleteDocument, restoreDocument } = useContext(AdminContext);
   const { songs, fetchSongs } = useContext(AudioContext);
@@ -45,6 +45,7 @@ const ItemComponent = ({
     }
   }, [songs]);
   const handleDeleteDocument = async () => {
+    setIsSongLoading(true);
     try {
       if (artist) {
         // delete songs of artist
@@ -59,6 +60,7 @@ const ItemComponent = ({
           }
         });
         await Promise.all(deletePromises);
+        setIsSongLoading(false);
       }
       await deleteDocument(song ? SongRef : ArtistRef, item.id);
       setRefreshFlatList((prev) => !prev);

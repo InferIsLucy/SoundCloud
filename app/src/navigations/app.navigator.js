@@ -1,9 +1,9 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Platform } from "react-native";
+import { View, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import HomeScreen from "../screens/Home.screen";
+import HomeScreen from "../screens/Home/Home.screen";
 import UserProfile from "../screens/UserProfile/UserProfile.screen";
 import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
 
@@ -12,7 +12,7 @@ import BottomPlayer from "../screens/MusicPlayer/BottomPlayerBar.screen";
 import { Colors } from "../theme/color";
 import PlayList from "../screens/Library.screen";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
-import Timer from "../screens/MusicPlayer/components/Timer";
+
 import DetailPlaylist from "../screens/MusicPlayer/DetailPlayList.screen";
 import { AudioContext } from "../providers/audio.context";
 import { useContext } from "react";
@@ -85,9 +85,7 @@ export const AppNavigator = () => {
           top: 12,
           right: 12,
         }}
-      >
-        <Timer duration={15}></Timer>
-      </View>
+      ></View>
     </>
   );
 };

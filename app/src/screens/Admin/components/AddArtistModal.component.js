@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import { ArtistRef, SongRef } from "../const";
 import { AdminContext } from "../../../providers/admin.context";
@@ -46,6 +47,7 @@ const AddArtistModal = ({ visible, onClose }) => {
         email,
         dateOfBirth,
         deletedAt: null,
+        followers: [],
         avtUri: downloadUri,
       };
       addDocument(ArtistRef, newArtist);
@@ -73,7 +75,7 @@ const AddArtistModal = ({ visible, onClose }) => {
   return (
     <Modal
       animationType="fade"
-      transparent={false}
+      transparent={true}
       visible={visible}
       onRequestClose={() => {
         onClose();
@@ -119,23 +121,23 @@ const AddArtistModal = ({ visible, onClose }) => {
           }}
         >
           <Text numberOfLines={2} style={styles.title}>
-            Add New Artist
+            Add Artist
           </Text>
           <View style={{ flexDirection: "row", marginLeft: 12, marginTop: 12 }}>
             <Ionicons name="person" size={24} color="#514b75" />
             <TextInput
               value={name}
-              placeholder="Artist Nickname"
+              placeholder=" Nickname"
               onChangeText={(text) => setName(text)}
               numberOfLines={1}
               style={styles.subtitle}
             ></TextInput>
           </View>
           <View style={styles.item}>
-            <Ionicons name="ear" size={16} color="#514b75" />
+            <MaterialIcons name="email" size={16} color="#514b75" />
             <TextInput
               value={email}
-              placeholder="Email"
+              placeholder=" Email"
               onChangeText={(text) => setEmail(text)}
               numberOfLines={1}
               style={styles.listens}
@@ -145,11 +147,11 @@ const AddArtistModal = ({ visible, onClose }) => {
             onPress={() => {
               setShowDatePicker(true);
             }}
-            style={styles.item}
+            style={[styles.item, { marginLeft: 0 }]}
           >
             <Ionicons name="calendar" size={16} color="#514b75" />
             <Text numberOfLines={1} style={styles.listens}>
-              {formatDate(dateOfBirth)}
+              {`Date of birth: ${formatDate(dateOfBirth)}`}
             </Text>
           </TouchableOpacity>
           {showDatePicker && (

@@ -2,23 +2,27 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   ScrollView,
   Image,
+  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import React, { useState, useContext, memo, useEffect } from "react";
 import styles from "./CommentScr.component.style";
 import { AntDesign } from "@expo/vector-icons";
+
 import Comment from "./comment/index";
 import Footer from "./footer/index";
 import { CommentContext } from "../../providers/comment.context";
 import { AudioContext } from "../../providers/audio.context";
+import BottomMenu from "./components/BottomMenu.component";
 
 const CommentScreen = ({ setCommentsVisible, songId }) => {
   const { addComment, isLoading, loadComments } = useContext(CommentContext);
   const { currentSong } = useContext(AudioContext);
   const [comments, setComments] = useState([]);
+  const [selectedComment, setSelectedComment] = useState(null);
+  const [isBottomMenuVisible, setBottomMenuVisible] = useState(false);
   useEffect(() => {
     (async () => {
       const list = await loadComments(songId);
@@ -26,7 +30,13 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
     })();
   }, []);
   return (
-    <View style={styles.container}>
+    <View
+      style={
+        isBottomMenuVisible
+          ? [styles.container, { opacity: 0.5 }]
+          : styles.container
+      }
+    >
       <View style={styles.header}>
         <View style={styles.sub_header}>
           <View style={styles.currentComments}>
@@ -64,7 +74,15 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
         ) : (
           <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
             {comments.map((item, index) => {
-              return <Comment key={index} comment={item} songId={songId} />;
+              return (
+                <Comment
+                  key={index}
+                  setBottomMenuVisible={setBottomMenuVisible}
+                  setSelectedComment={setSelectedComment}
+                  comment={item}
+                  songId={songId}
+                />
+              );
             })}
           </ScrollView>
         )}
@@ -72,6 +90,14 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
       <View style={styles.footer}>
         <Footer setComments={setComments} songId={songId} />
       </View>
+      <BottomMenu
+        setComments={setComments}
+        selectedComment={selectedComment}
+        visible={isBottomMenuVisible}
+        onClose={() => {
+          setBottomMenuVisible(false);
+        }}
+      ></BottomMenu>
     </View>
   );
 };

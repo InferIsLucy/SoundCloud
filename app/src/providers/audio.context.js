@@ -4,6 +4,7 @@ import React, {
   createContext,
   useRef,
   useContext,
+  useCallback,
 } from "react";
 import { Audio } from "expo-av";
 import * as MediaLibrary from "expo-media-library";
@@ -20,8 +21,7 @@ Audio.setAudioModeAsync({
   playThroughEarpieceAndroid: false,
   shouldDuckAndroid: true,
 });
-const REACT_IDS = "reactIdList";
-const songStorage = firebase.storage().ref("songs");
+
 const songsRef = firebase.firestore().collection("songs");
 const userRef = firebase.firestore().collection("users");
 export const AudioContextProvider = ({ children }) => {
@@ -29,53 +29,49 @@ export const AudioContextProvider = ({ children }) => {
   const { artists, isFetchingArtist } = useContext(ArtistContext);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [audioObj, setAudioObj] = useState(null);
   const [isBottomBarVisible, setBottomBarVisible] = useState(false);
   const [isPlaying, setIsPlaying] = useState(null);
-  const [playbackStatus, setPlaybackStatus] = useState({});
+  const [isFetchingData, setIsFetchingData] = useState(null);
+
   const [currentSong, setCurrentSong] = useState(null);
-  const [songDuration, setSongDuration] = useState("");
   const [repeatMode, setRepeatMode] = useState(0); // 0 - none, 1- all,2 - one
   const [shuffleMode, setShuffleMode] = useState(false);
   const [songs, setSongs] = useState([]);
   const [playlist, setPlaylist] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [listeningHistory, setListeningHistory] = useState([]);
-  const [currentPosition, setCurrentPosition] = useState([]);
   const [timerVisible, setTimerVisible] = useState(false);
-  const savedPosition = useRef(0);
+
   const currentSongIndex = useRef(-1);
   const currentSongId = useRef(-1);
   const currentPositionRef = useRef(0);
-  const timerDurationRef = useRef(0);
-  const setTimer = (duration) => {
-    timerDurationRef.current = duration;
-    setTimerVisible(true);
+  const timerDurationRef = useRef(-1);
+  const audioObj = useRef(null);
+  const renderCount = useRef(0);
+  renderCount.current++;
+  console.log("AudioContext", renderCount.current);
+
+  const clearTimer = () => {
+    timerDurationRef.current = -1;
   };
-  function listFilesAndDirectories(reference, pageToken) {
-    return reference.list({ pageToken }).then((result) => {
-      // Loop over each item
-      result.items.forEach((ref) => {
-        ref
-          .getDownloadURL()
-          .then((url) => {
-            console.log("url", url);
-          })
-          .catch((err) => console.log("error when get download url"));
-      });
-      if (result.nextPageToken) {
-        return listFilesAndDirectories(reference, result.nextPageToken);
-      }
-      return Promise.resolve();
-    });
-  }
+  const setTimer = (durationMillis) => {
+    if (typeof durationMillis === "number" && durationMillis >= 0) {
+      timerDurationRef.current = durationMillis;
+      setTimerVisible((prev) => !prev);
+    } else {
+      // handle invalid minute value here
+      console.log("Invalid timer value");
+    }
+  };
   const getLikedSongs = (list) => {
-    const listSong = list.filter((song) => {
-      if (song.likes) {
-        if (song.likes.includes(user.userId)) return song;
-      }
-    });
-    setLikedSongs(listSong);
+    if (user != null) {
+      const listSong = list.filter((song) => {
+        if (song.likes) {
+          if (song.likes.includes(user.userId)) return song;
+        }
+      });
+      setLikedSongs(listSong);
+    }
   };
   const playNext = async () => {
     moveToNext();
@@ -84,19 +80,20 @@ export const AudioContextProvider = ({ children }) => {
     moveToPrev();
   };
   const togglePlayStatus = async () => {
+    console.log("audioObj", audioObj.current == null);
     //getting songs
-    if (isLoading == true || audioObj == null) {
+    if (isLoading == true || audioObj.current == null) {
       return;
     }
 
-    if (audioObj._loading) {
+    if (audioObj.current._loading) {
       return;
     }
     setIsPlaying((isPlaying) => !isPlaying);
     if (isPlaying) {
-      await audioObj.pauseAsync();
+      await audioObj.current.pauseAsync();
     } else {
-      await audioObj.playAsync();
+      await audioObj.current.playAsync();
     }
   };
   const toggleShuffleMode = () => {
@@ -116,17 +113,13 @@ export const AudioContextProvider = ({ children }) => {
       const { sound: playbackObject } = await Audio.Sound.createAsync({
         uri: uri,
       });
-      setAudioObj(playbackObject);
-      const status = await playbackObject.getStatusAsync();
-      // Load the playbackObject and obtain the reference.
-
-      setSongDuration(formatTime(status.durationMillis));
-      setPlaybackStatus(status);
+      audioObj.current = playbackObject;
       await playbackObject.playAsync();
       setIsPlaying(true);
       // console.log("status", status);
+      console.log("initialized audio object");
     } catch (err) {
-      console.log("error when initialize audio object");
+      console.log("error when initialize audio object", err);
     }
   };
 
@@ -192,22 +185,14 @@ export const AudioContextProvider = ({ children }) => {
     }
   };
   const audioLoadSongAsync = async (songUri) => {
-    if (audioObj != null) {
+    if (audioObj.current != null) {
       setIsPlaying(false);
       try {
-        await audioObj.stopAsync();
-        // setIsPlaying(false);
-        await audioObj.unloadAsync();
-        // const newSound = new Audio.Sound();
-        await audioObj.loadAsync({ uri: songUri });
-        await audioObj.playAsync();
-        // await audioObj.loadAsync({ uri: songUri });
-        // setAudioObj(() => newSound);
-        const status = await audioObj.getStatusAsync();
-        setSongDuration(formatTime(status.durationMillis / 1000));
-        // currentSong.duration = status.durationMillis
-        setPlaybackStatus(() => status);
-        // await audioObj.playAsync();
+        await audioObj.current.stopAsync();
+        await audioObj.current.unloadAsync();
+        await audioObj.current.loadAsync({ uri: songUri });
+        await audioObj.current.playAsync();
+        const status = await audioObj.current.getStatusAsync();
         setIsPlaying(true);
       } catch (err) {
         throw err;
@@ -216,10 +201,9 @@ export const AudioContextProvider = ({ children }) => {
   };
 
   const moveToNext = () => {
-    console.log("isLoading", isLoading);
-    if (isLoading) {
-      return;
-    }
+    // if (isLoading) {
+    //   return;
+    // }
 
     let nextIndex;
     // Kiểm tra trạng thái repeatMode
@@ -230,6 +214,7 @@ export const AudioContextProvider = ({ children }) => {
           currentSongIndex.current === playlist.length - 1
             ? currentSongIndex.current
             : currentSongIndex.current + 1;
+        console.log("currentIndex", currentSongIndex.current);
         // Kiểm tra nếu chỉ mục vượt quá số lượng bài hát
         if (currentSongIndex.current > playlist.length - 1) {
           return;
@@ -257,6 +242,8 @@ export const AudioContextProvider = ({ children }) => {
     if (shuffleMode) {
       nextIndex = getRandomIndex(playlist.length, currentSongIndex.current);
     }
+    console.log("nextIndex", nextIndex);
+
     try {
       setCurrentSong(playlist[nextIndex]);
     } catch (e) {
@@ -317,53 +304,23 @@ export const AudioContextProvider = ({ children }) => {
       setError(e);
     }
   };
-  const getRandomIndex = (max, exclude) => {
+  const getRandomIndex = useCallback((max, exclude) => {
     let randomIndex;
     do {
       randomIndex = Math.floor(Math.random() * max);
     } while (randomIndex === exclude);
 
     return randomIndex;
-  };
+  }, []);
   const handleSongEnd = async () => {
     setIsLoading(true);
     moveToNext();
     //repeat 1 song forever
     if (repeatMode == 2) {
-      await audioObj.setPositionAsync(0);
-      savedPosition.current = 0;
+      await audioObj.current.setPositionAsync(0);
     }
     setIsLoading(false);
   };
-  useEffect(() => {
-    savedPosition.current = 0;
-    const handleSongChange = async () => {
-      setIsLoading(true);
-      if (currentSong != null) {
-        if (audioObj == null) {
-          await initializeAudioObject(currentSong.uri);
-        } else {
-          await audioLoadSongAsync(currentSong.uri);
-        }
-        currentSongId.current = currentSong.id;
-        currentSongIndex.current = songs.findIndex(
-          (item) => item.id === currentSong.id
-        );
-        setIsLoading(false);
-      }
-    };
-    handleSongChange();
-  }, [currentSong]);
-
-  useEffect(() => {
-    if (audioObj != null) {
-      // Lặp lại bài hiện tại (One)
-      if (repeatMode == 2) audioObj.setIsLoopingAsync(true);
-      else {
-        audioObj.setIsLoopingAsync(false);
-      }
-    }
-  }, [repeatMode]);
 
   const loadLocalSongs = async () => {
     setIsLoading(true);
@@ -380,7 +337,7 @@ export const AudioContextProvider = ({ children }) => {
           isLocalSong: true,
         }));
         setIsLoading(false);
-        return localSongs; // Return the local songs array
+        return localSongs;
       }
     } catch (e) {
       console.log("error", e);
@@ -388,7 +345,7 @@ export const AudioContextProvider = ({ children }) => {
       setError(e);
     }
   };
-  const getRemoteSongs = async () => {
+  const getRemoteSongs = useCallback(async () => {
     try {
       const querySnapshot = await songsRef.where("deletedAt", "==", null).get();
       const newSongs = [];
@@ -410,7 +367,7 @@ export const AudioContextProvider = ({ children }) => {
     } catch (err) {
       console.log("error when get all songs", err);
     }
-  };
+  }, [artists, songsRef]);
   const getListeningHistory = async (listeningHistoryIds) => {
     const listSong = listeningHistoryIds.map((id) => {
       return songs.find((song) => song.id === id);
@@ -437,42 +394,54 @@ export const AudioContextProvider = ({ children }) => {
       throw error;
     }
   };
+  const fetchSongs = async () => {
+    console.log("fetching songs");
+    setIsFetchingData(true);
+    const listLocal = await loadLocalSongs(); // Await the local songs array
+    const listRemote = await getRemoteSongs(); // Await the remote songs array
+    setSongs(() => [...listLocal, ...listRemote]);
+    setPlaylist([...listLocal, ...listRemote]);
+    setIsFetchingData(false);
+  };
 
   useEffect(() => {
     if (isAuthenticated && !isFetchingArtist) {
       fetchSongs();
     }
   }, [isAuthenticated, isFetchingArtist]);
-  const fetchSongs = async () => {
-    console.log("fetching songs");
-    const listLocal = await loadLocalSongs(); // Await the local songs array
-    const listRemote = await getRemoteSongs(); // Await the remote songs array
-    setSongs([...listLocal, ...listRemote]);
-    setPlaylist([...listLocal, ...listRemote]);
-  };
   useEffect(() => {
     if (isAuthenticated) {
       getListeningHistory(user.listeningHistory || []);
     }
   }, [songs, isAuthenticated]);
-  // useEffect(() => {
-  //   return audioObj
-  //     ? () => {
-  //         console.log("Unloading Sound");
-  //         audioObj.unloadAsync();
-  //         setAudioObj(null);
-  //       }
-  //     : undefined;
-  // }, [audioObj]);
+  useEffect(() => {
+    const handleSongChange = async () => {
+      setIsLoading(true);
+      if (currentSong != null) {
+        if (audioObj.current == null) {
+          await initializeAudioObject(currentSong.uri);
+        } else {
+          await audioLoadSongAsync(currentSong.uri);
+        }
+        currentSongId.current = currentSong.id;
+        currentSongIndex.current = playlist.findIndex(
+          (item) => item.id === currentSong.id
+        );
+        setIsLoading(false);
+      }
+    };
+    handleSongChange();
+  }, [currentSong]);
 
-  // console.log("isPlaying", isPlaying);
-  // console.log("audioObj", audioObj);
-  // console.log("songs", songs);
-  // console.log("currentSong", currentSong);
-  // console.log("currentSongIndex.current", currentSongIndex.current);
-  // console.log("currentSongId.current", currentSongId.current);
-  // console.log("playbackStatus", playbackStatus);
-
+  useEffect(() => {
+    if (audioObj.current != null) {
+      // Lặp lại bài hiện tại (One)
+      if (repeatMode == 2) audioObj.current.setIsLoopingAsync(true);
+      else {
+        audioObj.current.setIsLoopingAsync(false);
+      }
+    }
+  }, [repeatMode]);
   return (
     <AudioContext.Provider
       value={{
@@ -481,26 +450,23 @@ export const AudioContextProvider = ({ children }) => {
         shuffleMode,
         isPlaying,
         isLoading,
-        playbackStatus,
         likedSongs,
         currentSongIndex,
         currentSong,
         currentPosition: currentPositionRef.current,
         playlist,
+        isFetchingData,
         timerVisible,
         songs: songs.filter((song) => song.isLocalSong == null),
         localSongs: songs.filter((song) => song.isLocalSong != null),
-        songDuration,
         isBottomBarVisible,
-        savedPosition,
         listeningHistory,
         timerDurationRef,
         setPlaylist,
         setTimer,
+        clearTimer,
         setCurrentSong,
-        setAudioObj,
         setBottomBarVisible,
-        setPlaybackStatus,
         handleSongEnd,
         checkIfReact,
         sendReact,

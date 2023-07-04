@@ -4,15 +4,18 @@ import { AudioContext } from "../../../providers/audio.context";
 
 function Timer() {
   const { audioObj, timerDurationRef, timerVisible } = useContext(AudioContext);
-  const [timeLeft, setTimeLeft] = useState(timerDurationRef.current);
+  const [timeLeft, setTimeLeft] = useState(timerDurationRef.current / 1000);
+  useEffect(() => {
+    setTimeLeft(timerDurationRef.current / 1000);
+  }, [timerDurationRef.current]);
   useEffect(() => {
     const timerId = setInterval(() => {
-      setTimeLeft(async (timeLeft) => {
+      setTimeLeft((timeLeft) => {
         if (timeLeft > 0) {
           return timeLeft - 1;
         } else {
-          if (audioObj) {
-            await audioObj.pauseAsync;
+          if (audioObj.current) {
+            pauseAudio();
           }
           clearInterval(timerId);
           return 0;
@@ -24,7 +27,9 @@ function Timer() {
       clearInterval(timerId);
     };
   }, []);
-
+  const pauseAudio = async () => {
+    await audioObj.current.pauseAsync();
+  };
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
@@ -32,9 +37,8 @@ function Timer() {
       .toString()
       .padStart(2, "0")}`;
   };
-
+  return <></>;
   if (timerVisible == false) {
-    return <></>;
   }
   return (
     <Text style={{ color: "white", fontWeight: 500 }}>

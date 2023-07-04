@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -17,7 +17,7 @@ import COLORS from "../consts/colors";
 import { formatTime } from "../utils/TimeFormater";
 import PlayListInPutModal from "../components/PlayListInputMadal";
 import { PlaylistContext } from "../providers/playlist.context";
-import ListPlayList from "./MusicPlayer/components/ListPlayList.component";
+import PlaylistItem from "./MusicPlayer/components/PlaylistItem";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { fontSizes } from "../theme/fontSizes";
 import SongItem from "./MusicPlayer/components/SongItem.component";
@@ -46,13 +46,10 @@ const PlayList = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isHistoryItemClicked, setIsHistoryItemClicked] = useState(false);
   const [isLocalItemClicked, setIslocalItemClicked] = useState(false);
-  // const [localSongs, setLocalSongs] = useState([]);
-  // useEffect(() => {
-  //   const list = songs.filter((song) => {
-  //     return song.isLocalSong == true;
-  //   });
-  //   setLocalSongs(list);
-  // }, []);
+  const renderCount = useRef(0);
+  renderCount.current++;
+  console.log("Library", renderCount.current);
+
   const Card = ({ song = {} }) => {
     return (
       <View activeOpacity={0.8}>
@@ -182,7 +179,7 @@ const PlayList = ({ navigation }) => {
         {/* <FlatList
           data={playlists}
           renderItem={({ item }) => (
-            <ListPlayList Item={item.name} O={item.id} />
+            <PlaylistItem Item={item.name} O={item.id} />
           )}
         /> */}
         {playlists.map((playlist) => {
@@ -195,7 +192,7 @@ const PlayList = ({ navigation }) => {
                 });
               }}
             >
-              <ListPlayList Item={playlist.name} O={playlist.id} />
+              <PlaylistItem Item={playlist.name} O={playlist.id} />
             </TouchableOpacity>
           );
         })}

@@ -20,7 +20,7 @@ const Navigator = () => {
   if (isCheckingLoggedin) {
     return <WelcomeScreen></WelcomeScreen>;
   }
-  if (user != null && user.displayName == "admin") {
+  if (user != null && user.isAdmin) {
     return (
       <NavigationContainer>
         <AdminContextProvider>

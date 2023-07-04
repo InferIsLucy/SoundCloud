@@ -8172,7 +8172,7 @@ react-devtools-core@^4.26.1:
     shell-quote "^1.6.1"
     ws "^7"
 
-"react-dom@^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react-dom@^17.0.2 || ^18.0.0", react-dom@18.2.0:
+"react-dom@^17.0.2 || ^18.0.0", react-dom@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-18.2.0.tgz"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
@@ -8200,11 +8200,6 @@ react-is@^18.0.0:
   resolved "https://registry.npmjs.org/react-is/-/react-is-18.2.0.tgz"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
-"react-native-androw@>= 0.0.33":
-  version "0.0.34"
-  resolved "https://registry.npmjs.org/react-native-androw/-/react-native-androw-0.0.34.tgz"
-  integrity sha512-YuW0GxYNzABvPPe6k+JdLUF5CAzKSW5R6IxxA/+fg5gc+4avE1tZgLmnRfNtXJCbW9r90YLYp33S9Uu2pe//fg==
-
 react-native-codegen@^0.71.5:
   version "0.71.5"
   resolved "https://registry.npmjs.org/react-native-codegen/-/react-native-codegen-0.71.5.tgz"
@@ -8214,13 +8209,6 @@ react-native-codegen@^0.71.5:
     flow-parser "^0.185.0"
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
-
-"react-native-dynamic-vector-icons@>= 0.2.1", "react-native-dynamic-vector-icons@>= x.x.x":
-  version "1.3.0"
-  resolved "https://registry.npmjs.org/react-native-dynamic-vector-icons/-/react-native-dynamic-vector-icons-1.3.0.tgz"
-  integrity sha512-sjjZXZlVzMsd4MhfJOjuk1p06Xh99LxZIihy0FtSAh6mYIz14sML5zRvcqY5Zrsr4zdFSO2xVqDRLbHHnYS/YQ==
-  dependencies:
-    react-native-vector-icons ">= 6.x.x"
 
 react-native-flex-layout@^0.1.5:
   version "0.1.5"
@@ -8232,10 +8220,10 @@ react-native-gradle-plugin@^0.71.17:
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.18.tgz"
   integrity sha512-7F6bD7B8Xsn3JllxcwHhFcsl9aHIig47+3eN4IHFNqfLhZr++3ElDrcqfMzugM+niWbaMi7bJ0kAkAL8eCpdWg==
 
-react-native-imaged-card-view@^0.0.11:
-  version "0.0.11"
-  resolved "https://registry.npmjs.org/react-native-imaged-card-view/-/react-native-imaged-card-view-0.0.11.tgz"
-  integrity sha512-xVvI0mWP1SR+J61P5X649eDZXunCXtSMZ+GkGsY03vEPofnfah8q3Am2NDX9KcO6SzdNtxRJeLmDogyfj63ReQ==
+react-native-linear-gradient@^2.7.2:
+  version "2.7.2"
+  resolved "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.7.2.tgz"
+  integrity sha512-c1mNtmQrD+nzlIePQ5XZR/6IuEaNcYvE+N7MnOHDSOkXmxfLVbyicT15KEYnXQqbTLwTrFNJPZot241lWRVC3g==
 
 react-native-paper@^5.6.0:
   version "5.7.2"
@@ -8264,17 +8252,12 @@ react-native-sound@^0.11.2:
   resolved "https://registry.npmjs.org/react-native-sound/-/react-native-sound-0.11.2.tgz"
   integrity sha512-LmGc8lgOK3qecYMVQpyHvww/C+wgT6sWeMpVbOe4NCRGC2yKd4fo4U0KBUo9PO7AqKESO3I/2GZg1/C0+bwiiA==
 
-"react-native-star-review@>= 0.0.23":
-  version "0.0.23"
-  resolved "https://registry.npmjs.org/react-native-star-review/-/react-native-star-review-0.0.23.tgz"
-  integrity sha512-PotsLaJLonurR/buLWN98lF1Cpu3al0i7EP2f/HnxMJ7OL9P5kd4TFWYMjIdlXsT9zXYT2s144Vp9tZF6pClGw==
-
 react-native-track-player@^3.2.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/react-native-track-player/-/react-native-track-player-3.2.0.tgz"
   integrity sha512-svv6TOgU/quFV1aajG5PskVhgFG0wHQtO+aYs6cIH0D27ckzN8WVoC3jI94m1CVaSgLMw48P911csYuD2fIcqA==
 
-react-native-vector-icons@*, react-native-vector-icons@^9.2.0, "react-native-vector-icons@>= 6.6.0", "react-native-vector-icons@>= 6.x.x":
+react-native-vector-icons@*, react-native-vector-icons@^9.2.0:
   version "9.2.0"
   resolved "https://registry.npmjs.org/react-native-vector-icons/-/react-native-vector-icons-9.2.0.tgz"
   integrity sha512-wKYLaFuQST/chH3AJRjmOLoLy3JEs1JR6zMNgTaemFpNoXs0ztRnTxcxFD9xhX7cJe1/zoN5BpQYe7kL0m5yyA==
@@ -8303,7 +8286,7 @@ react-native-webview@11.26.0:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-native@*, "react-native@>= 0.55.x", "react-native@>= 0.60.5", react-native@>=0.41.2, react-native@>=0.60.0-rc.2, react-native@>=0.65, react-native@>=0.8.0, react-native@0.71.7:
+react-native@*, react-native@>=0.60.0-rc.2, react-native@>=0.65, react-native@>=0.8.0, react-native@0.71.7:
   version "0.71.7"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.71.7.tgz"
   integrity sha512-Id6iRLS581fJMFGbBl1jP5uSmjExtGOvw5Gvh7694zISXjsRAsFMmU+izs0pyCLqDBoHK7y4BT7WGPGw693nYw==
@@ -8343,13 +8326,6 @@ react-native@*, "react-native@>= 0.55.x", "react-native@>= 0.60.5", react-native
     whatwg-fetch "^3.0.0"
     ws "^6.2.2"
 
-"react-number-format@>= 4.2.0", "react-number-format@>= 4.x.x":
-  version "5.2.2"
-  resolved "https://registry.npmjs.org/react-number-format/-/react-number-format-5.2.2.tgz"
-  integrity sha512-wCh64Z1HCwXcO2dbgkeYIaB+Rmp/fcsH8kAeRtUkc46dv1pIrgDjie2WkOqKBw8YqyqhwNdYgNFNQuuY+iGJ/g==
-  dependencies:
-    prop-types "^15.7.2"
-
 react-refresh@^0.4.0:
   version "0.4.3"
   resolved "https://registry.npmjs.org/react-refresh/-/react-refresh-0.4.3.tgz"
@@ -8363,7 +8339,7 @@ react-shallow-renderer@^16.15.0:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
 
-react@*, "react@^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18.0.0", react@^18.2.0, "react@>= 16.8.6", "react@>= 16.x.x", react@>=16.3.0, react@>=16.8, react@>=16.8.6, react@>=17.0.0, react@>=17.0.2, react@18.2.0:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18.0.0", react@^18.2.0, react@>=16.3.0, react@>=16.8, react@>=16.8.6, react@>=17.0.0, react@>=17.0.2, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

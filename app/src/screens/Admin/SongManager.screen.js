@@ -27,6 +27,7 @@ const SongManager = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingData, setFetchingData] = useState(false);
+  const [isSongLoading, setIsSongLoading] = useState(false);
 
   const searchFilter = (text) => {
     if (text !== "") {
@@ -52,24 +53,36 @@ const SongManager = () => {
     setRefreshing(false);
   };
   const fetchData = async () => {
-    const list = await getDocs(SongRef, "deletedAt", "==", null);
-    const modifiedList = list.map((song) => {
-      if (song.isLocalSong == null) {
-        const artistListFromSong = song.artist;
-        const artistList = artists.filter((artist) => {
-          return artistListFromSong.some((item) => item.id == artist.id);
-        });
-        return { ...song, artist: artistList };
-      }
-    });
-    setSongs(() => modifiedList);
-    setFilteredSongs(() => modifiedList);
+    setIsSongLoading(true);
+    try {
+      const list = await getDocs(SongRef, "deletedAt", "==", null);
+      const modifiedList = list.map((song) => {
+        if (song.isLocalSong == null) {
+          const artistListFromSong = song.artist;
+          const artistList = artists.filter((artist) => {
+            return artistListFromSong.some((item) => item.id == artist.id);
+          });
+          return { ...song, artist: artistList };
+        }
+      });
+      setSongs(() => modifiedList);
+      setFilteredSongs(() => modifiedList);
+      setIsSongLoading(false);
+    } catch (er) {
+      console.log("Err when loading songs", er);
+    }
   };
   useEffect(() => {
     if (!isFetchingArtist) fetchData();
   }, [refreshFlatlist, isFetchingArtist]);
   return (
-    <View style={styles.container}>
+    <View
+      style={
+        isSongLoading || detailModalVisible
+          ? [styles.container, { opacity: 0.7 }]
+          : styles.container
+      }
+    >
       <View>
         <Text style={styles.heading}>Song List</Text>
       </View>
@@ -99,6 +112,7 @@ const SongManager = () => {
               setDetailModalVisible={setDetailModalVisible}
               setRefreshFlatList={setRefreshFlatList}
               song={item}
+              setIsSongLoading={setIsSongLoading}
             />
           </TouchableOpacity>
         )}
@@ -118,6 +132,13 @@ const SongManager = () => {
           song={selectedItem}
         ></DetailItem>
       </Modal>
+
+      {isSongLoading && (
+        <ActivityIndicator
+          size={"large"}
+          style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0 }}
+        ></ActivityIndicator>
+      )}
     </View>
   );
 };

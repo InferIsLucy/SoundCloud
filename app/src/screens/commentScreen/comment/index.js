@@ -15,7 +15,12 @@ import { CommentContext } from "../../../providers/comment.context";
 import ReplyCommentItem from "../ReplyCommentItem.component";
 const dayjs = require("dayjs");
 
-const comment = ({ comment, songId }) => {
+const comment = ({
+  comment,
+  songId,
+  setSelectedComment,
+  setBottomMenuVisible,
+}) => {
   const { addComment, loadComments, loadReplyComments } =
     useContext(CommentContext);
   const [showReplyCommentInput, setShowReplyCommentInput] = useState(false);
@@ -34,13 +39,16 @@ const comment = ({ comment, songId }) => {
     setReplyCommentContent("");
     Keyboard.dismiss();
   };
-
+  const moreIconOnClick = () => {
+    setSelectedComment(() => comment);
+    setBottomMenuVisible(true);
+  };
+  const getReplyComments = async () => {
+    const list = await loadReplyComments(comment.id);
+    setReplyList(list);
+  };
   useEffect(() => {
-    (async () => {
-      const list = await loadReplyComments(comment.id);
-      console.log("list", list);
-      setReplyList(list);
-    })();
+    getReplyComments();
   }, []);
   return (
     <View>
@@ -89,7 +97,7 @@ const comment = ({ comment, songId }) => {
             >
               <Text style={styles.replyText}>Reply</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={moreIconOnClick}>
               <Entypo
                 name="dots-three-vertical"
                 size={17}
@@ -103,6 +111,9 @@ const comment = ({ comment, songId }) => {
       {replyList.map((replyComment) => {
         return (
           <ReplyCommentItem
+            setBottomMenuVisible={setBottomMenuVisible}
+            setSelectedComment={setSelectedComment}
+            getReplyComments={getReplyComments}
             key={replyComment.id}
             comment={replyComment}
           ></ReplyCommentItem>

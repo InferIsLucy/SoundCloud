@@ -1,4 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  memo,
+  useCallback,
+  useRef,
+} from "react";
 import {
   View,
   StyleSheet,
@@ -14,17 +22,15 @@ import {
   Image,
   Modal,
 } from "react-native";
-import COLORS from "../consts/colors";
+import COLORS from "../../consts/colors";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import places from "../consts/places";
-import { AudioContext } from "../providers/audio.context";
-import { AuthenticationContext } from "../providers/authentication.context";
-import { ArtistContext } from "../providers/artist.context";
-import ArtistScreen from "./Artist.Screen";
-import { Colors } from "../theme/color";
-import { Ionicons } from "@expo/vector-icons";
-import { formatTime } from "../utils/TimeFormater";
-import { Box } from "@react-native-material/core";
+import { AudioContext } from "../../providers/audio.context";
+import { AuthenticationContext } from "../../providers/authentication.context";
+import { ArtistContext } from "../../providers/artist.context";
+import ArtistScreen from "../Artist.Screen";
+import { Colors } from "../../theme/color";
+import HomeCardItemComponent from "./components/HomeCardItem.component";
+import RecommendCard from "./components/RecommendCard.component";
 
 const { width } = Dimensions.get("screen");
 const HomeScreen = ({ navigation }) => {
@@ -35,10 +41,8 @@ const HomeScreen = ({ navigation }) => {
     isBottomBarVisible,
     setCurrentSong,
     addSongToHistory,
+    isFetchingData,
   } = useContext(AudioContext);
-  const LinkImg =
-    "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
-
   const { artists } = useContext(ArtistContext);
   const { user } = useContext(AuthenticationContext);
   const [filterdData, setfilterdData] = useState([]);
@@ -49,88 +53,108 @@ const HomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newReleasedSongs, setNewReleasedSongs] = useState([]);
   const [randomSongs, setRandomSongs] = useState([]);
+
+  // const renderCount = useRef(0);
+  // renderCount.current++;
+  // console.log("Home", renderCount.current);
+
   useEffect(() => {
-    const randomSongs = getRandomSongs(5);
-    const newSongs = getNewSongs();
-    setRandomSongs(randomSongs);
-    setNewReleasedSongs(newSongs);
-  }, [songs]);
+    if (!isFetchingData) {
+      const randomSongs = getRandomSongs(5);
+      const newSongs = getNewSongs();
+      setRandomSongs(randomSongs);
+      setNewReleasedSongs(newSongs);
+    }
+  }, [isFetchingData]);
+
   function getRandomSongs(count) {
     const shuffledSongs = [...songs].sort(() => 0.5 - Math.random());
     return shuffledSongs.slice(0, count);
   }
+
   function getNewSongs() {
-    const oneWeekAgo = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
-    return songs.filter((song) => song.publishDate.toMillis() >= oneWeekAgo);
+    return songs
+      .sort((a, b) => a.publishDate.toMillis() - b.publishDate.toMillis())
+      .slice(0, 5);
   }
   const [isRandomSongClicked, setIsRandomSongClicked] = useState(false);
   const [isNewSongClicked, setIsNewSongClicked] = useState(false);
 
-  const searchFilter = (text) => {
-    if (text !== "") {
-      const newData = songs.filter((song) => {
-        if (song.isLocalSong == null) {
-          const itemData = song.name
-            ? song.name.toUpperCase()
+  const searchFilter = useCallback(
+    (text) => {
+      if (text !== "") {
+        const newData = songs.filter((song) => {
+          if (song.isLocalSong == null) {
+            const itemData = song.name
+              ? song.name.toUpperCase()
+              : "".toLowerCase();
+            const textData = text.toUpperCase();
+            return itemData.indexOf(textData) > -1;
+          }
+        });
+        const artistData = artists.filter((artist) => {
+          const itemData = artist.name
+            ? artist.name.toUpperCase()
             : "".toLowerCase();
           const textData = text.toUpperCase();
           return itemData.indexOf(textData) > -1;
-        }
-      });
-      const artistData = artists.filter((artist) => {
-        const itemData = artist.name
-          ? artist.name.toUpperCase()
-          : "".toLowerCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setfilterdData(newData);
-      setfilterdArtistData(artistData);
-      setsearch(text);
-      setIsShow(true);
-    } else {
-      setfilterdData(songs);
-      setfilterdArtistData(artists);
-      setsearch(text);
-      setIsShow(false);
-    }
-  };
-  const refreshSearch = () => {
+        });
+        setfilterdData(newData);
+        setfilterdArtistData(artistData);
+        setsearch(text);
+        setIsShow(true);
+      } else {
+        setfilterdData(songs);
+        setfilterdArtistData(artists);
+        setsearch(text);
+        setIsShow(false);
+      }
+    },
+    [songs, artists]
+  );
+
+  const refreshSearch = useCallback(() => {
     setfilterdData([]);
     setsearch("");
     setfilterdArtistData([]);
-  };
-  const handleItemClick = (song, type) => {
-    switch (type) {
-      case "new":
-        //check if fisrt time click on item
-        if (!isNewSongClicked) {
-          setPlaylist(() => newReleasedSongs);
-        }
-        setIsNewSongClicked(false);
-        setIsRandomSongClicked(true);
-        break;
-      case "random":
-        if (!isRandomSongClicked) {
-          setPlaylist(() => randomSongs);
-        }
-        setIsNewSongClicked(true);
-        setIsRandomSongClicked(false);
-        break;
-      case "search":
-        setPlaylist([song]);
-        refreshSearch();
+  }, []);
 
-        break;
-    }
-    handlePlaySong(song);
-    addSongToHistory(user.userId, song.id);
-  };
-  const handlePlaySong = (song) => {
+  const handleItemClick = useCallback(
+    (song, type) => {
+      switch (type) {
+        case "new":
+          //check if fisrt time click on item
+          if (!isNewSongClicked) {
+            setPlaylist(() => newReleasedSongs);
+          }
+          setIsNewSongClicked(false);
+          setIsRandomSongClicked(true);
+          break;
+        case "random":
+          if (!isRandomSongClicked) {
+            setPlaylist(() => randomSongs);
+          }
+          setIsNewSongClicked(true);
+          setIsRandomSongClicked(false);
+          break;
+        case "search":
+          setPlaylist([song]);
+          refreshSearch();
+
+          break;
+      }
+      handlePlaySong(song);
+      addSongToHistory(user.userId, song.id);
+    },
+    [newReleasedSongs, randomSongs]
+  );
+
+  const handlePlaySong = useCallback((song) => {
     setCurrentSong(() => song);
     navigation.navigate("Player");
-  };
+  }, []);
   const ItemView = ({ song, index }) => {
+    console.log("itemView");
     return (
       <View style={styles.itemStyle}>
         <View style={styles.itemContainer}>
@@ -181,166 +205,32 @@ const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
     );
   };
-  const ItemSeparatorView = () => {
-    return (
-      <View
-        style={{ height: 0.8, width: "100%", backgroundColor: "#332222" }}
-      />
-    );
-  };
 
-  const categoryIcon = [
-    <Icon name="flight" size={25} color={COLORS.primary} />,
-    <Icon name="flight" size={25} color={COLORS.primary} />,
-    <Icon name="flight" size={25} color={COLORS.primary} />,
-    <Icon name="flight" size={25} color={COLORS.primary} />,
-  ];
-  const ListCategory = () => {
+  const Heading = () => {
     return (
-      <View style={styles.categoryContainer}>
-        {categoryIcon.map((icon, index) => (
-          <View key={index} style={styles.iconContainer}>
-            {icon}
-          </View>
-        ))}
-      </View>
-    );
-  };
-  const Card = ({ song = {} }) => {
-    return (
-      <View activeOpacity={0.8}>
-        <ImageBackground
-          style={styles.cardImage}
+      <View style={{ flexDirection: "row", height: 80, width: "100%" }}>
+        <Image
           source={{
-            uri: song.imageUri == "" ? LinkImg : song.imageUri,
+            uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
           }}
-        >
-          <Text
-            style={{
-              color: COLORS.white,
-              fontSize: 20,
-              fontWeight: "bold",
-              marginTop: 10,
-              textShadowColor: "#060606",
-              textShadowOffset: { width: 2, height: 2 },
-              textShadowRadius: 2,
-            }}
-          >
-            {song.name}
-          </Text>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "space-between",
-              flexDirection: "row",
-              alignItems: "flex-end",
-            }}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Ionicons name="person-circle-outline" size={20} color="white" />
-              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
-                {song.artistString}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row" }}>
-              <Ionicons name="md-timer-outline" size={20} color="white" />
-              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
-                {formatTime(song.duration)}
-              </Text>
-            </View>
-          </View>
-        </ImageBackground>
+          style={{ width: 50, height: 50 }}
+        ></Image>
+        <View style={{ flex: 1 }}></View>
+        <Image
+          source={{
+            uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          }}
+          style={{ width: 50, height: 50 }}
+        ></Image>
+        <Image
+          source={{
+            uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          }}
+          style={{ width: 50, height: 50 }}
+        ></Image>
       </View>
     );
   };
-  const RecommendCard = ({ place }) => {
-    return (
-      <ImageBackground
-        style={styles.rmCard}
-        source={{
-          uri: place.imageUri == "" ? LinkImg : place.imageUri,
-        }}
-      >
-        <Text
-          style={{
-            color: COLORS.white,
-            fontSize: 20,
-            fontWeight: "bold",
-            marginTop: 10,
-            textShadowColor: "#060606",
-            textShadowOffset: { width: 2, height: 2 },
-            textShadowRadius: 2,
-          }}
-        >
-          {place.name}
-        </Text>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              width: "100%",
-              flexDirection: "row",
-              marginTop: 120,
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Ionicons name="person-circle-outline" size={20} color="white" />
-              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
-                {place.artistString}
-              </Text>
-            </View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Ionicons name="md-timer-outline" size={20} color="white" />
-              <Text style={{ marginLeft: 5, color: "white", fontSize: 17 }}>
-                {formatTime(place.duration)}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </ImageBackground>
-    );
-  };
-
-  const Card01 = ({ place }) => {
-    return (
-      <ImageBackground
-        style={styles.rmCard01}
-        source={{
-          uri: place.imageUri == "" ? LinkImg : place.imageUri,
-        }}
-      >
-        <Text
-          style={{
-            color: COLORS.white,
-            fontSize: 20,
-            fontWeight: "bold",
-            marginTop: 10,
-            textShadowColor: "#060606",
-            textShadowOffset: { width: 2, height: 2 },
-            textShadowRadius: 2,
-          }}
-        >
-          {place.name}
-        </Text>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        ></View>
-      </ImageBackground>
-    );
-  };
-
   return (
     <SafeAreaView
       style={{
@@ -360,10 +250,11 @@ const HomeScreen = ({ navigation }) => {
           }}
           style={{
             backgroundColor: COLORS.dark,
-            height: 150,
+            height: 180,
             paddingHorizontal: 20,
           }}
         >
+          <Heading></Heading>
           <View style={{ flex: 1 }}>
             <View style={styles.inputContainer}>
               <Icon name="search" size={28} />
@@ -380,8 +271,8 @@ const HomeScreen = ({ navigation }) => {
           <View
             style={{
               position: "absolute",
-
-              top: 140,
+              top: 180,
+              borderRadius: 4,
               right: 20,
               left: 20,
               zIndex: 1,
@@ -422,7 +313,7 @@ const HomeScreen = ({ navigation }) => {
             data={newReleasedSongs}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleItemClick(item, "new")}>
-                <Card song={item} />
+                <HomeCardItemComponent song={item} />
               </TouchableOpacity>
             )}
           />
@@ -435,19 +326,10 @@ const HomeScreen = ({ navigation }) => {
             data={randomSongs}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleItemClick(item, "random")}>
-                <RecommendCard place={item} />
+                <RecommendCard song={item} />
               </TouchableOpacity>
             )}
           />
-          {/* <Text style={styles.sectionTitle}>Lựa chọn hôm nay</Text>
-          <FlatList
-            snapToInterval={width - 20}
-            contentContainerStyle={{ paddingLeft: 20 }}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={songs}
-            renderItem={({ item }) => <Card01 place={item} />}
-          /> */}
         </View>
       </ScrollView>
       <View>
@@ -468,7 +350,6 @@ const HomeScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   header: {
     paddingVertical: 10,
@@ -488,7 +369,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     borderRadius: 10,
     position: "absolute",
-    top: 120,
+    top: 80,
     flexDirection: "row",
     paddingHorizontal: 20,
     alignItems: "center",
@@ -518,26 +399,10 @@ const styles = StyleSheet.create({
   sectionTitle1: {
     marginHorizontal: 20,
     marginVertical: 20,
-    marginTop: 50,
+    marginTop: 60,
     fontWeight: "bold",
     fontSize: 20,
     color: Colors.defaultTextColor,
-  },
-  cardImage: {
-    height: 220,
-    width: width / 2,
-    marginRight: 20,
-    padding: 10,
-    overflow: "hidden",
-    borderRadius: 10,
-  },
-  rmCard: {
-    width: width - 40,
-    height: 200,
-    marginRight: 20,
-    borderRadius: 10,
-    overflow: "hidden",
-    padding: 10,
   },
   rmCard01: {
     width: width - 250,
@@ -589,4 +454,4 @@ const styles = StyleSheet.create({
     height: 50,
   },
 });
-export default HomeScreen;
+export default memo(HomeScreen);

@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     fontSize: 16,
-    color: "black",
+    color: "white",
   },
   textError: {
     color: "tomato",
