@@ -5,13 +5,13 @@ import React, {
   useRef,
   useContext,
 } from "react";
-import { AuthenticationContext } from "./authentication.context";
+import { UserContext } from "./user.context";
 import { AudioContext } from "./audio.context";
 import { firebase } from "../config/firebase";
 export const PlaylistContext = createContext();
 const playlistRef = firebase.firestore().collection("playlists");
 export const PlaylistContextProvider = ({ children }) => {
-  const { user, isAuthenticated } = useContext(AuthenticationContext);
+  const { user, isAuthenticated } = useContext(UserContext);
   const [playlists, setPlaylists] = useState([]);
 
   const renderCount = useRef(0);

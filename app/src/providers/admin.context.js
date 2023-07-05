@@ -123,7 +123,7 @@ export const AdminContextProvider = ({ children }) => {
         id: doc.id,
         ...doc.data(),
       }));
-      console.log("Retrieving documents successfully ", deleteDocs.length);
+
       setIsLoading(false);
 
       return deleteDocs;

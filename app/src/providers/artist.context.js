@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { firebase } from "../config/firebase";
-import { AuthenticationContext } from "./authentication.context";
+import { UserContext } from "./user.context";
 
 const artistRef = firebase.firestore().collection("artists");
 const usersRef = firebase.firestore().collection("users");
@@ -8,7 +8,7 @@ const usersRef = firebase.firestore().collection("users");
 export const ArtistContext = createContext();
 export const ArtistContextProvider = ({ children }) => {
   //lấy thông tin của user để đính kèm vào comment
-  const { user, isAuthenticated } = useContext(AuthenticationContext);
+  const { user, isAuthenticated } = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(false);
   const [artists, setArtists] = useState([]);
   const [isFetchingArtist, setIsFetchingArtist] = useState(false);

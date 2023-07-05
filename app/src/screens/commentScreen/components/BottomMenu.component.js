@@ -20,11 +20,11 @@ import { PlaylistContext } from "../../../providers/playlist.context";
 import { AudioContext } from "../../../providers/audio.context";
 import { Image } from "react-native";
 import { CommentContext } from "../../../providers/comment.context";
-import { AuthenticationContext } from "../../../providers/authentication.context";
+import { UserContext } from "../../../providers/user.context";
 
 const BottomMenu = ({ visible, onClose, selectedComment, setComments }) => {
   const { deleteComment } = useContext(CommentContext);
-  const { user } = useContext(AuthenticationContext);
+  const { user } = useContext(UserContext);
   const handleDeleteComment = async () => {
     try {
       if (user.userId == selectedComment.userId) {

@@ -3,11 +3,11 @@ import React, { useContext, useEffect, useState } from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Colors } from "../../../theme/color";
 import { ArtistContext } from "../../../providers/artist.context";
-import { AuthenticationContext } from "../../../providers/authentication.context";
+import { UserContext } from "../../../providers/user.context";
 const FollowingItem = ({ artist = {} }) => {
   const { toggleFollowing, followedArtistIds, checkIfFollowed } =
     useContext(ArtistContext);
-  const { user } = useContext(AuthenticationContext);
+  const { user } = useContext(UserContext);
   const [isFollowed, setIsFollowed] = useState(true);
   useEffect(() => {
     const res = checkIfFollowed(artist.id);

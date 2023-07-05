@@ -26,6 +26,8 @@ import { AudioContext } from "../../providers/audio.context";
 import { formatTime } from "../../utils/TimeFormater";
 import OptionsModal from "./components/OptionsModal.component";
 import SetTimerModal from "./components/TimerModel.component";
+import { StatisticContext } from "../../providers/statistic.context";
+import { UserContext } from "../../providers/user.context";
 
 const PlayerScreen = ({ navigation }) => {
   const {
@@ -36,9 +38,11 @@ const PlayerScreen = ({ navigation }) => {
     //playback status
     setBottomBarVisible,
   } = useContext(AudioContext);
-
+  const { addListen } = useContext(StatisticContext);
+  const { user } = useContext(UserContext);
   const [currentPosition, setCurrentPosition] = useState(0);
   const [songDuration, setSongDuration] = useState(0);
+  const [isListenCounted, setIsListenCounted] = useState(false);
   const [commentsVisible, setCommentsVisible] = useState(false);
   const [isOptionModalVisible, setIsOptionModalVisible] = useState(false);
   const [timerModalVisible, setTimerModalVisible] = useState(false);
@@ -75,15 +79,25 @@ const PlayerScreen = ({ navigation }) => {
           intervalRef.current = setInterval(async () => {
             const status = await audioObj.current.getStatusAsync();
             if (
-              status.isLoaded && // Kiểm tra bài hát đã tải xong
+              status.isLoaded &&
               status.positionMillis === status.durationMillis
             ) {
               setCurrentPosition(status.positionMillis);
-              console.log("handleSongEnd");
               handleSongEnd();
               clearInterval(intervalRef.current);
               intervalRef.current = null;
               return;
+            }
+            if (
+              !isListenCounted &&
+              status.positionMillis >= status.durationMillis * 0.3
+            ) {
+              addListen(
+                user.userId,
+                currentSong.artist.map((art) => art.id),
+                currentSong.id
+              );
+              setIsListenCounted(() => true);
             }
             setCurrentPosition(status.positionMillis);
             setSongDuration(status.durationMillis);
@@ -102,7 +116,11 @@ const PlayerScreen = ({ navigation }) => {
         intervalRef.current = null;
       }
     };
-  }, [audioObj.current, currentSong, isPlaying]);
+  }, [audioObj.current, currentSong, isPlaying, isListenCounted]);
+  useEffect(() => {
+    //TODO: unhandle case repeat once song
+    setIsListenCounted(false);
+  }, [currentSong]);
   return (
     <View
       style={[
@@ -242,8 +260,8 @@ const PlayerScreen = ({ navigation }) => {
           }}
         >
           <CommentScreen
+            song={currentSong}
             setCommentsVisible={setCommentsVisible}
-            songId={currentSong.id}
           ></CommentScreen>
         </View>
       </Modal>

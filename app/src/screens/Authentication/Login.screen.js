@@ -9,16 +9,15 @@ import {
 } from "../shared-components/AuthButton.component";
 import { Spacer } from "../../components/spacer";
 import { Colors } from "../../theme/color";
-import { AuthenticationContext } from "../../providers/authentication.context";
+import { UserContext } from "../../providers/user.context";
 import { loginSchema } from "../../utils/Validator";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
-  const { onLoginWithEmail, auth, error, sendPasswordResetEmail } = useContext(
-    AuthenticationContext
-  );
+  const { onLoginWithEmail, auth, error, sendPasswordResetEmail } =
+    useContext(UserContext);
   const handleLoginWithEmail = () => {
     loginSchema
 

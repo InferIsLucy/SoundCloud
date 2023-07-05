@@ -17,15 +17,16 @@ import { CommentContext } from "../../providers/comment.context";
 import { AudioContext } from "../../providers/audio.context";
 import BottomMenu from "./components/BottomMenu.component";
 
-const CommentScreen = ({ setCommentsVisible, songId }) => {
+const CommentScreen = ({ setCommentsVisible }) => {
   const { addComment, isLoading, loadComments } = useContext(CommentContext);
+
   const { currentSong } = useContext(AudioContext);
   const [comments, setComments] = useState([]);
   const [selectedComment, setSelectedComment] = useState(null);
   const [isBottomMenuVisible, setBottomMenuVisible] = useState(false);
   useEffect(() => {
     (async () => {
-      const list = await loadComments(songId);
+      const list = await loadComments(currentcurrentSong.id);
       setComments(list);
     })();
   }, []);
@@ -57,7 +58,7 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
           <View style={styles.currentSong}>
             <View style={styles.Image}>
               <Image
-                source={require("./../../../assets/singtoyou.png")}
+                source={{ uri: currentSong.imageUri }}
                 style={styles.songImage}
               />
             </View>
@@ -80,7 +81,7 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
                   setBottomMenuVisible={setBottomMenuVisible}
                   setSelectedComment={setSelectedComment}
                   comment={item}
-                  songId={songId}
+                  songId={currentSong.id}
                 />
               );
             })}
@@ -88,7 +89,7 @@ const CommentScreen = ({ setCommentsVisible, songId }) => {
         )}
       </View>
       <View style={styles.footer}>
-        <Footer setComments={setComments} songId={songId} />
+        <Footer setComments={setComments} songId={currentSong.id} />
       </View>
       <BottomMenu
         setComments={setComments}

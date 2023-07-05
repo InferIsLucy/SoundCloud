@@ -13,9 +13,9 @@ import {
 import { auth } from "../../config/firebase";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { accountSchema } from "../../utils/Validator";
-import { AuthenticationContext } from "../../providers/authentication.context";
+import { UserContext } from "../../providers/user.context";
 const RegisterScreen = ({ navigation }) => {
-  const { createUserWithEmail, error } = useContext(AuthenticationContext);
+  const { createUserWithEmail, error } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");

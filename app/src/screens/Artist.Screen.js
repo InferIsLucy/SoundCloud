@@ -14,11 +14,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { AudioContext } from "../providers/audio.context";
 import { Colors } from "../theme/color";
 import SongItem from "./MusicPlayer/components/SongItem.component";
-import { AuthenticationContext } from "../providers/authentication.context";
+import { UserContext } from "../providers/user.context";
 import { ArtistContext } from "../providers/artist.context";
 const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
   const { songs } = useContext(AudioContext);
-  const { user } = useContext(AuthenticationContext);
+  const { user } = useContext(UserContext);
   const { followedArtistIds, checkIfFollowed, toggleFollowing } =
     useContext(ArtistContext);
   const [artistSongs, setArtistSongs] = useState([]);

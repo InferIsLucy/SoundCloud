@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Image } from "react-native";
-import AdminInfor from "../screens/Admin/AdminInfor.screen";
+import HistoryAndStatistic from "../screens/Admin/HistoryAndStatistic.screen";
 import SongManager from "../screens/Admin/SongManager.screen";
 import ArtistManager from "../screens/Admin/ArtistManager.screen";
 import UploadScreen from "../screens/Admin/Upload.screen";
@@ -27,7 +27,7 @@ export const AdminNavigator = () => {
               case "ArtistManager":
                 src = require("../../assets/artist.png");
                 break;
-              case "AdminInfor":
+              case "HistoryAndStatistic":
                 src = require("../../assets/user.png");
                 break;
               case "Upload":
@@ -65,9 +65,9 @@ export const AdminNavigator = () => {
           component={UploadScreen}
         />
         <Tab.Screen
-          name="AdminInfor"
+          name="HistoryAndStatistic"
           options={{ headerShown: false }}
-          component={AdminInfor}
+          component={HistoryAndStatistic}
         />
       </Tab.Navigator>
     </>

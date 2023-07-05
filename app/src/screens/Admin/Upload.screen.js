@@ -24,13 +24,13 @@ import { AdminContext } from "../../providers/admin.context";
 import { isStringNullOrEmpty, isValidAge } from "../../utils/Validator";
 import ArtistListModal from "./components/ArtistListModal.component";
 import ArtistItem from "./components/ArtistItem.component";
-import { AuthenticationContext } from "../../providers/authentication.context";
+import { UserContext } from "../../providers/user.context";
 import { NotificationContext } from "../../providers/notification.context";
 import { SongRef } from "./const";
 const UploadScreen = () => {
   const playbackObject = new Audio.Sound();
   const { uploadFile, addDocument } = useContext(AdminContext);
-  const { getListUser } = useContext(AuthenticationContext);
+  const { getListUser } = useContext(UserContext);
   const { sendNotificationToListUser } = useContext(NotificationContext);
   const [imageSongUri, setImageSongUri] = useState(null);
   const [mp3Uri, setMp3Uri] = useState(null);

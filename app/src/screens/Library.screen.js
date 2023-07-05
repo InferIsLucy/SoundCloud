@@ -25,13 +25,13 @@ import places from "../consts/places";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../theme/color";
 import { AudioContext } from "../providers/audio.context";
-import { AuthenticationContext } from "../providers/authentication.context";
+import { UserContext } from "../providers/user.context";
 
 const { width } = Dimensions.get("screen");
 const PlayList = ({ navigation }) => {
   const { playlists, createNewPlaylist, updatePlaylist, deleteSongInPlaylist } =
     useContext(PlaylistContext);
-  const { user } = useContext(AuthenticationContext);
+  const { user } = useContext(UserContext);
   const {
     songs,
     listeningHistory,

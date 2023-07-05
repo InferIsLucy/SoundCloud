@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useContext, memo, useEffect, useState } from "react";
 import { AudioContext } from "../../../providers/audio.context";
 import { formatTime } from "../../../utils/TimeFormater";
-import { AuthenticationContext } from "../../../providers/authentication.context";
+import { UserContext } from "../../../providers/user.context";
 
 // item artist in artist list modal
 const ArtistTag2 = ({ artist = {}, defaultSelectedValue, toggleAddArtist }) => {

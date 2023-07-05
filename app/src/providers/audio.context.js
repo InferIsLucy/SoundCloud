@@ -12,7 +12,7 @@ import { formatTime } from "../utils/TimeFormater";
 import { firebase } from "../config/firebase";
 import { getSongArtistFromArray } from "../utils/Converters";
 import * as SecureStore from "expo-secure-store";
-import { AuthenticationContext } from "./authentication.context";
+import { UserContext } from "./user.context";
 import { ArtistContext } from "./artist.context";
 
 export const AudioContext = createContext();
@@ -25,7 +25,7 @@ Audio.setAudioModeAsync({
 const songsRef = firebase.firestore().collection("songs");
 const userRef = firebase.firestore().collection("users");
 export const AudioContextProvider = ({ children }) => {
-  const { user, isAuthenticated } = useContext(AuthenticationContext);
+  const { user, isAuthenticated } = useContext(UserContext);
   const { artists, isFetchingArtist } = useContext(ArtistContext);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -149,13 +149,8 @@ export const AudioContextProvider = ({ children }) => {
   };
   const sendReact = async (songId) => {
     try {
-      // Get the current user's ID (replace with your own logic to obtain the user ID)
       const userId = user.userId;
-
-      // Get the song document reference from Firebase
       const songRef = firebase.firestore().collection("songs").doc(songId);
-
-      // Retrieve the song document
       const songDoc = await songRef.get();
 
       if (songDoc.exists) {
@@ -192,7 +187,6 @@ export const AudioContextProvider = ({ children }) => {
         await audioObj.current.unloadAsync();
         await audioObj.current.loadAsync({ uri: songUri });
         await audioObj.current.playAsync();
-        const status = await audioObj.current.getStatusAsync();
         setIsPlaying(true);
       } catch (err) {
         throw err;
@@ -345,8 +339,9 @@ export const AudioContextProvider = ({ children }) => {
       setError(e);
     }
   };
-  const getRemoteSongs = useCallback(async () => {
+  const getRemoteSongs = async () => {
     try {
+      console.log("artist.length", artists.length);
       const querySnapshot = await songsRef.where("deletedAt", "==", null).get();
       const newSongs = [];
       querySnapshot.forEach((documentSnapshot) => {
@@ -367,7 +362,7 @@ export const AudioContextProvider = ({ children }) => {
     } catch (err) {
       console.log("error when get all songs", err);
     }
-  }, [artists, songsRef]);
+  };
   const getListeningHistory = async (listeningHistoryIds) => {
     const listSong = listeningHistoryIds.map((id) => {
       return songs.find((song) => song.id === id);
@@ -395,7 +390,6 @@ export const AudioContextProvider = ({ children }) => {
     }
   };
   const fetchSongs = async () => {
-    console.log("fetching songs");
     setIsFetchingData(true);
     const listLocal = await loadLocalSongs(); // Await the local songs array
     const listRemote = await getRemoteSongs(); // Await the remote songs array

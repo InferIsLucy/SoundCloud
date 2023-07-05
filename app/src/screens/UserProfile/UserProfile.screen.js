@@ -15,17 +15,17 @@ import { Spacer } from "../../components/spacer";
 import { Ionicons } from "@expo/vector-icons";
 import SongItem from "../MusicPlayer/components/SongItem.component";
 import FollowingDetail from "./FollowingDetail.screen";
-import { AuthenticationContext } from "../../providers/authentication.context";
+import { UserContext } from "../../providers/user.context";
 import { AudioContext } from "../../providers/audio.context";
 import { ArtistContext } from "../../providers/artist.context";
 import { Colors } from "../../theme/color";
 const UserProfile = ({ navigation }) => {
-  const { updateUserInfor, user } = useContext(AuthenticationContext);
+  const { updateUserInfor, user } = useContext(UserContext);
   const { getFollowerArtistsByUserId, followedArtistIds } =
     useContext(ArtistContext);
   const { likedSongs, setPlaylist } = useContext(AudioContext);
   const [avatarUri, setAvatarUri] = useState(user.avatar);
-  const { logout } = useContext(AuthenticationContext);
+  const { logout } = useContext(UserContext);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {

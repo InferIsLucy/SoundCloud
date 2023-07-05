@@ -3,7 +3,7 @@ import { useAppState } from "@react-native-community/hooks";
 import { useEffect, useContext } from "react";
 import { SafeAreaView, Platform, StatusBar, Modal } from "react-native";
 import { AuthNavigator } from "./auth.navigator";
-import { AuthenticationContext } from "../providers/authentication.context";
+import { UserContext } from "../providers/user.context";
 import { AppNavigator } from "./app.navigator";
 import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import { AudioContext } from "../providers/audio.context";
@@ -14,9 +14,8 @@ import { AdminContextProvider } from "../providers/admin.context";
 
 const STATUS_BAR_HEIGHT = StatusBar.currentHeight;
 const Navigator = () => {
-  const { isAuthenticated, isCheckingLoggedin, isLoading, user } = useContext(
-    AuthenticationContext
-  );
+  const { isAuthenticated, isCheckingLoggedin, isLoading, user } =
+    useContext(UserContext);
   if (isCheckingLoggedin) {
     return <WelcomeScreen></WelcomeScreen>;
   }

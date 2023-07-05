@@ -25,7 +25,7 @@ import {
 import COLORS from "../../consts/colors";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { AudioContext } from "../../providers/audio.context";
-import { AuthenticationContext } from "../../providers/authentication.context";
+import { UserContext } from "../../providers/user.context";
 import { ArtistContext } from "../../providers/artist.context";
 import ArtistScreen from "../Artist.Screen";
 import { Colors } from "../../theme/color";
@@ -44,7 +44,7 @@ const HomeScreen = ({ navigation }) => {
     isFetchingData,
   } = useContext(AudioContext);
   const { artists } = useContext(ArtistContext);
-  const { user } = useContext(AuthenticationContext);
+  const { user } = useContext(UserContext);
   const [filterdData, setfilterdData] = useState([]);
   const [filterdArtistData, setfilterdArtistData] = useState([]);
   const [search, setsearch] = useState("");
@@ -59,13 +59,13 @@ const HomeScreen = ({ navigation }) => {
   // console.log("Home", renderCount.current);
 
   useEffect(() => {
-    if (!isFetchingData) {
-      const randomSongs = getRandomSongs(5);
-      const newSongs = getNewSongs();
-      setRandomSongs(randomSongs);
-      setNewReleasedSongs(newSongs);
-    }
-  }, [isFetchingData]);
+    // if (!isFetchingData) {
+    const randomSongs = getRandomSongs(5);
+    const newSongs = getNewSongs();
+    setRandomSongs(randomSongs);
+    setNewReleasedSongs(newSongs);
+    // }
+  }, [songs]);
 
   function getRandomSongs(count) {
     const shuffledSongs = [...songs].sort(() => 0.5 - Math.random());

@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import styles from "./comment/style.js";
 import { Avatar } from "react-native-paper";
 import { Entypo } from "@expo/vector-icons";
-import { AuthenticationContext } from "../../providers/authentication.context.js";
+import { UserContext } from "../../providers/user.context.js";
 const dayjs = require("dayjs");
 
 const ReplyCommentItem = ({

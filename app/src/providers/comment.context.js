@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { firebase } from "../config/firebase";
-import { AuthenticationContext } from "./authentication.context";
+import { UserContext } from "./user.context";
 import { NotificationContext } from "./notification.context";
 export const CommentContext = createContext();
 
@@ -9,7 +9,7 @@ const usersRef = firebase.firestore().collection("users");
 
 //TODO: move comment collection into user field "comments" on firestore database
 export const CommentContextProvider = ({ children }) => {
-  const { user } = useContext(AuthenticationContext);
+  const { user } = useContext(UserContext);
   const { sendNotification } = useContext(NotificationContext);
   const [isLoading, setIsLoading] = useState(false);
 

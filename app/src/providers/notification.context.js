@@ -7,7 +7,7 @@ import React, {
   memo,
 } from "react";
 import { firebase } from "../config/firebase";
-import { AuthenticationContext } from "./authentication.context";
+import { UserContext } from "./user.context";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { NotificationApi } from "../api/notification";
@@ -25,7 +25,7 @@ Notifications.setNotificationHandler({
 const usersRef = firebase.firestore().collection("users");
 const NEW_MESSAGE_TITLE = "New message";
 const NotificationContextProvider = ({ children }) => {
-  const { user, isAuthenticated } = useContext(AuthenticationContext);
+  const { user, isAuthenticated } = useContext(UserContext);
   const notificationListener = useRef();
   const responseListener = useRef();
   console.log("Notification Context");

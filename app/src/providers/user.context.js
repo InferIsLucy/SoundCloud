@@ -12,12 +12,12 @@ import {
 import { firebase } from "../config/firebase";
 import * as SecureStore from "expo-secure-store";
 
-export const AuthenticationContext = createContext();
+export const UserContext = createContext();
 
 const USER_ID = "userId";
 const imageStorage = firebase.storage().ref("images");
 const usersRef = firebase.firestore().collection("users");
-export const AuthenticationContextProvider = ({ children }) => {
+export const UserContextProvider = ({ children }) => {
   const auth = getAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isCheckingLoggedin, setIsCheckingLoggedIn] = useState(false);
@@ -217,7 +217,7 @@ export const AuthenticationContextProvider = ({ children }) => {
     }
   };
   return (
-    <AuthenticationContext.Provider
+    <UserContext.Provider
       value={{
         isAuthenticated,
         user,
@@ -235,6 +235,6 @@ export const AuthenticationContextProvider = ({ children }) => {
       }}
     >
       {children}
-    </AuthenticationContext.Provider>
+    </UserContext.Provider>
   );
 };
