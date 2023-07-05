@@ -42,7 +42,11 @@ const HistoryAndStatistic = () => {
   const getRandomColor = (usedColors) => {
     let color = "";
     do {
-      color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+      color =
+        "#" +
+        Math.floor(Math.random() * 16777215)
+          .toString(16)
+          .padStart(6, "0");
     } while (usedColors.includes(color));
     return color;
   };
@@ -79,7 +83,9 @@ const HistoryAndStatistic = () => {
       console.log("err when load data chart", er);
     }
   };
-
+  useEffect(() => {
+    loadDataChart(date.getMonth() + 1, date.getFullYear());
+  }, []);
   useEffect(() => {
     (async () => {
       const listSong = await getDeleteDocs(SongRef);

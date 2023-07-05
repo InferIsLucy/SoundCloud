@@ -36,7 +36,6 @@ const { width } = Dimensions.get("screen");
 const HomeScreen = ({ navigation }) => {
   const {
     songs,
-    currentSong,
     setPlaylist,
     isBottomBarVisible,
     setCurrentSong,
@@ -53,11 +52,6 @@ const HomeScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newReleasedSongs, setNewReleasedSongs] = useState([]);
   const [randomSongs, setRandomSongs] = useState([]);
-
-  // const renderCount = useRef(0);
-  // renderCount.current++;
-  // console.log("Home", renderCount.current);
-
   useEffect(() => {
     // if (!isFetchingData) {
     const randomSongs = getRandomSongs(5);
@@ -118,7 +112,13 @@ const HomeScreen = ({ navigation }) => {
     setsearch("");
     setfilterdArtistData([]);
   }, []);
-
+  const artistItemClick = (artist) => {
+    refreshSearch();
+    setSelectedArtist(() => artist);
+    navigation.navigate("Artist", {
+      artist,
+    });
+  };
   const handleItemClick = useCallback(
     (song, type) => {
       switch (type) {
@@ -180,9 +180,7 @@ const HomeScreen = ({ navigation }) => {
     return (
       <TouchableOpacity
         onPress={() => {
-          refreshSearch();
-          setSelectedArtist(artist);
-          setModalVisible(true);
+          artistItemClick(artist);
         }}
         style={styles.itemStyle}
       >
@@ -282,7 +280,7 @@ const HomeScreen = ({ navigation }) => {
           >
             {filterdArtistData.map((artist, index) => {
               return (
-                //Song searched Item
+                //Artist searched Item
                 <ArtistSearchItem
                   key={`as + ${index}`}
                   index={index}
@@ -332,21 +330,6 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
       </ScrollView>
-      <View>
-        <Modal
-          animationType="fade"
-          transparent={false}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <ArtistScreen
-            artist={selectedArtist}
-            setModalVisible={setModalVisible}
-          ></ArtistScreen>
-        </Modal>
-      </View>
     </SafeAreaView>
   );
 };

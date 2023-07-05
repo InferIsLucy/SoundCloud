@@ -16,8 +16,9 @@ import { Colors } from "../theme/color";
 import SongItem from "./MusicPlayer/components/SongItem.component";
 import { UserContext } from "../providers/user.context";
 import { ArtistContext } from "../providers/artist.context";
-const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
-  const { songs } = useContext(AudioContext);
+const ArtistScreen = ({ navigation, route }) => {
+  const { songs, setPlaylist } = useContext(AudioContext);
+  const { artist = {} } = route.params;
   const { user } = useContext(UserContext);
   const { followedArtistIds, checkIfFollowed, toggleFollowing } =
     useContext(ArtistContext);
@@ -39,12 +40,16 @@ const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
   const toggleFollowingArtist = async () => {
     await toggleFollowing(artist.id, user.userId);
   };
+  const songItemOnClick = () => {
+    console.log("setPlaylist", artistSongs.length);
+    setPlaylist(() => artistSongs);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => {
-            setModalVisible(false);
+            navigation.goBack();
           }}
           style={{ paddingLeft: 8, paddingRight: 4 }}
         >
@@ -97,8 +102,13 @@ const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
           <Text style={styles.followText}>
             {artist.followers != null ? artist.followers.length : 0}
           </Text>
-          <Text style={styles.followText}> Follower</Text>
+          <Text style={styles.followText}>
+            {artist.followers != null && artist.followers.length > 1
+              ? " Followers"
+              : " Follower"}
+          </Text>
         </View>
+
         <TouchableOpacity
           onPress={toggleFollowingArtist}
           style={{
@@ -136,7 +146,9 @@ const ArtistScreen = ({ navigation, artist = {}, setModalVisible }) => {
         <FlatList
           data={artistSongs}
           renderItem={({ item, index }) => (
-            <SongItem navigation={navigation} songIndex={index} song={item} />
+            <TouchableOpacity onPress={songItemOnClick}>
+              <SongItem navigation={navigation} songIndex={index} song={item} />
+            </TouchableOpacity>
           )}
           keyExtractor={(item) => item.id}
         />

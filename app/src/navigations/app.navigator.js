@@ -16,6 +16,7 @@ import PlayerScreen from "../screens/MusicPlayer/Player.screen";
 import DetailPlaylist from "../screens/MusicPlayer/DetailPlayList.screen";
 import { AudioContext } from "../providers/audio.context";
 import { useContext } from "react";
+import ArtistScreen from "../screens/Artist.Screen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -76,6 +77,7 @@ export const AppNavigator = () => {
       >
         <Stack.Screen name="AppTabs" component={Tabs} />
         <Stack.Screen name="Player" component={PlayerScreen} />
+        <Stack.Screen name="Artist" component={ArtistScreen} />
         <Stack.Screen name="DetailPlaylist" component={DetailPlaylist} />
       </Stack.Navigator>
       <BottomPlayer></BottomPlayer>

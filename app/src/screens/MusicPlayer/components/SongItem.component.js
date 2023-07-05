@@ -1,8 +1,11 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useContext, memo, useEffect } from "react";
+import { Feather } from "@expo/vector-icons";
+
 import { AudioContext } from "../../../providers/audio.context";
 import { formatTime } from "../../../utils/TimeFormater";
 import { UserContext } from "../../../providers/user.context";
+import { formatListenNumber } from "../../../utils/Converters";
 
 //SongItem
 const SongItem = ({ navigation, song = {} }) => {
@@ -29,12 +32,18 @@ const SongItem = ({ navigation, song = {} }) => {
         style={styles.img}
       ></Image>
       <View style={{ flex: 1, marginLeft: 12 }}>
-        <Text
-          numberOfLines={1}
-          style={{ fontSize: 16, color: "white", fontWeight: 500 }}
-        >
-          {song.name}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text
+            numberOfLines={1}
+            style={{ fontSize: 16, color: "white", fontWeight: 500 }}
+          >
+            {song.name}
+          </Text>
+          <Text numberOfLines={1} style={{ color: "#cac5e5", marginLeft: 4 }}>
+            {`${formatListenNumber(song.listens)} `}
+          </Text>
+          <Feather name="headphones" size={18} color="#cac5e5" />
+        </View>
         <Text numberOfLines={1} style={{ color: "#cac5e5" }}>
           {song.artistString}
         </Text>

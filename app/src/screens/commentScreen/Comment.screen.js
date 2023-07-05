@@ -26,7 +26,7 @@ const CommentScreen = ({ setCommentsVisible }) => {
   const [isBottomMenuVisible, setBottomMenuVisible] = useState(false);
   useEffect(() => {
     (async () => {
-      const list = await loadComments(currentcurrentSong.id);
+      const list = await loadComments(currentSong.id);
       setComments(list);
     })();
   }, []);

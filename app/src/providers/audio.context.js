@@ -397,6 +397,16 @@ export const AudioContextProvider = ({ children }) => {
     setPlaylist([...listLocal, ...listRemote]);
     setIsFetchingData(false);
   };
+  const updateListen = async (songId, value) => {
+    try {
+      const songdoc = songsRef.doc(songId);
+      await songdoc.update({
+        listens: firebase.firestore.FieldValue.increment(value),
+      });
+    } catch (err) {
+      console.log("Error when updating listens:", err);
+    }
+  };
 
   useEffect(() => {
     if (isAuthenticated && !isFetchingArtist) {
@@ -456,6 +466,7 @@ export const AudioContextProvider = ({ children }) => {
         isBottomBarVisible,
         listeningHistory,
         timerDurationRef,
+        updateListen,
         setPlaylist,
         setTimer,
         clearTimer,

@@ -15,7 +15,10 @@ import { Feather } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
 
-import { getSongArtistFromArray } from "../../../utils/Converters";
+import {
+  formatListenNumber,
+  getSongArtistFromArray,
+} from "../../../utils/Converters";
 import { AdminContext } from "../../../providers/admin.context";
 import { SongRef } from "../const";
 import { convertFirebaseTimestamp } from "../../../utils/TimeFormater";
@@ -127,7 +130,7 @@ const CardView = ({ ...props }) => {
           <Feather name="headphones" size={16} color="#514b75" />
 
           <Text numberOfLines={1} style={styles.listens}>
-            {` ${song.listens} lượt nghe`}
+            {` ${formatListenNumber(song.listens)} lượt nghe`}
           </Text>
         </View>
         <View

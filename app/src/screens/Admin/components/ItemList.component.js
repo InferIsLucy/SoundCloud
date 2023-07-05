@@ -14,7 +14,10 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import { AdminContext } from "../../../providers/admin.context";
 import { SongRef, ArtistRef } from "../const";
-import { getSongArtistFromArray } from "../../../utils/Converters";
+import {
+  formatListenNumber,
+  getSongArtistFromArray,
+} from "../../../utils/Converters";
 import { AudioContext } from "../../../providers/audio.context";
 const ItemComponent = ({
   song = null,
@@ -126,12 +129,31 @@ const ItemComponent = ({
       )}
 
       <View style={{ flex: 1, marginLeft: 12 }}>
-        <Text
-          numberOfLines={1}
-          style={{ fontSize: 16, color: "white", fontWeight: 500 }}
-        >
-          {item.name}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{
+              fontSize: 16,
+              color: "white",
+              fontWeight: 500,
+              width: 120,
+            }}
+          >
+            {item.name}
+          </Text>
+          {song && (
+            <>
+              <Text
+                numberOfLines={1}
+                style={{ color: "#cac5e5", marginLeft: 4 }}
+              >
+                {`${formatListenNumber(song.listens)} `}
+              </Text>
+              <Feather name="headphones" size={18} color="#cac5e5" />
+            </>
+          )}
+        </View>
         <View style={{ flexDirection: "row" }}>
           <Text numberOfLines={1} style={{ color: "#cac5e5" }}>
             {item.text}

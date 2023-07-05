@@ -35,7 +35,7 @@ const PlayerScreen = ({ navigation }) => {
     currentSong = {},
     audioObj,
     isPlaying,
-    //playback status
+    updateListen,
     setBottomBarVisible,
   } = useContext(AudioContext);
   const { addListen } = useContext(StatisticContext);
@@ -97,6 +97,8 @@ const PlayerScreen = ({ navigation }) => {
                 currentSong.artist.map((art) => art.id),
                 currentSong.id
               );
+              updateListen(currentSong.id, 1);
+
               setIsListenCounted(() => true);
             }
             setCurrentPosition(status.positionMillis);
