@@ -137,7 +137,7 @@ const ItemComponent = ({
               fontSize: 16,
               color: "white",
               fontWeight: 500,
-              width: 120,
+              maxWidth: 120,
             }}
           >
             {item.name}

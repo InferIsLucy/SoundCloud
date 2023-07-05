@@ -2,6 +2,7 @@ import {
   Dimensions,
   FlatList,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -97,7 +98,7 @@ const HistoryAndStatistic = () => {
     })();
   }, [songs, refreshFlatlist]);
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <TouchableOpacity
         style={{
           backgroundColor: "#19022b",
@@ -137,6 +138,8 @@ const HistoryAndStatistic = () => {
       <View>
         <Text style={styles.heading}>Deleted Songs</Text>
         <FlatList
+          horizontal
+          pagingEnabled
           extraData={refreshFlatlist}
           data={deletedSongs}
           renderItem={({ item, index }) => (
@@ -151,6 +154,8 @@ const HistoryAndStatistic = () => {
       <View>
         <Text style={styles.heading}>Deleted Artists</Text>
         <FlatList
+          horizontal
+          pagingEnabled
           extraData={refreshFlatlist}
           style={{ marginTop: 12, marginBottom: 60 }}
           data={deletedArtists}
@@ -189,7 +194,7 @@ const HistoryAndStatistic = () => {
           value={date}
         />
       )}
-    </View>
+    </ScrollView>
   );
 };
 

@@ -11,11 +11,13 @@ import { Spacer } from "../../components/spacer";
 import { Colors } from "../../theme/color";
 import { UserContext } from "../../providers/user.context";
 import { loginSchema } from "../../utils/Validator";
+import ForgetPassword from "./components/ForgetPassword.component";
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
+  const [showResetDialog, setShowResetDialog] = useState(false);
   const { onLoginWithEmail, auth, error, sendPasswordResetEmail } =
     useContext(UserContext);
   const handleLoginWithEmail = () => {
@@ -49,15 +51,15 @@ const LoginScreen = ({ navigation }) => {
       }
     }
   };
-  const handleResetPassword = () => {
-    console.log("email", email);
-    sendPasswordResetEmail(auth, email)
-      .then(() => console.log("sended"))
-      .catch((er) => console.log("error", er));
-  };
   const handleLoginWithGoogle = () => {};
   return (
-    <View style={styles.container}>
+    <View
+      style={
+        showResetDialog
+          ? [styles.container, { opacity: 0.5 }]
+          : styles.container
+      }
+    >
       <AuthFrame
         onBackBtnPress={() => {
           navigation.navigate("Auth");
@@ -103,10 +105,20 @@ const LoginScreen = ({ navigation }) => {
 
         <Spacer position={"top"} size={"medium"}></Spacer>
 
-        <TouchableOpacity onPress={handleResetPassword}>
+        <TouchableOpacity
+          onPress={() => {
+            setShowResetDialog(true);
+          }}
+        >
           <Text style={styles.forgotPassword}>Forgot your password?</Text>
         </TouchableOpacity>
       </AuthFrame>
+      <ForgetPassword
+        visible={showResetDialog}
+        onClose={() => {
+          setShowResetDialog(false);
+        }}
+      ></ForgetPassword>
     </View>
   );
 };
