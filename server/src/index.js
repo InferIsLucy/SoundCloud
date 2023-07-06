@@ -2,12 +2,8 @@ const express = require("express");
 require("dotenv").config();
 const app = express();
 const sendNotification = require("./notification");
-
+const notificationDb = require("./controllers/notification.controller");
 app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
 
 app.post("/notify", (req, res) => {
   const { token, title, message } = req.body;
@@ -27,12 +23,22 @@ app.post("/notify", (req, res) => {
     });
   }
 });
+
 app.post("/notifyToUsers", (req, res) => {
-  const { tokenList, title, message } = req.body;
-  console.log("tokenList", tokenList);
+  const { userData, title, message } = req.body;
+  console.log("userData", userData);
   if (title != null && message != null) {
-    tokenList.forEach((token) => {
-      sendNotification(token, title, message);
+    userData.forEach((data) => {
+      const { notificationToken, userId } = data;
+      const notification = {
+        title,
+        message,
+        date: new Date(),
+        userId: userId,
+        read: false,
+      };
+      sendNotification(notificationToken, title, message);
+      notificationDb.saveNotificationToDb(notification);
     });
     res.json({
       message: "success",
@@ -43,7 +49,9 @@ app.post("/notifyToUsers", (req, res) => {
     });
   }
 });
+
 const port = process.env.PORT || 3000;
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
