@@ -6,6 +6,7 @@ const notificationController = require("./controllers/notification.controller");
 app.use(express.json());
 
 app.post("/notify", notificationController.notify);
+app.post("/saveNotification", notificationController.saveNotification);
 app.post("/notifyToUsers", notificationController.notificationToUsers);
 
 const port = process.env.PORT || 3000;

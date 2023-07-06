@@ -11,6 +11,31 @@ const saveNotificationToDb = async (notification) => {
   }
 };
 
+exports.saveNotification = async (req, res) => {
+  const { userId, title, message } = req.body;
+  console.log({ message });
+  try {
+    const notification = {
+      title,
+      message,
+      date: new Date(),
+      userId: userId,
+      read: false,
+    };
+    await saveNotificationToDb(notification);
+    res.json({
+      message: "success",
+      data: {
+        message,
+      },
+    });
+  } catch (er) {
+    res.json({
+      message: "failed",
+    });
+  }
+};
+
 exports.notificationToUsers = async (req, res) => {
   const { userData, title, message } = req.body;
   console.log("userData", userData);
