@@ -61,7 +61,7 @@ const HomeCardItemComponent = ({ song = {} }) => {
 };
 const styles = StyleSheet.create({
   cardImage: {
-    height: 220,
+    height: 170,
     width: width / 2,
     marginRight: 20,
     padding: 10,

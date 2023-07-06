@@ -237,10 +237,12 @@ const PlayerScreen = ({ navigation }) => {
 
       {/* music controller */}
       <PlayerController></PlayerController>
-      <BottomReactionBar
-        setCommentsVisible={setCommentsVisible}
-        song={currentSong}
-      ></BottomReactionBar>
+      {!currentSong.isLocalSong && (
+        <BottomReactionBar
+          setCommentsVisible={setCommentsVisible}
+          song={currentSong}
+        ></BottomReactionBar>
+      )}
       <Modal
         animationType="slide"
         transparent={true}

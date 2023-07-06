@@ -29,21 +29,16 @@ const BottomPlayer = () => {
         }}
         style={styles.container}
       >
-        {currentSong.imageUri == "" ? (
-          <Image
-            source={{
-              uri: "https://scontent.fsgn13-4.fna.fbcdn.net/v/t39.30808-6/345233585_3487344644926329_8037647308456647249_n.jpg?stp=dst-jpg_s600x600&_nc_cat=110&ccb=1-7&_nc_sid=730e14&_nc_ohc=VbpDJyKRgJQAX9ENQew&_nc_ht=scontent.fsgn13-4.fna&oh=00_AfCmPytdWUlbad82ZV66FR1hC5HftsYHUBs251YtDTypeg&oe=645B8F2C",
-            }}
-            style={styles.img}
-          ></Image>
-        ) : (
-          <Image
-            source={{
-              uri: currentSong.imageUri,
-            }}
-            style={styles.img}
-          ></Image>
-        )}
+        <Image
+          source={
+            currentSong.imageUri == ""
+              ? require("../../../assets/girl_listening_to_music.png")
+              : {
+                  uri: currentSong.imageUri,
+                }
+          }
+          style={styles.img}
+        ></Image>
 
         <View>
           <Text

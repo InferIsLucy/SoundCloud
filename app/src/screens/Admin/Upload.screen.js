@@ -71,10 +71,13 @@ const UploadScreen = () => {
       );
 
       const users = await getListUser(uniqueIds);
-      const userTokens = users.map((user) => {
-        if (user.expoNotifyToken) return user.expoNotifyToken;
+      const userData = users.map((user) => {
+        if (user.expoNotifyToken)
+          return {
+            notificationToken: user.expoNotifyToken,
+            userId: user.userId,
+          };
       });
-      console.log("status", status.durationMillis);
 
       const newSong = {
         name,
@@ -87,22 +90,29 @@ const UploadScreen = () => {
         listens: 0,
         duration: status.durationMillis,
       };
+      const artistString = selectedArtists.reduce((acc, artist, index) => {
+        if (index === 0) {
+          return artist.name;
+        } else {
+          return acc + ", " + artist.name;
+        }
+      }, "");
       await addDocument(SongRef, newSong);
-      await sendNotification(
-        userTokens,
-        "THÔNG BÁO MỚI",
-        `Bài hát ${name} vừa được phát hành.`
-      );
       Alert.alert("Success!");
       refreshForm();
       setIsLoading(false);
+      await sendNotification(
+        userData,
+        "THÔNG BÁO",
+        `${artistString} vừa phát hành bài hát mới ${name}.`
+      );
     } catch (er) {
       console.log(er);
       setIsLoading(false);
     }
   };
-  const sendNotification = async (userTokens, title, message) => {
-    await sendNotificationToListUser(userTokens, title, message);
+  const sendNotification = async (userData, title, message) => {
+    await sendNotificationToListUser(userData, title, message);
   };
   const refreshForm = () => {
     setImageSongUri(null);
@@ -204,17 +214,6 @@ const UploadScreen = () => {
             {mp3Name == "" ? "File is not uploaded" : mp3Name}
           </Text>
         </View>
-        {/* <TouchableOpacity
-          onPress={() => {
-            setShowDatePicker(true);
-          }}
-          style={styles.item}
-        >
-          <Ionicons name="calendar" size={24} color="#ffffff" />
-          <Text style={styles.listens}>
-            {`Pick publish date: ${formatDate(publishDate)}`}
-          </Text>
-        </TouchableOpacity> */}
         {showDatePicker && (
           <RNDateTimePicker
             maximumDate={new Date()}
@@ -229,7 +228,6 @@ const UploadScreen = () => {
           ></RNDateTimePicker>
         )}
       </View>
-
       <TouchableOpacity
         onPress={() => setIsArtistListVisible(true)}
         style={[
@@ -370,9 +368,7 @@ const styles = StyleSheet.create({
   },
   btnWraper: {
     flexDirection: "row",
-    position: "absolute",
-    bottom: 12,
+
     marginBottom: 20,
-    right: 12,
   },
 });

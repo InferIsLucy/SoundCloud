@@ -26,6 +26,11 @@ const BottomMenu = ({ visible, onClose, selectedComment, setComments }) => {
   const { deleteComment } = useContext(CommentContext);
   const { user } = useContext(UserContext);
   const handleDeleteComment = async () => {
+    console.log(
+      "user.userId == selectedComment.userId",
+      user.userId,
+      selectedComment.userId
+    );
     try {
       if (user.userId == selectedComment.userId) {
         Alert.alert("Error", "Cannot delete this comment");

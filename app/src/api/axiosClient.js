@@ -1,5 +1,5 @@
 import axios from "axios";
-import { urlApi } from "../constants";
+import { urlApi, localUri } from "../constants";
 
 const axiosClient = axios.create({
   // baseURL: "http://192.168.200.104:8088/api/v1",

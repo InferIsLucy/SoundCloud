@@ -22,15 +22,16 @@ import {
   Image,
   Modal,
 } from "react-native";
-import COLORS from "../../consts/colors";
 import Icon from "react-native-vector-icons/MaterialIcons";
+
+import COLORS from "../../consts/colors";
 import { AudioContext } from "../../providers/audio.context";
 import { UserContext } from "../../providers/user.context";
 import { ArtistContext } from "../../providers/artist.context";
-import ArtistScreen from "../Artist.Screen";
 import { Colors } from "../../theme/color";
 import HomeCardItemComponent from "./components/HomeCardItem.component";
 import RecommendCard from "./components/RecommendCard.component";
+import HomeHeadingComponent from "./components/HomeHeading.component";
 
 const { width } = Dimensions.get("screen");
 const HomeScreen = ({ navigation }) => {
@@ -203,32 +204,6 @@ const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
     );
   };
-
-  const Heading = () => {
-    return (
-      <View style={{ flexDirection: "row", height: 80, width: "100%" }}>
-        <Image
-          source={{
-            uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-          }}
-          style={{ width: 50, height: 50 }}
-        ></Image>
-        <View style={{ flex: 1 }}></View>
-        <Image
-          source={{
-            uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-          }}
-          style={{ width: 50, height: 50 }}
-        ></Image>
-        <Image
-          source={{
-            uri: "https://images.pexels.com/photos/3574678/pexels-photo-3574678.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-          }}
-          style={{ width: 50, height: 50 }}
-        ></Image>
-      </View>
-    );
-  };
   return (
     <SafeAreaView
       style={{
@@ -252,14 +227,15 @@ const HomeScreen = ({ navigation }) => {
             paddingHorizontal: 20,
           }}
         >
-          <Heading></Heading>
+          <HomeHeadingComponent avatar={user.avatar}></HomeHeadingComponent>
+
           <View style={{ flex: 1 }}>
             <View style={styles.inputContainer}>
               <Icon name="search" size={28} />
               <TextInput
                 value={search}
                 onChangeText={(text) => searchFilter(text)}
-                placeholder="Search...                                                       ."
+                placeholder="Search...."
                 style={{ color: "black", fontSize: 18 }}
               />
             </View>
@@ -303,10 +279,11 @@ const HomeScreen = ({ navigation }) => {
         )}
 
         <Text style={styles.sectionTitle1}>Mới phát hành</Text>
-        <View>
+        <View style={{ zIndex: 0 }}>
           <FlatList
             contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
+            removeClippedSubviews={false}
             showsHorizontalScrollIndicator={false}
             data={newReleasedSongs}
             renderItem={({ item }) => (

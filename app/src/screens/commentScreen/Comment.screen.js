@@ -58,7 +58,11 @@ const CommentScreen = ({ setCommentsVisible }) => {
           <View style={styles.currentSong}>
             <View style={styles.Image}>
               <Image
-                source={{ uri: currentSong.imageUri }}
+                source={
+                  currentSong.imageUri == ""
+                    ? require("../../../assets/girl_listening_to_music.png")
+                    : { uri: currentSong.imageUri }
+                }
                 style={styles.songImage}
               />
             </View>

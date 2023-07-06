@@ -16,7 +16,6 @@ export const PlaylistContextProvider = ({ children }) => {
 
   const renderCount = useRef(0);
   renderCount.current++;
-  console.log("PlaylistContext", renderCount.current);
 
   useEffect(() => {
     const loadPlaylists = async () => {

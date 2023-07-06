@@ -55,6 +55,7 @@ export const CommentContextProvider = ({ children }) => {
 
           sendNotification(
             userReplied.expoNotifyToken,
+            userReplied.userId,
             commentContent,
             `New message from ${user.displayName}`
           );

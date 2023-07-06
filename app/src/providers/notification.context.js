@@ -23,12 +23,13 @@ Notifications.setNotificationHandler({
   }),
 });
 const usersRef = firebase.firestore().collection("users");
+const notificationRef = firebase.firestore().collection("notifications");
 const NEW_MESSAGE_TITLE = "New message";
 const NotificationContextProvider = ({ children }) => {
   const { user, isAuthenticated } = useContext(UserContext);
   const notificationListener = useRef();
+  const [notifications, setNotifications] = useState([]);
   const responseListener = useRef();
-  console.log("Notification Context");
   async function registerForPushNotificationsAsync() {
     let token;
     if (Device.isDevice) {
@@ -61,12 +62,13 @@ const NotificationContextProvider = ({ children }) => {
   }
   const sendNotification = async (
     token,
+    userId,
     message,
     title = NEW_MESSAGE_TITLE
   ) => {
     if (user.expoNotifyToken != token) {
       try {
-        await NotificationApi.sendNotification(token, title, message);
+        await NotificationApi.sendNotification(token, userId, title, message);
       } catch (err) {
         console.log("error when send notification", err);
       }
@@ -113,11 +115,24 @@ const NotificationContextProvider = ({ children }) => {
         saveUserExpoPushToken(token)
       );
       notificationListener.current =
-        Notifications.addNotificationReceivedListener((notification) => {});
-      responseListener.current =
-        Notifications.addNotificationResponseReceivedListener((response) => {
-          console.log(response);
+        Notifications.addNotificationReceivedListener(async (notification) => {
+          try {
+            // const title = notification.request.content.title;
+            // const body = notification.request.content.body;
+            // const userId = user.userId;
+            // await NotificationApi.saveNotification(userId, title, body);
+
+            const updatedNotifications = await loadNotifications(user.userId);
+            setNotifications(updatedNotifications);
+
+            console.log("saved notification");
+          } catch (er) {
+            console.log(er);
+          }
         });
+      responseListener.current =
+        Notifications.addNotificationResponseReceivedListener((response) => {});
+
       return () => {
         Notifications.removeNotificationSubscription(
           notificationListener.current
@@ -126,9 +141,67 @@ const NotificationContextProvider = ({ children }) => {
       };
     }
   }, [isAuthenticated]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      (async () => {
+        const res = await loadNotifications(user.userId);
+        console.log("res", res.length);
+        setNotifications(res);
+      })();
+    }
+  }, [isAuthenticated]);
+
+  const loadNotifications = async (userId, limit) => {
+    try {
+      let query = notificationRef.where("userId", "==", userId);
+      if (limit) {
+        query = query.limit(limit);
+      }
+      const querySnapshot = await query.get();
+      const notifications = [];
+      querySnapshot.forEach((doc) => {
+        notifications.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+
+      // descending
+      notifications.sort((a, b) => b.date.toMillis() - a.date.toMillis());
+      return notifications;
+    } catch (err) {
+      console.log("Error when loading notifications:", err);
+      return [];
+    }
+  };
+
+  const markAsSeenNotifications = async () => {
+    try {
+      const querySnapshot = await notificationRef
+        .where("userId", "==", user.userId)
+        .where("read", "==", false)
+        .get();
+      const batch = firebase.firestore().batch();
+      querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, { read: true });
+      });
+      await batch.commit();
+
+      const updatedNotifications = await loadNotifications(user.userId);
+      setNotifications(() => updatedNotifications);
+    } catch (err) {
+      console.log("Error when marking notifications as seen:", err);
+    }
+  };
+
   return (
     <NotificationContext.Provider
-      value={{ sendNotification, sendNotificationToListUser }}
+      value={{
+        notifications,
+        sendNotification,
+        markAsSeenNotifications,
+        sendNotificationToListUser,
+      }}
     >
       {children}
     </NotificationContext.Provider>

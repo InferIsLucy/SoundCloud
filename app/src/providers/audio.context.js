@@ -49,8 +49,6 @@ export const AudioContextProvider = ({ children }) => {
   const audioObj = useRef(null);
   const renderCount = useRef(0);
   renderCount.current++;
-  console.log("AudioContext", renderCount.current);
-
   const clearTimer = () => {
     timerDurationRef.current = -1;
   };
@@ -250,7 +248,6 @@ export const AudioContextProvider = ({ children }) => {
     if (isLoading) {
       return;
     }
-
     let prevIndex;
 
     // Kiểm tra trạng thái repeatMode
@@ -341,7 +338,6 @@ export const AudioContextProvider = ({ children }) => {
   };
   const getRemoteSongs = async () => {
     try {
-      console.log("artist.length", artists.length);
       const querySnapshot = await songsRef.where("deletedAt", "==", null).get();
       const newSongs = [];
       querySnapshot.forEach((documentSnapshot) => {
@@ -365,7 +361,7 @@ export const AudioContextProvider = ({ children }) => {
   };
   const getListeningHistory = async (listeningHistoryIds) => {
     const listSong = listeningHistoryIds.map((id) => {
-      return songs.find((song) => song.id === id);
+      return songs.find((song) => song.id === id && song.deletedAt == null);
     });
     setListeningHistory(listSong);
   };
@@ -420,18 +416,22 @@ export const AudioContextProvider = ({ children }) => {
   }, [songs, isAuthenticated]);
   useEffect(() => {
     const handleSongChange = async () => {
-      setIsLoading(true);
-      if (currentSong != null) {
-        if (audioObj.current == null) {
-          await initializeAudioObject(currentSong.uri);
-        } else {
-          await audioLoadSongAsync(currentSong.uri);
+      try {
+        setIsLoading(true);
+        if (currentSong != null) {
+          if (audioObj.current == null) {
+            await initializeAudioObject(currentSong.uri);
+          } else {
+            await audioLoadSongAsync(currentSong.uri);
+          }
+          currentSongId.current = currentSong.id;
+          currentSongIndex.current = playlist.findIndex(
+            (item) => item.id === currentSong.id
+          );
+          setIsLoading(false);
         }
-        currentSongId.current = currentSong.id;
-        currentSongIndex.current = playlist.findIndex(
-          (item) => item.id === currentSong.id
-        );
-        setIsLoading(false);
+      } catch (er) {
+        console.log("er", er);
       }
     };
     handleSongChange();

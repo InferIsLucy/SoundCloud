@@ -58,7 +58,11 @@ const OptionsModal = ({ visible, onClose, song, setTimerModalVisible }) => {
             >
               <View style={[styles.column, { flex: 0 }]}>
                 <Image
-                  source={song.imageUri == "" ? null : { uri: song.imageUri }}
+                  source={
+                    song.imageUri == ""
+                      ? require("../../../../assets/girl_listening_to_music.png")
+                      : { uri: song.imageUri }
+                  }
                   style={styles.image}
                 />
               </View>
