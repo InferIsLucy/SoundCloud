@@ -2,7 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const app = express();
 const sendNotification = require("./notification");
-const notificationDb = require("./controllers/notification.controller");
+const notificationController = require("./controllers/notification.controller");
 app.use(express.json());
 
 app.post("/notify", (req, res) => {
@@ -38,7 +38,7 @@ app.post("/notifyToUsers", (req, res) => {
         read: false,
       };
       sendNotification(notificationToken, title, message);
-      notificationDb.saveNotificationToDb(notification);
+      notificationController.saveNotificationToDb(notification);
     });
     res.json({
       message: "success",
